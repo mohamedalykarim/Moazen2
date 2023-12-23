@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -35,10 +37,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -60,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            MainActivityUi(context = this@MainActivity, viewModel)
+            MainActivityUi(context = this@MainActivity, viewModel, pref)
         }
     }
 }
@@ -68,11 +72,8 @@ class MainActivity : AppCompatActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainActivityUi (context: Context, viewModel : MainActivityViewModel){
-
-
-
-
+fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, pref: PreferencesUtils){
+    val coroutineScope = rememberCoroutineScope()
     val showCityBottomSheet by viewModel.showCityBottomSheet.collectAsState()
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -116,22 +117,48 @@ fun MainActivityUi (context: Context, viewModel : MainActivityViewModel){
 
 
             ModalBottomSheet(
+                modifier = Modifier.padding(10.dp),
                 onDismissRequest = {
                     viewModel.setShowCityBottomSheet(false)
                 },
                 sheetState = sheetState
             ) {
+                Text("Choose Current City", modifier = Modifier
+                    .padding(0.dp, 0.dp, 0.dp, 16.dp)
+                    .fillMaxWidth(), textAlign = TextAlign.Center)
 
-                
+                LazyColumn(content = {
+                    cities.forEach { cityName ->
+
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                                    .clickable {
+                                        /** set first open false **/
+                                        coroutineScope.launch {
+                                            withContext(Dispatchers.IO){
+                                                /** Set Alarm for first time after choosing city **/
+                                                AlarmUtils.setAlarmForFirstTime(context, cityName)
+                                                pref.setIsFirstOpen(false)
+                                            }
+                                        }
+
+                                        viewModel.setShowCityBottomSheet(false)
+
+                                    }
+                                    .background(Color(parseColor("#e389a5")))
+                                    .padding(16.dp)) {
+                                Text(cityName, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = Color(parseColor("#932f3a")
+                                ))
+                            }
+                        }
+                    }
+                })
 
 
 
-                Text("Choose Current City")
-
-
-
-
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(50.dp))
             }
         }
     }

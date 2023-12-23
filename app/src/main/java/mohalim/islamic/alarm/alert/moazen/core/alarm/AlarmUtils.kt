@@ -4,9 +4,16 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import mohalim.islamic.alarm.alert.moazen.core.reciever.AlarmReciever
+import org.json.JSONArray
+import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.Calendar
+import java.util.Date
 
 
 class AlarmUtils {
@@ -34,6 +41,24 @@ class AlarmUtils {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
             )
+        }
+
+        fun setAlarmForFirstTime(context: Context, cityName: String){
+            try {
+                context.resources.assets.open("$cityName.json").bufferedReader().use {
+                    val jsonString = it.readText()
+                    val jsonObject = JSONObject(jsonString)
+                    val dateJsonArray = jsonObject.getJSONArray("$cityName")
+
+
+                    /** date **/
+                    val calender = Calendar.getInstance()
+                    Log.d("TAG", "setAlarmForFirstTime: "+calender.get(Calendar.DAY_OF_YEAR))
+                }
+
+            }catch (exception : Exception){
+                Log.d("TAG", "setAlarmForFirstTime: "+ exception.message)
+            }
         }
     }
 }
