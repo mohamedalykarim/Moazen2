@@ -35,7 +35,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.lifecycleScope
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,19 +48,21 @@ import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
+import mohalim.islamic.alarm.alert.moazen.core.service.TimerWorker
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
     val viewModel: MainActivityViewModel by viewModels()
+    @Inject lateinit var dataStore: DataStore<Preferences>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val pref = PreferencesUtils(this)
         lifecycleScope.launch {
-            pref.getIsFirstOpen().collect{
+            PreferencesUtils.getIsFirstOpen(dataStore).collect{
                 if (it){
                     Log.d("TAG", "onCreate: first open")
                     viewModel.setShowCityBottomSheet(true)
@@ -64,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            MainActivityUi(context = this@MainActivity, viewModel, pref)
+            MainActivityUi(context = this@MainActivity, viewModel, dataStore)
         }
     }
 }
@@ -72,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, pref: PreferencesUtils){
+fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStore : DataStore<Preferences>){
     val coroutineScope = rememberCoroutineScope()
     val showCityBottomSheet by viewModel.showCityBottomSheet.collectAsState()
     val sheetState = rememberModalBottomSheetState()
@@ -140,7 +147,13 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, pref: Pr
                                             withContext(Dispatchers.IO){
                                                 /** Set Alarm for first time after choosing city **/
                                                 AlarmUtils.setAlarmForFirstTime(context, cityName)
-                                                pref.setIsFirstOpen(false)
+                                                PreferencesUtils.setIsFirstOpen(dataStore,false)
+                                                PreferencesUtils.setCurrentCityName(dataStore, cityName)
+
+                                                val setAlarmsRequest : PeriodicWorkRequest = PeriodicWorkRequest.Builder(TimerWorker::class.java, 1, TimeUnit.HOURS).build()
+                                                WorkManager.getInstance(context).enqueueUniquePeriodicWork("TimerWorker", ExistingPeriodicWorkPolicy.UPDATE, setAlarmsRequest)
+
+
                                             }
                                         }
 

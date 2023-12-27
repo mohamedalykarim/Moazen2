@@ -1,8 +1,10 @@
 package mohalim.islamic.alarm.alert.moazen.core.service
 
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -12,58 +14,71 @@ import android.util.Log
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
 import java.io.IOException
+import kotlin.math.log
 
 
 @AndroidEntryPoint
 class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
     MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
-    MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener{
+    MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener{
 
-
-    private var mediaPlayer: MediaPlayer? = null
-    var mediaFile_elharam_elmekky: String? = "android.resource://" + packageName + "/" + R.raw.elharam_elmekky
-    //Used to pause/resume MediaPlayer
+    private val binder = LocalBinder()
+    private var mediaPlayer : MediaPlayer? = null
     private var resumePosition : Int = 0
 
-    private lateinit var audioManager: AudioManager;
 
-    private val iBinder = LocalBinder()
+
+    inner class LocalBinder : Binder(){
+        fun getService() : MediaPlayerService = this@MediaPlayerService
+    }
 
     override fun onBind(intent: Intent?): IBinder? {
-        return iBinder
+        return binder
     }
 
-    private fun initMediaPlayer(){
-        mediaPlayer = MediaPlayer();
-        //Set up MediaPlayer event listeners
-        mediaPlayer?.setOnCompletionListener(this);
-        mediaPlayer?.setOnErrorListener(this);
-        mediaPlayer?.setOnPreparedListener(this);
-        mediaPlayer?.setOnBufferingUpdateListener(this);
-        mediaPlayer?.setOnSeekCompleteListener(this);
-        mediaPlayer?.setOnInfoListener(this);
-        //Reset so that the MediaPlayer is not pointing to another data source
-        mediaPlayer?.reset();
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        val audioAttributes =  AudioAttributes.Builder()
-            .setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED)
-            .setLegacyStreamType(AudioManager.STREAM_ALARM)
-            .setUsage(AudioAttributes.USAGE_ALARM)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build()
+        val rawId = intent?.getIntExtra("Media", 0)
+        if (rawId == 0) stopSelf()
 
-        mediaPlayer?.setAudioAttributes(audioAttributes)
+        initMediaPlayer(rawId!!)
 
-        try {
-            // Set the data source to the mediaFile location
-            mediaPlayer?.setDataSource(mediaFile_elharam_elmekky)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            stopSelf()
+        val filter = IntentFilter().apply {
+            addAction("android.media.VOLUME_CHANGED_ACTION")
         }
-        mediaPlayer?.prepareAsync()
+        registerReceiver(volumeButtonReceiver, filter)
+
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+
+    private fun initMediaPlayer(rawId : Int) {
+       try {
+           mediaPlayer?.reset()
+           mediaPlayer?.release()
+
+           mediaPlayer = MediaPlayer()
+           mediaPlayer?.setOnCompletionListener(this);
+           mediaPlayer?.setOnErrorListener(this);
+           mediaPlayer?.setOnPreparedListener(this);
+           mediaPlayer?.setOnBufferingUpdateListener(this);
+           mediaPlayer?.setOnSeekCompleteListener(this);
+           mediaPlayer?.setOnInfoListener(this);
+
+           /** Prepare file **/
+           val rawFileDescriptor = resources.openRawResourceFd(R.raw.elharam_elmekky)
+           mediaPlayer?.setDataSource(rawFileDescriptor.fileDescriptor, rawFileDescriptor.startOffset, rawFileDescriptor.length)
+           rawFileDescriptor.close()
+
+
+           mediaPlayer?.prepareAsync()
+       }catch (exception : Exception){
+           Log.d("TAG", "initMediaPlayer: "+exception.message)
+       }
+
 
     }
+
 
     private fun playMedia() {
         if (!mediaPlayer!!.isPlaying) mediaPlayer?.start()
@@ -118,82 +133,38 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     override fun onSeekComplete(mp: MediaPlayer?) {
-        TODO("Not yet implemented")
+        Log.d("TAG", "onSeekComplete: ")
+
     }
 
     override fun onInfo(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        TODO("Not yet implemented")
+        Log.d("TAG", "onInfo: ")
+        return true
     }
 
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
-        TODO("Not yet implemented")
+        Log.d("TAG", "onBufferingUpdate: ")
     }
 
-    inner class LocalBinder : Binder() {
-        fun getService() : MediaPlayerService? {
-            return this@MediaPlayerService
-        }
-    }
 
-    override fun onAudioFocusChange(focusChange: Int) {
-        when(focusChange){
-            AudioManager.AUDIOFOCUS_GAIN -> {
-                if (mediaPlayer == null ) initMediaPlayer()
-                else if (!mediaPlayer!!.isPlaying) mediaPlayer?.start()
-                mediaPlayer!!.setVolume(1.0f, 1.0f)
-            }
-
-            AudioManager.AUDIOFOCUS_LOSS -> {
-                if (mediaPlayer!!.isPlaying) mediaPlayer?.stop()
-                mediaPlayer?.release()
-                mediaPlayer = null
-            }
-
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                if (mediaPlayer!!.isPlaying) mediaPlayer?.pause()
-            }
-
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                if (mediaPlayer!!.isPlaying) mediaPlayer?.setVolume(1.0f, 1.0f)
+    // Create a BroadcastReceiver to handle volume button events
+    private val volumeButtonReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val action = intent?.action
+            if (action == "android.media.VOLUME_CHANGED_ACTION") {
+                stopMedia()
+                stopSelf()
             }
         }
     }
 
-    private fun requestAudioFocus(): Boolean {
-        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        var result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-            return true
-        }
-        return false
-    }
-
-    private fun removeAudioFocus() : Boolean {
-        return AudioManager.AUDIOFOCUS_REQUEST_GRANTED == audioManager.abandonAudioFocus(this)
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        try {
-            mediaFile_elharam_elmekky = intent?.extras?.getString("media")
-        }catch (e : NullPointerException){
-            stopSelf()
-        }
-
-        if (!requestAudioFocus()){
-            stopSelf()
-        }
-
-        if (mediaFile_elharam_elmekky != null && mediaFile_elharam_elmekky != "") initMediaPlayer()
-
-        return super.onStartCommand(intent, flags, startId)
-    }
 
     override fun onDestroy() {
+        unregisterReceiver(volumeButtonReceiver)
+        mediaPlayer?.reset()
+        mediaPlayer?.release()
         super.onDestroy()
-        if (mediaPlayer != null){
-            stopMedia()
-            mediaPlayer?.release()
-        }
-        removeAudioFocus()
     }
+
+
 }

@@ -5,17 +5,62 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
+import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.service.MediaPlayerService
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class AlarmReciever : BroadcastReceiver() {
+    @Inject lateinit var dataStore: DataStore<Preferences>;
+
+
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.d("TAG", "onReceive: AlarmReciever")
+
         val azanType = intent?.getStringExtra("AZAN_TYPE") ?: return
-        val playerIntent = Intent(context, MediaPlayerService::class.java)
-        val mediaUri = "android.resource://" + context!!.packageName + "/" + R.raw.elharam_elmekky
-        playerIntent.putExtra("media", mediaUri)
-        context.startService(playerIntent)
+
+        when(azanType){
+            "AZAN_TYPE_FAGR" ->{
+                val playerIntent = Intent(context, MediaPlayerService::class.java)
+                playerIntent.putExtra("Media", R.raw.elharam_elmekky)
+                context?.startService(playerIntent)
+            }
+
+            "AZAN_TYPE_ZOHR" -> {
+                val playerIntent = Intent(context, MediaPlayerService::class.java)
+                playerIntent.putExtra("Media", R.raw.elharam_elmekky)
+                context?.startService(playerIntent)
+            }
+
+            "AZAN_TYPE_ASR" -> {
+                val playerIntent = Intent(context, MediaPlayerService::class.java)
+                playerIntent.putExtra("Media", R.raw.elharam_elmekky)
+                context?.startService(playerIntent)
+            }
+
+            "AZAN_TYPE_MAGHREB" -> {
+                val playerIntent = Intent(context, MediaPlayerService::class.java)
+                playerIntent.putExtra("Media", R.raw.elharam_elmekky)
+                context?.startService(playerIntent)
+            }
+
+            "AZAN_TYPE_ESHA" -> {
+                val playerIntent = Intent(context, MediaPlayerService::class.java)
+                playerIntent.putExtra("Media", R.raw.elharam_elmekky)
+                context?.startService(playerIntent)
+            }
+        }
+
+
     }
 }

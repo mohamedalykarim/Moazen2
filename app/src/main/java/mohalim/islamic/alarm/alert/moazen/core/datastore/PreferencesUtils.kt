@@ -12,24 +12,45 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
-class PreferencesUtils(val context: Context) {
-    val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+class PreferencesUtils @Inject constructor(val context: Context, private val dataStore: DataStore<Preferences>) {
+
+
+    companion object {
 
         val IS_FIRST_OPEN = booleanPreferencesKey("is_first_open")
+        val CURRENT_CITY_NAME = stringPreferencesKey("current_city_name")
 
-        suspend fun setIsFirstOpen(isFirstOpen: Boolean){
-            context.dataStore.edit { settings ->
+
+        suspend fun setIsFirstOpen(dataStore: DataStore<Preferences>, isFirstOpen: Boolean){
+            dataStore.edit { settings ->
                 settings[IS_FIRST_OPEN] = isFirstOpen
             }
         }
 
-        fun getIsFirstOpen(): Flow<Boolean> {
-            return context.dataStore.data
+        fun getIsFirstOpen(dataStore: DataStore<Preferences>): Flow<Boolean> {
+            return dataStore.data
                 .map { preferences ->
                     preferences[IS_FIRST_OPEN] ?: true
                 }
         }
+
+
+
+        suspend fun setCurrentCityName(dataStore: DataStore<Preferences>, cityName: String){
+            dataStore.edit { settings ->
+                settings[CURRENT_CITY_NAME] = cityName
+            }
+        }
+
+        fun getCurrentCityName(dataStore: DataStore<Preferences>): Flow<String> {
+            return dataStore.data
+                .map { preferences ->
+                    preferences[CURRENT_CITY_NAME] ?: ""
+                }
+        }
+    }
 
 
 }
