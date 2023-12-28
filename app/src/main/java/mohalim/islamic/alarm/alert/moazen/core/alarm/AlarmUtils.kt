@@ -7,6 +7,7 @@ import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import mohalim.islamic.alarm.alert.moazen.core.reciever.AlarmReciever
+import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import org.json.JSONObject
 import java.time.Instant
 import java.time.LocalDateTime
@@ -83,29 +84,45 @@ class AlarmUtils {
                              * Examle of date 2007-12-03T10:15:30:55.000000.
                              * **/
                             var date = "$year-$month-${day}T${times.get(0)}:00"
-                            var dateMillisecond = localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond)
-                            setAlarm(context, "AZAN_TYPE_FAGR", date)
+                            var dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
+                            if (currentMillisecond <= dateMillisecond){
+                                setAlarm(context, "AZAN_TYPE_FAGR", date)
+                                Log.d("TAG", "setAlarms: "+ date)
+                            }
 
                             date = "$year-$month-${day}T${times.get(2)}:00"
-                            dateMillisecond = localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond)
-                            setAlarm(context, "AZAN_TYPE_ZOHR", date)
+                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
+                            if (currentMillisecond <= dateMillisecond){
+                                setAlarm(context, "AZAN_TYPE_ZOHR", date)
+                                Log.d("TAG", "setAlarms: "+ date)
+                            }
 
                             date = "$year-$month-${day}T${times.get(3)}:00"
-                            dateMillisecond = localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond)
-                            setAlarm(context, "AZAN_TYPE_ASR", date)
+                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
+                            if (currentMillisecond <= dateMillisecond){
+                                setAlarm(context, "AZAN_TYPE_ASR", date)
+                                Log.d("TAG", "setAlarms: "+ date)
+                            }
 
                             date = "$year-$month-${day}T${times.get(5)}:00"
-                            dateMillisecond = localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond)
-                            setAlarm(context, "AZAN_TYPE_MAGHREB", date)
+                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
+                            if (currentMillisecond <= dateMillisecond){
+                                setAlarm(context, "AZAN_TYPE_MAGHREB", date)
+                                Log.d("TAG", "setAlarms: "+ date)
+                            }
 
                             date = "$year-$month-${day}T${times.get(6)}:00"
-                            dateMillisecond = localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond)
-                            setAlarm(context, "AZAN_TYPE_ESHA", date)
+                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
+                            if (currentMillisecond <= dateMillisecond){
+                                setAlarm(context, "AZAN_TYPE_ESHA", date)
+                                Log.d("TAG", "setAlarms: "+ date)
+                            }
+
+//                            date = "2023-12-28T16:52:00"
+//                            dateMillisecond = localDateTimeStringToCalender(date).timeInMillis
+//                            if (currentMillisecond <= dateMillisecond){
+//                                setAlarm(context, "AZAN_TYPE_ESHA", date)
+//                            }
                         }
 
                     }
@@ -117,14 +134,7 @@ class AlarmUtils {
             }
         }
 
-        fun localDateTimeStringToCalender(input: String): Calendar {
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-            val localDateTime =  LocalDateTime.parse(input, formatter)
-            val millis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = millis
-            return calendar
-        }
+
 
 
     }

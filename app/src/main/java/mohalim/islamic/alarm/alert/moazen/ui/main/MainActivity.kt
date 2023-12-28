@@ -44,11 +44,13 @@ import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.service.TimerWorker
+import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -61,14 +63,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            PreferencesUtils.getIsFirstOpen(dataStore).collect{
-                if (it){
-                    Log.d("TAG", "onCreate: first open")
-                    viewModel.setShowCityBottomSheet(true)
-                }
+        runBlocking {
+            withContext(Dispatchers.IO){
+                viewModel.checkIfFirstOpen()
+                viewModel.getCurrentCityName(this@MainActivity)
             }
         }
+
+
 
         setContent {
             MainActivityUi(context = this@MainActivity, viewModel, dataStore)
@@ -144,14 +146,30 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     .clickable {
                                         /** set first open false **/
                                         coroutineScope.launch {
-                                            withContext(Dispatchers.IO){
+                                            withContext(Dispatchers.IO) {
                                                 /** Set Alarm for first time after choosing city **/
                                                 AlarmUtils.setAlarmForFirstTime(context, cityName)
-                                                PreferencesUtils.setIsFirstOpen(dataStore,false)
-                                                PreferencesUtils.setCurrentCityName(dataStore, cityName)
+                                                PreferencesUtils.setIsFirstOpen(dataStore, false)
+                                                PreferencesUtils.setCurrentCityName(
+                                                    dataStore,
+                                                    cityName
+                                                )
 
-                                                val setAlarmsRequest : PeriodicWorkRequest = PeriodicWorkRequest.Builder(TimerWorker::class.java, 1, TimeUnit.HOURS).build()
-                                                WorkManager.getInstance(context).enqueueUniquePeriodicWork("TimerWorker", ExistingPeriodicWorkPolicy.UPDATE, setAlarmsRequest)
+                                                val setAlarmsRequest: PeriodicWorkRequest =
+                                                    PeriodicWorkRequest
+                                                        .Builder(
+                                                            TimerWorker::class.java,
+                                                            1,
+                                                            TimeUnit.HOURS
+                                                        )
+                                                        .build()
+                                                WorkManager
+                                                    .getInstance(context)
+                                                    .enqueueUniquePeriodicWork(
+                                                        "TimerWorker",
+                                                        ExistingPeriodicWorkPolicy.UPDATE,
+                                                        setAlarmsRequest
+                                                    )
 
 
                                             }
