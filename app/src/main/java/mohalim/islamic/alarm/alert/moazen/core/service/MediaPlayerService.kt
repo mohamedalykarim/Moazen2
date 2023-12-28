@@ -48,6 +48,8 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
         val filter = IntentFilter().apply {
             addAction("android.media.VOLUME_CHANGED_ACTION")
         }
+
+        // Register receiver for volume press button
         registerReceiver(volumeButtonReceiver, filter)
 
         notification(azanType)
@@ -58,19 +60,18 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private fun notification(azanType: String?) {
         // Create Notification channel
         val channel = NotificationChannel(
-            "mohalim.islamic.alarm.alert.moazen",
-            "Foreground Service Channel",
-            NotificationManager.IMPORTANCE_DEFAULT
+            "moazenNotificationChannnel",
+            "Moazen Service Channel",
+            NotificationManager.IMPORTANCE_HIGH
         )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.createNotificationChannel(channel)
 
 
         // Create a notification using NotificationCompat.Builder
-        val notification = NotificationCompat.Builder(this, "mohalim.islamic.alarm.alert.moazen")
+        val notification = NotificationCompat.Builder(this, "moazenNotificationChannnel")
             .setContentTitle(azanType)
             .setContentText(azanType)
-            .setSmallIcon(R.drawable.bottom)
             .build()
 
         // Start the service as a foreground service with the notification
