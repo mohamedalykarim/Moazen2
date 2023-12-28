@@ -45,7 +45,7 @@ class AlarmUtils {
                     context,
                     alarmId,
                     intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
             )
         }
@@ -59,7 +59,7 @@ class AlarmUtils {
                 context.resources.assets.open("$cityName.json").bufferedReader().use {
                     val jsonString = it.readText()
                     val jsonObject = JSONObject(jsonString)
-                    val dateJsonArray = jsonObject.getJSONArray("$cityName")
+                    val dateJsonArray = jsonObject.getJSONArray(cityName)
 
                     /** date **/
                     val calender = Calendar.getInstance()
@@ -93,8 +93,7 @@ class AlarmUtils {
                             date = "$year-$month-${day}T${times.get(6)}:00.000000"
                             setAlarm(context, "AZAN_TYPE_ESHA", date)
 
-                            Toast.makeText(context, date, Toast.LENGTH_LONG).show()
-
+                            Log.d("TAG", "setAlarms: All alarms are set")
                         }
 
                     }

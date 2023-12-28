@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.provider.SyncStateContract
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -33,31 +35,36 @@ class AlarmReciever : BroadcastReceiver() {
             "AZAN_TYPE_FAGR" ->{
                 val playerIntent = Intent(context, MediaPlayerService::class.java)
                 playerIntent.putExtra("Media", R.raw.elharam_elmekky)
-                context?.startService(playerIntent)
+                playerIntent.putExtra("AZAN_TYPE", "AZAN_TYPE_FAGR")
+                context!!.startForegroundService(playerIntent)
             }
 
             "AZAN_TYPE_ZOHR" -> {
                 val playerIntent = Intent(context, MediaPlayerService::class.java)
                 playerIntent.putExtra("Media", R.raw.elharam_elmekky)
-                context?.startService(playerIntent)
+                playerIntent.putExtra("AZAN_TYPE", "AZAN_TYPE_ZOHR")
+                context!!.startForegroundService(playerIntent)
             }
 
             "AZAN_TYPE_ASR" -> {
                 val playerIntent = Intent(context, MediaPlayerService::class.java)
                 playerIntent.putExtra("Media", R.raw.elharam_elmekky)
-                context?.startService(playerIntent)
+                playerIntent.putExtra("AZAN_TYPE", "AZAN_TYPE_ASR")
+                context!!.startForegroundService(playerIntent)
             }
 
             "AZAN_TYPE_MAGHREB" -> {
                 val playerIntent = Intent(context, MediaPlayerService::class.java)
                 playerIntent.putExtra("Media", R.raw.elharam_elmekky)
-                context?.startService(playerIntent)
+                playerIntent.putExtra("AZAN_TYPE", "AZAN_TYPE_MAGHREB")
+                context!!.startForegroundService(playerIntent)
             }
 
             "AZAN_TYPE_ESHA" -> {
                 val playerIntent = Intent(context, MediaPlayerService::class.java)
                 playerIntent.putExtra("Media", R.raw.elharam_elmekky)
-                context?.startService(playerIntent)
+                playerIntent.putExtra("AZAN_TYPE", "AZAN_TYPE_ESHA")
+                context!!.startForegroundService(playerIntent)
             }
         }
 

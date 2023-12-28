@@ -32,6 +32,13 @@
 
         <service android:name=".core.service.MediaPlayerService" />
         <receiver android:name=".core.reciever.AlarmReciever" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove">
+        </provider>
+
      </application>
 
 

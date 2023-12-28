@@ -1,20 +1,21 @@
 package mohalim.islamic.alarm.alert.moazen.core.service
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.media.AudioAttributes
-import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
-import java.io.IOException
-import kotlin.math.log
 
 
 @AndroidEntryPoint
@@ -39,6 +40,7 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         val rawId = intent?.getIntExtra("Media", 0)
+        val azanType = intent?.getStringExtra("AZAN_TYPE")
         if (rawId == 0) stopSelf()
 
         initMediaPlayer(rawId!!)
@@ -48,8 +50,33 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
         }
         registerReceiver(volumeButtonReceiver, filter)
 
-        return super.onStartCommand(intent, flags, startId)
+        notification(azanType)
+
+        return START_STICKY
     }
+
+    private fun notification(azanType: String?) {
+        // Create Notification channel
+        val channel = NotificationChannel(
+            "mohalim.islamic.alarm.alert.moazen",
+            "Foreground Service Channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
+
+
+        // Create a notification using NotificationCompat.Builder
+        val notification = NotificationCompat.Builder(this, "mohalim.islamic.alarm.alert.moazen")
+            .setContentTitle(azanType)
+            .setContentText(azanType)
+            .setSmallIcon(R.drawable.bottom)
+            .build()
+
+        // Start the service as a foreground service with the notification
+        startForeground(15001, notification)
+    }
+
 
 
     private fun initMediaPlayer(rawId : Int) {
