@@ -9,6 +9,9 @@ import android.provider.SyncStateContract
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +22,8 @@ import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.service.MediaPlayerService
+import mohalim.islamic.alarm.alert.moazen.core.service.TimerWorker
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -28,9 +33,7 @@ class AlarmReciever : BroadcastReceiver() {
 
 
     override fun onReceive(context: Context?, intent: Intent?) {
-
         val azanType = intent?.getStringExtra("AZAN_TYPE") ?: return
-
         when(azanType){
             "AZAN_TYPE_FAGR" ->{
                 val playerIntent = Intent(context, MediaPlayerService::class.java)
@@ -68,6 +71,8 @@ class AlarmReciever : BroadcastReceiver() {
             }
         }
 
+        val setAlarmsRequest : PeriodicWorkRequest = PeriodicWorkRequest.Builder(TimerWorker::class.java, 1, TimeUnit.HOURS).build()
+        WorkManager.getInstance(context!!).enqueueUniquePeriodicWork("TimerWorker", ExistingPeriodicWorkPolicy.UPDATE, setAlarmsRequest)
 
     }
 }
