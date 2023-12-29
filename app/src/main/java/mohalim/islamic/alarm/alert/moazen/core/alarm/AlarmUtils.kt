@@ -118,11 +118,12 @@ class AlarmUtils {
                                 Log.d("TAG", "setAlarms: "+ date)
                             }
 
-//                            date = "2023-12-28T16:52:00"
-//                            dateMillisecond = localDateTimeStringToCalender(date).timeInMillis
+//                            date = "2023-12-29T14:47:00"
+//                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
 //                            if (currentMillisecond <= dateMillisecond){
 //                                setAlarm(context, "AZAN_TYPE_ESHA", date)
 //                            }
+//                            Log.d("TAG", "setAlarms: "+date)
                         }
 
                     }

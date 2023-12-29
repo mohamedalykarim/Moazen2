@@ -58,24 +58,28 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     private fun notification(azanType: String?) {
-        // Create Notification channel
-        val channel = NotificationChannel(
-            "moazenNotificationChannnel",
-            "Moazen Service Channel",
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        val notificationManager = getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(channel)
 
+        // Create the NotificationChannel.
+        val name = "NotificationChannelName"
+        val descriptionText = "NotificationChannelDescription"
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val mChannel = NotificationChannel("moazenNotificationChannnel", name, importance)
+        mChannel.description = descriptionText
+        // Register the channel with the system. You can't change the importance
+        // or other notification behaviors after this.
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(mChannel)
 
-        // Create a notification using NotificationCompat.Builder
-        val notification = NotificationCompat.Builder(this, "moazenNotificationChannnel")
-            .setContentTitle(azanType)
-            .setContentText(azanType)
-            .build()
+        val builder = NotificationCompat.Builder(this, "moazenNotificationChannnel")
+            .setSmallIcon(R.drawable.clock)
+            .setContentTitle("textTitle")
+            .setContentText("textContent")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        val notification = builder.build()
 
         // Start the service as a foreground service with the notification
-        startForeground(15001, notification)
+        startForeground(1, notification)
     }
 
 

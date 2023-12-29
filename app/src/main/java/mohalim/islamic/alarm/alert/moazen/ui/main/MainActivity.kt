@@ -13,12 +13,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -27,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -63,6 +68,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
+        setContent {
+            MainActivityUi(context = this@MainActivity, viewModel, dataStore)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         runBlocking {
             withContext(Dispatchers.IO){
                 viewModel.checkIfFirstOpen()
@@ -70,20 +85,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
 
-
-        setContent {
-            MainActivityUi(context = this@MainActivity, viewModel, dataStore)
-        }
+    override fun onPause() {
+        super.onPause()
+        viewModel.stopCounter()
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStore : DataStore<Preferences>){
     val coroutineScope = rememberCoroutineScope()
+
     val showCityBottomSheet by viewModel.showCityBottomSheet.collectAsState()
+    val timer by viewModel.timer.collectAsState()
+    val nextPrayType by viewModel.nextPrayerType.collectAsState()
+
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
@@ -104,8 +122,58 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
             )
 
             Column {
-                Text(modifier = Modifier.fillMaxWidth(), text = "Till Next pray:", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, textAlign = TextAlign.Center)
-                Text(modifier = Modifier.fillMaxWidth(), text = "00:00:00", fontWeight = FontWeight.ExtraBold, fontSize = 40.sp, textAlign = TextAlign.Center)
+                Column ( modifier = Modifier.fillMaxWidth(),  //important
+                    horizontalAlignment  = Alignment.CenterHorizontally
+                ) {
+                    var azanDrawable = R.drawable.remain
+                    when(nextPrayType){
+                        "AZAN_TYPE_FAGR"-> azanDrawable = R.drawable.till_fagr
+                        "AZAN_TYPE_SHROUQ"-> azanDrawable = R.drawable.shrouq
+                        "AZAN_TYPE_ZOHR"-> azanDrawable = R.drawable.till_zohr
+                        "AZAN_TYPE_ASR"-> azanDrawable = R.drawable.till_asr
+                        "AZAN_TYPE_GHROUB"-> azanDrawable = R.drawable.ghroub
+                        "AZAN_TYPE_MAGHREB"-> azanDrawable = R.drawable.till_maghreb
+                        "AZAN_TYPE_ESHA"-> azanDrawable = R.drawable.till_eshaa
+                    }
+                    Image(modifier = Modifier.width(350.dp), painter = painterResource(id = azanDrawable), contentDescription = "till Zohr image", contentScale = ContentScale.FillWidth)
+
+                }
+                Text(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp, 16.dp, 0.dp, 0.dp), text = "Till Next Prayer:", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, textAlign = TextAlign.Center)
+
+                Text(modifier = Modifier.fillMaxWidth(),  text = timer, fontWeight = FontWeight.ExtraBold, fontSize = 46.sp, textAlign = TextAlign.Center)
+
+                Row {
+                    Row(modifier = Modifier
+                        .padding(16.dp, 16.dp, 8.dp, 16.dp)
+                        .weight(1f)
+                        .clickable {
+
+                        }
+                        .background(Color(parseColor("#d7d7d7")))) {
+                        Row {
+                            Image(modifier = Modifier
+                                .padding(8.dp, 16.dp, 4.dp, 16.dp)
+                                .width(32.dp), painter = painterResource(id = R.drawable.clock), contentDescription = "Prayer Times Icon")
+                            Text(modifier = Modifier.padding(0.dp, 21.dp), text = "Prayer Times",  fontSize = 16.sp, textAlign = TextAlign.Center)
+                        }
+                    }
+
+                    Row(modifier = Modifier
+                        .padding(8.dp, 16.dp, 16.dp, 16.dp)
+                        .weight(1f)
+                        .clickable { }
+                        .background(Color(parseColor("#d7d7d7")))) {
+                        Row {
+                            Image(modifier = Modifier
+                                .padding(8.dp, 16.dp, 4.dp, 16.dp)
+                                .width(32.dp), painter = painterResource(id = R.drawable.clock), contentDescription = "Prayer Times Icon")
+                            Text(modifier = Modifier.padding(0.dp, 21.dp), text = "More",  fontSize = 16.sp, textAlign = TextAlign.Center)
+                        }
+                    }
+                }
+
             }
 
             Image(
@@ -154,22 +222,6 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                                     dataStore,
                                                     cityName
                                                 )
-
-                                                val setAlarmsRequest: PeriodicWorkRequest =
-                                                    PeriodicWorkRequest
-                                                        .Builder(
-                                                            TimerWorker::class.java,
-                                                            1,
-                                                            TimeUnit.HOURS
-                                                        )
-                                                        .build()
-                                                WorkManager
-                                                    .getInstance(context)
-                                                    .enqueueUniquePeriodicWork(
-                                                        "TimerWorker",
-                                                        ExistingPeriodicWorkPolicy.UPDATE,
-                                                        setAlarmsRequest
-                                                    )
 
 
                                             }
