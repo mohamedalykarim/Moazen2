@@ -13,6 +13,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
@@ -70,11 +71,23 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
 
+        val contentView = RemoteViews(packageName, R.layout.custom_notifications)
+        var azanDrawable = R.drawable.remain
+
+        when(azanType){
+            "AZAN_TYPE_FAGR"-> azanDrawable = R.drawable.till_fagr
+            "AZAN_TYPE_SHROUQ"-> azanDrawable = R.drawable.shrouq
+            "AZAN_TYPE_ZOHR"-> azanDrawable = R.drawable.till_zohr
+            "AZAN_TYPE_ASR"-> azanDrawable = R.drawable.till_asr
+            "AZAN_TYPE_GHROUB"-> azanDrawable = R.drawable.ghroub
+            "AZAN_TYPE_MAGHREB"-> azanDrawable = R.drawable.till_maghreb
+            "AZAN_TYPE_ESHA"-> azanDrawable = R.drawable.till_eshaa
+        }
+        contentView.setImageViewResource(R.id.image, azanDrawable)
+
         val builder = NotificationCompat.Builder(this, "moazenNotificationChannnel")
-            .setSmallIcon(R.drawable.clock)
-            .setContentTitle("textTitle")
-            .setContentText("textContent")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setSmallIcon(R.drawable.ic_masjed_icon)
+            .setCustomContentView(contentView)
 
         val notification = builder.build()
 

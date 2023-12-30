@@ -5,8 +5,10 @@ import android.util.Log
 import mohalim.islamic.alarm.alert.moazen.core.model.NextPray
 import org.json.JSONArray
 import org.json.JSONObject
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.chrono.HijrahDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
@@ -117,6 +119,19 @@ class TimesUtils {
             minutesString = if (minutes < 10){ "0$minutes" }else{ minutes.toString() }
             secondsString = if (seconds < 10){ "0$seconds" }else{ seconds.toString() }
             return Triple(hoursString, minutesString, secondsString)
+        }
+
+
+        fun getDate(): String {
+            val calendar = Calendar.getInstance().time
+            val formatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+            return formatter.format(calendar)
+        }
+
+        fun getHigriDate(): String {
+            var date  = ""
+            date = DateTimeFormatter.ofPattern("MMMM dd, yyyy", Locale.getDefault()).format(HijrahDate.now())
+            return date
         }
 
     }
