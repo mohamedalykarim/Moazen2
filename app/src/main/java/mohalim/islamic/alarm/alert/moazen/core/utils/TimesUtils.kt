@@ -121,6 +121,25 @@ class TimesUtils {
             return Triple(hoursString, minutesString, secondsString)
         }
 
+        fun getPrayersInTimeFormat(prayers : JSONArray): MutableList<String> {
+            val calendar = Calendar.getInstance()
+            val list : MutableList<String> = ArrayList()
+            for (i in 0 until prayers.length()) {
+                val item = prayers.get(i)
+                val splitedValue = item.toString().split(":")
+                var hour = splitedValue[0].toInt()
+                val minute = splitedValue[1].toInt()
+
+                calendar.set(Calendar.HOUR_OF_DAY, hour)
+                calendar.set(Calendar.MINUTE, minute)
+                val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+                list.add(formatter.format(calendar.time).replace("am", "AM").replace("pm", "PM"))
+            }
+
+            return list
+
+        }
+
 
         fun getDate(): String {
             val calendar = Calendar.getInstance().time

@@ -39,8 +39,9 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
     private val _showPrayersBottomSheet = MutableStateFlow(false)
     val showPrayersBottomSheet : StateFlow<Boolean> = _showPrayersBottomSheet.asStateFlow()
 
-    private val _prayersForToday = MutableStateFlow(JSONArray())
-    val prayersForToday : StateFlow<JSONArray> = _prayersForToday.asStateFlow()
+    val list : MutableList<String> = ArrayList()
+    private val _prayersForToday = MutableStateFlow(list)
+    val prayersForToday : StateFlow<MutableList<String>> = _prayersForToday.asStateFlow()
 
     private val _timer = MutableStateFlow("00:00:00")
     val timer : StateFlow<String> = _timer.asStateFlow()
@@ -174,7 +175,7 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                         nextPray = TimesUtils.getNextPray(praysForToday, 1)
                     }
 
-                    Log.d("TAG", "getCurrentCityName: prayers" + praysForToday)
+                    _prayersForToday.value = TimesUtils.getPrayersInTimeFormat(praysForToday)
 
                     _nextPrayerType.value = nextPray!!.azanType
 

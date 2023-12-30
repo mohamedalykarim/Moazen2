@@ -124,7 +124,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
     val timer by viewModel.timer.collectAsState()
     val nextPrayType by viewModel.nextPrayerType.collectAsState()
     val currentCity by viewModel.currentCity.collectAsState()
-    val prayersForToday by viewmodel.prayersForToday.collectAsState()
+    val prayersForToday by viewModel.prayersForToday.collectAsState()
 
     val isFagerAlertWork by viewModel.isFagerAlertWork.collectAsState()
     val isDuhurAlertWork by viewModel.isDuhurAlertWork.collectAsState()
@@ -456,7 +456,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "15:00 AM",
+                                    text = prayersForToday!![0],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
@@ -508,7 +508,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "15:00 AM",
+                                    text = prayersForToday!![2],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
@@ -559,7 +559,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "15:00 AM",
+                                    text = prayersForToday!![3],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
@@ -612,7 +612,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "15:00 AM",
+                                    text = prayersForToday!![5],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
@@ -665,7 +665,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "15:00 AM",
+                                    text = prayersForToday!![6],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
