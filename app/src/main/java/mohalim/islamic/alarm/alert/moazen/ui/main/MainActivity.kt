@@ -5,6 +5,7 @@ import android.graphics.Color.parseColor
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -250,6 +251,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                         interactionSource = interactionMore,
                                         indication = null,
                                         onClick = {
+                                            Toast.makeText(context, "Soon", Toast.LENGTH_LONG).show()
                                         }
                                     )
                                     .clip(RoundedCornerShape(10.dp))
@@ -303,13 +305,22 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
         if (showCityBottomSheet) {
             val cities : MutableList<String>  = ArrayList()
             cities.add("Luxor")
-            cities.add("Higaza")
 
             /** First Open Bottom Sheet to choose the city */
             ModalBottomSheet(
                 modifier = Modifier.padding(10.dp),
                 onDismissRequest = {
                     viewModel.setShowCityBottomSheet(false)
+                    if (currentCity == ""){
+                        coroutineScope.launch {
+                            withContext(Dispatchers.IO) {
+                                /** Set Alarm for first time after choosing city **/
+                                AlarmUtils.setAlarmForFirstTime(context, "Luxor")
+                                PreferencesUtils.setIsFirstOpen(dataStore, false)
+                                PreferencesUtils.setCurrentCityName(dataStore, "Luxor")
+                            }
+                        }
+                    }
                 },
                 sheetState = sheetState
             ) {
@@ -331,12 +342,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                                 /** Set Alarm for first time after choosing city **/
                                                 AlarmUtils.setAlarmForFirstTime(context, cityName)
                                                 PreferencesUtils.setIsFirstOpen(dataStore, false)
-                                                PreferencesUtils.setCurrentCityName(
-                                                    dataStore,
-                                                    cityName
-                                                )
-
-
+                                                PreferencesUtils.setCurrentCityName(dataStore, cityName)
                                             }
                                         }
 
