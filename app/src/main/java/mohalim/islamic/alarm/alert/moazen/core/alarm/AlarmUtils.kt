@@ -74,10 +74,21 @@ class AlarmUtils {
                         if (item.has(todayString)){
                             val times = item.getJSONArray(todayString)
                             val year = calender.get(Calendar.YEAR)
-                            val month = calender.get(Calendar.MONTH) + 1
-                            val day = calender.get(Calendar.DAY_OF_MONTH)
+                            val monthLong = calender.get(Calendar.MONTH) + 1
+                            val dayLong = calender.get(Calendar.DAY_OF_MONTH)
                             val currentMillisecond = calender.timeInMillis
 
+                            var month = ""
+                            var day = ""
+                            month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
+                            day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
+
+
+                            Log.d("TAG", "setAlarms: month "+month)
+                            Log.d("TAG", "setAlarms: day "+day)
+
+                            Log.d("TAG", "setAlarms: month "+monthLong)
+                            Log.d("TAG", "setAlarms: day "+dayLong)
 
 
                             /**

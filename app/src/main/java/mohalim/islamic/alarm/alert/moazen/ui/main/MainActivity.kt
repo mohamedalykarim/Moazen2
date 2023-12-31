@@ -3,18 +3,14 @@ package mohalim.islamic.alarm.alert.moazen.ui.main
 import android.content.Context
 import android.graphics.Color.parseColor
 import android.os.Bundle
-import android.util.Log
-import android.view.MotionEvent
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +18,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,8 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -39,19 +32,13 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,10 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.lifecycle.lifecycleScope
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -73,13 +56,12 @@ import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
-import java.time.chrono.HijrahDate
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    val viewModel: MainActivityViewModel by viewModels()
+    private val viewModel: MainActivityViewModel by viewModels()
     @Inject lateinit var dataStore: DataStore<Preferences>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -115,7 +97,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStore : DataStore<Preferences>){
     val coroutineScope = rememberCoroutineScope()
@@ -147,9 +129,11 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
         Image(modifier = Modifier.fillMaxSize(), painter = painterResource(id = R.drawable.transparent_bg), contentScale = ContentScale.Crop, contentDescription = "")
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
             Image(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 0.dp),
                 painter = painterResource(id = R.drawable.top),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillWidth,
                 contentDescription = ""
             )
 
@@ -163,7 +147,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
 
                 Column ( modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 32.dp),  //important
+                    .padding(top = 8.dp, bottom = 16.dp),  //important
                     horizontalAlignment  = Alignment.CenterHorizontally
                 ) {
                     var azanDrawable = R.drawable.remain
@@ -176,32 +160,32 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                         "AZAN_TYPE_MAGHREB"-> azanDrawable = R.drawable.till_maghreb
                         "AZAN_TYPE_ESHA"-> azanDrawable = R.drawable.till_eshaa
                     }
-                    Image(modifier = Modifier.width(250.dp), painter = painterResource(id = azanDrawable), contentDescription = "till Zohr image", contentScale = ContentScale.FillWidth)
+                    Image(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp), painter = painterResource(id = azanDrawable), contentDescription = "till Zohr image", contentScale = ContentScale.FillWidth)
 
                 }
 
                 Text(modifier = Modifier.fillMaxWidth(),  text = timer, fontWeight = FontWeight.ExtraBold, fontSize = 60.sp, textAlign = TextAlign.Center)
 
+                
+                Spacer(modifier = Modifier.height(16.dp))
 
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                    Row (){
+                    Row{
 
                         /** Prayers Button */
                         val interactionPrayerTimeSource = remember { MutableInteractionSource() }
                         val isPrayersPressed by interactionPrayerTimeSource.collectIsPressedAsState()
-                        val scalePrayers = if (isPrayersPressed) 1.02f else 1.0f
+                        val scalePrayers = if (isPrayersPressed) .90f else 1f
 
                         Column(modifier = Modifier
                             .width(170.dp)
-                            .animateContentSize()
                             .scale(scalePrayers),
                             horizontalAlignment = Alignment.CenterHorizontally) {
                             Row(
                                 modifier = Modifier
-                                    .padding(4.dp, 4.dp, 2.dp, 4.dp)
                                     .width(150.dp)
-
+                                    .height(50.dp)
                                     .clickable(
                                         interactionSource = interactionPrayerTimeSource,
                                         indication = null,
@@ -212,7 +196,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(
                                         if (isPrayersPressed) Color(parseColor("#ffffff")) else Color(
-                                            parseColor("#ffccdd")
+                                            parseColor("#f5f5f5")
                                         )
                                     )
                                     .border(
@@ -225,9 +209,9 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                             ) {
                                 Row {
                                     Image(modifier = Modifier
-                                        .padding(8.dp, 16.dp, 4.dp, 16.dp)
+                                        .padding(top = 9.dp)
                                         .width(32.dp), painter = painterResource(id = R.drawable.clock), contentDescription = "Prayer Times Icon")
-                                    Text(modifier = Modifier.padding(0.dp, 21.dp), text = "Prayer Times",  fontSize = 16.sp, textAlign = TextAlign.Center, color = Color(parseColor("#932f3a")))
+                                    Text(modifier = Modifier.padding(top = 13.dp), text = "Prayer Times",  fontSize = 16.sp, textAlign = TextAlign.Center, color = Color(parseColor("#932f3a")))
                                 }
                             }
                         }
@@ -235,29 +219,30 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                         /** More Button */
                         val interactionMore = remember { MutableInteractionSource() }
                         val isMorePressed by interactionMore.collectIsPressedAsState()
-                        val scaleMore = if (isMorePressed) 1.02f else 1.0f
+                        val scaleMore = if (isMorePressed) .90f else 1.0f
 
 
                         Column(modifier = Modifier
                             .width(170.dp)
-                            .animateContentSize()
                             .scale(scaleMore),
                             horizontalAlignment = Alignment.CenterHorizontally) {
                             Row(
                                 modifier = Modifier
-                                    .padding(2.dp, 4.dp, 4.dp, 4.dp)
                                     .width(150.dp)
+                                    .height(50.dp)
                                     .clickable(
                                         interactionSource = interactionMore,
                                         indication = null,
                                         onClick = {
-                                            Toast.makeText(context, "Soon", Toast.LENGTH_LONG).show()
+                                            Toast
+                                                .makeText(context, "Soon", Toast.LENGTH_LONG)
+                                                .show()
                                         }
                                     )
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(
                                         if (isMorePressed) Color(parseColor("#ffffff")) else Color(
-                                            parseColor("#ffccdd")
+                                            parseColor("#f5f5f5")
                                         )
                                     )
                                     .border(
@@ -271,13 +256,13 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                 Row {
                                     Image(
                                         modifier = Modifier
-                                            .padding(8.dp, 16.dp, 4.dp, 16.dp)
-                                            .width(32.dp),
-                                        painter = painterResource(id = R.drawable.clock),
+                                            .padding(top = 13.dp, start = 7.dp)
+                                            .width(22.dp),
+                                        painter = painterResource(id = R.drawable.more_icon),
                                         contentDescription = "Prayer Times Icon"
                                     )
                                     Text(
-                                        modifier = Modifier.padding(0.dp, 21.dp),
+                                        modifier = Modifier.padding(top= 13.dp, start = 6.dp),
                                         text = "More",
                                         fontSize = 16.sp,
                                         textAlign = TextAlign.Center,
@@ -294,9 +279,10 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(16.dp, 0.dp)
                     .weight(1f, false),
                 painter = painterResource(id = R.drawable.bottom),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillWidth,
                 contentDescription = ""
             )
         }
@@ -342,7 +328,10 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                                 /** Set Alarm for first time after choosing city **/
                                                 AlarmUtils.setAlarmForFirstTime(context, cityName)
                                                 PreferencesUtils.setIsFirstOpen(dataStore, false)
-                                                PreferencesUtils.setCurrentCityName(dataStore, cityName)
+                                                PreferencesUtils.setCurrentCityName(
+                                                    dataStore,
+                                                    cityName
+                                                )
                                             }
                                         }
 
@@ -373,7 +362,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                 onDismissRequest = {
                     viewModel.setShowPrayersBottomSheet(false)
                 },
-                sheetState = sheetState
+                sheetState = prayersSheetState
             ) {
                 Box (
                     modifier = Modifier
@@ -462,7 +451,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = prayersForToday!![0],
+                                    text = prayersForToday[0],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
@@ -474,8 +463,8 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                         modifier = Modifier
                                             .width(25.dp)
                                             .clickable {
-                                                coroutineScope.launch{
-                                                    withContext(Dispatchers.IO){
+                                                coroutineScope.launch {
+                                                    withContext(Dispatchers.IO) {
                                                         viewModel.setIsFagrAlertWork(!isFagerAlertWork)
                                                     }
                                                 }
@@ -487,9 +476,14 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                             Spacer(modifier = Modifier.height(8.dp))
 
 
-                            Column(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color(
-                                parseColor("#dadada")
-                            ))){}
+                            Column(modifier = Modifier
+                                .height(1.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    Color(
+                                        parseColor("#dadada")
+                                    )
+                                )){}
 
                             /**
                              * Duhur Time
@@ -514,7 +508,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = prayersForToday!![2],
+                                    text = prayersForToday[2],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
@@ -525,12 +519,12 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     Image(modifier = Modifier
                                         .width(25.dp)
                                         .clickable {
-                                        coroutineScope.launch{
-                                            withContext(Dispatchers.IO){
-                                                viewModel.setIsDuhurAlertWork(!isDuhurAlertWork)
+                                            coroutineScope.launch {
+                                                withContext(Dispatchers.IO) {
+                                                    viewModel.setIsDuhurAlertWork(!isDuhurAlertWork)
+                                                }
                                             }
-                                        }
-                                    },
+                                        },
                                         painter = painterResource(if (isDuhurAlertWork) R.drawable.bell_work else R.drawable.bell_not_work),
                                         contentDescription = "Prayer Times")
                                 }
@@ -538,9 +532,14 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            Column(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color(
-                                parseColor("#dadada")
-                            ))){}
+                            Column(modifier = Modifier
+                                .height(1.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    Color(
+                                        parseColor("#dadada")
+                                    )
+                                )){}
 
                             /**
                              * ASR Time
@@ -565,7 +564,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = prayersForToday!![3],
+                                    text = prayersForToday[3],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
@@ -577,8 +576,8 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                         modifier = Modifier
                                             .width(25.dp)
                                             .clickable {
-                                                coroutineScope.launch{
-                                                    withContext(Dispatchers.IO){
+                                                coroutineScope.launch {
+                                                    withContext(Dispatchers.IO) {
                                                         viewModel.setIsAsrAlertWork(!isAsrAlertWork)
                                                     }
                                                 }
@@ -591,9 +590,14 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                             Spacer(modifier = Modifier.height(8.dp))
 
 
-                            Column(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color(
-                                parseColor("#dadada")
-                            ))){}
+                            Column(modifier = Modifier
+                                .height(1.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    Color(
+                                        parseColor("#dadada")
+                                    )
+                                )){}
 
                             /**
                              * Maghrib Time
@@ -618,7 +622,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = prayersForToday!![5],
+                                    text = prayersForToday[5],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
@@ -630,8 +634,8 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                         modifier = Modifier
                                             .width(25.dp)
                                             .clickable {
-                                                coroutineScope.launch{
-                                                    withContext(Dispatchers.IO){
+                                                coroutineScope.launch {
+                                                    withContext(Dispatchers.IO) {
                                                         viewModel.setIsMaghribAlertWork(!isMaghribAlertWork)
                                                     }
                                                 }
@@ -644,9 +648,14 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                             Spacer(modifier = Modifier.height(8.dp))
 
 
-                            Column(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color(
-                                parseColor("#dadada")
-                            ))){}
+                            Column(modifier = Modifier
+                                .height(1.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    Color(
+                                        parseColor("#dadada")
+                                    )
+                                )){}
 
                             /**
                              * Isha' Time
@@ -671,7 +680,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                                    text = prayersForToday!![6],
+                                    text = prayersForToday[6],
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131")))
@@ -683,8 +692,8 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                         modifier = Modifier
                                             .width(25.dp)
                                             .clickable {
-                                                coroutineScope.launch{
-                                                    withContext(Dispatchers.IO){
+                                                coroutineScope.launch {
+                                                    withContext(Dispatchers.IO) {
                                                         viewModel.setIsIshaaAlertWork(!isIshaaAlertWork)
                                                     }
                                                 }

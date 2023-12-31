@@ -17,7 +17,7 @@ class TimesUtils {
 
     companion object{
         fun getPraysForToday(context: Context, cityName: String, daysDifference: Int): JSONArray {
-            var jsonArray : JSONArray = JSONArray();
+            var jsonArray = JSONArray();
             context.resources.assets.open("$cityName.json").bufferedReader().use {
                 val jsonString = it.readText()
                 val jsonObject = JSONObject(jsonString)
@@ -28,8 +28,11 @@ class TimesUtils {
                     val millisecondsDifference = daysDifference * 24 * 60 * 60 * 1000
                     calendar.timeInMillis = calendar.timeInMillis + millisecondsDifference
                 }
-                val todayString: String = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + "-" + calendar.get(Calendar.DAY_OF_MONTH)
 
+                val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+                val todayString: String = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + "-" + if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth
+                Log.d("TAG", "getPraysForToday: todayString "+ todayString)
                 for (i in 0 until dateJsonArray.length()) {
                     val item = dateJsonArray.getJSONObject(i)
                     if (item.has(todayString)) {
@@ -50,26 +53,37 @@ class TimesUtils {
             val calendartommorow = Calendar.getInstance()
 
             var year = 0
-            var month = 0
-            var day = 0
+            var monthLong = 0
+            var dayLong = 0
 
             if (daysDifference == 0){
                 year = calendarToday.get(Calendar.YEAR)
-                month = calendarToday.get(Calendar.MONTH) + 1
-                day = calendarToday.get(Calendar.DAY_OF_MONTH)
+                monthLong = calendarToday.get(Calendar.MONTH) + 1
+                dayLong = calendarToday.get(Calendar.DAY_OF_MONTH)
             }else{
                 val millisecondsDifference = daysDifference * 24 * 60 * 60 * 1000
                 calendartommorow.timeInMillis = calendartommorow.timeInMillis + millisecondsDifference
 
                 year = calendartommorow.get(Calendar.YEAR)
-                month = calendartommorow.get(Calendar.MONTH) + 1
-                day = calendartommorow.get(Calendar.DAY_OF_MONTH)
+                monthLong = calendartommorow.get(Calendar.MONTH) + 1
+                dayLong = calendartommorow.get(Calendar.DAY_OF_MONTH)
+
+                if (monthLong == 12 && dayLong == 31) year +=1
             }
 
+            var month = ""
+            var day = ""
+            month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
+            day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
 
+            Log.d("TAG", "getNextPray: month "+month)
+            Log.d("TAG", "getNextPray: day "+day)
+            Log.d("TAG", "getNextPray: month "+monthLong)
+            Log.d("TAG", "getNextPray: day "+dayLong)
 
             for (i in 0 until jsonArray.length()) {
                 date = "$year-$month-${day}T${jsonArray.get(i)}:00"
+                Log.d("TAG", "getNextPray1: "+date)
                 val dateCalendar = localDateTimeStringToCalender(date)
                 if (calendarToday.timeInMillis < dateCalendar.timeInMillis){
                     nextDayDate = "$year-$month-${day}T${jsonArray.get(i)}:00"

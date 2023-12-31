@@ -26,7 +26,6 @@ import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.model.NextPray
 import mohalim.islamic.alarm.alert.moazen.core.service.TimerWorker
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
-import org.json.JSONArray
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -39,7 +38,7 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
     private val _showPrayersBottomSheet = MutableStateFlow(false)
     val showPrayersBottomSheet : StateFlow<Boolean> = _showPrayersBottomSheet.asStateFlow()
 
-    val list : MutableList<String> = ArrayList()
+    private val list : MutableList<String> = ArrayList()
     private val _prayersForToday = MutableStateFlow(list)
     val prayersForToday : StateFlow<MutableList<String>> = _prayersForToday.asStateFlow()
 
@@ -87,8 +86,7 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
     suspend fun observeIsDuhurAlertsWorks(){
         viewModelScope.launch {
-            PreferencesUtils.getIsDuhurAlertWork(dataStore).collect{ _isDuhurAlertWork.value = it
-                Log.d("TAG", "observeIsAzanAlertsWorks: "+ it)}
+            PreferencesUtils.getIsDuhurAlertWork(dataStore).collect{ _isDuhurAlertWork.value = it }
         }
     }
 
