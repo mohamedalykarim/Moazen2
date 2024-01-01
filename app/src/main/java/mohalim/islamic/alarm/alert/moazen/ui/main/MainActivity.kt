@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -56,6 +57,10 @@ import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
+import java.time.LocalTime
+import java.time.chrono.HijrahDate
+import java.time.temporal.ChronoUnit
+import java.util.Calendar
 import javax.inject.Inject
 
 
@@ -108,6 +113,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
     val nextPrayType by viewModel.nextPrayerType.collectAsState()
     val currentCity by viewModel.currentCity.collectAsState()
     val prayersForToday by viewModel.prayersForToday.collectAsState()
+    val isNextDay by viewModel.isNextDay.collectAsState()
 
     val isFagerAlertWork by viewModel.isFagerAlertWork.collectAsState()
     val isDuhurAlertWork by viewModel.isDuhurAlertWork.collectAsState()
@@ -160,7 +166,9 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                         "AZAN_TYPE_MAGHREB"-> azanDrawable = R.drawable.till_maghreb
                         "AZAN_TYPE_ESHA"-> azanDrawable = R.drawable.till_eshaa
                     }
-                    Image(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp), painter = painterResource(id = azanDrawable), contentDescription = "till Zohr image", contentScale = ContentScale.FillWidth)
+                    Image(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp), painter = painterResource(id = azanDrawable), contentDescription = "till Zohr image", contentScale = ContentScale.FillWidth)
 
                 }
 
@@ -380,16 +388,24 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                             .fillMaxSize()
                             .padding(16.dp),
                     ) {
+                        val calendar = Calendar.getInstance()
+                        var hijrahDate = HijrahDate.now()
+
+                        if (isNextDay){
+                            calendar.timeInMillis = calendar.timeInMillis + 24*60*60*1000
+                            hijrahDate = hijrahDate.plus(1, ChronoUnit.DAYS)
+                        }
+
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = TimesUtils.getDate(),
+                            text = TimesUtils.getDate(calendar),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.ExtraBold,
                             textAlign = TextAlign.Center,
                             color = Color(parseColor("#9a212a")))
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = TimesUtils.getHigriDate(),
+                            text = TimesUtils.getHigriDate(hijrahDate),
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center,
                             color = Color(parseColor("#313131"))
@@ -705,6 +721,89 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
 
 
 
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+
+
+                        Column(
+                            modifier = Modifier
+                                .background(Color(parseColor("#fff2f6")))
+                                .border(
+                                    1.dp,
+                                    Color(parseColor("#ffd4e2")),
+                                    shape = RoundedCornerShape(20)
+                                )
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Row{
+                                Column(Modifier.width(100.dp), horizontalAlignment  = Alignment.CenterHorizontally) {
+                                    Spacer(modifier = Modifier.height(5.dp))
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = "Sunrise",
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        color = Color(parseColor("#969498")))
+
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = prayersForToday[1],
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        color = Color(parseColor("#313131")))
+                                }
+
+                                Column(modifier = Modifier
+                                    .width(1.dp)
+                                    .height(40.dp)
+                                    .background(Color(parseColor("#dadada")))){}
+
+                                Column(Modifier.width(100.dp), horizontalAlignment  = Alignment.CenterHorizontally) {
+                                    Spacer(modifier = Modifier.height(5.dp))
+
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = "Mid Day",
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        color = Color(parseColor("#969498")))
+
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = LocalTime.NOON.toString(),
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        color = Color(parseColor("#313131")))
+
+                                }
+
+                                Column(modifier = Modifier
+                                    .width(1.dp)
+                                    .height(40.dp)
+                                    .background(Color(parseColor("#dadada")))){}
+
+
+                                Column (Modifier.width(100.dp), horizontalAlignment  = Alignment.CenterHorizontally) {
+                                    Spacer(modifier = Modifier.height(5.dp))
+
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = "Sunset",
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        color = Color(parseColor("#969498")))
+
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = prayersForToday[4],
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        color = Color(parseColor("#313131")))
+
+                                }
+                            }
                         }
                     }
                 }

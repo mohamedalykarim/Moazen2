@@ -48,6 +48,10 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
     private val _nextPrayerType = MutableStateFlow("")
     val nextPrayerType : StateFlow<String> = _nextPrayerType.asStateFlow()
 
+    private val _isNextDay = MutableStateFlow(false)
+    val isNextDay : StateFlow<Boolean> = _isNextDay.asStateFlow()
+
+
     private val _currentCity = MutableStateFlow("")
     val currentCity : StateFlow<String> = _currentCity.asStateFlow()
 
@@ -171,6 +175,7 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     if (nextPray == null){
                         praysForToday = TimesUtils.getPraysForToday(context, it, 1)
                         nextPray = TimesUtils.getNextPray(praysForToday, 1)
+                        _isNextDay.value = true
                     }
 
                     _prayersForToday.value = TimesUtils.getPrayersInTimeFormat(praysForToday)

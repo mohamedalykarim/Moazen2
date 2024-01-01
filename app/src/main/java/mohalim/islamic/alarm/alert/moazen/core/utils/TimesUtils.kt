@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.chrono.HijrahDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 
@@ -76,10 +77,6 @@ class TimesUtils {
             month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
             day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
 
-            Log.d("TAG", "getNextPray: month "+month)
-            Log.d("TAG", "getNextPray: day "+day)
-            Log.d("TAG", "getNextPray: month "+monthLong)
-            Log.d("TAG", "getNextPray: day "+dayLong)
 
             for (i in 0 until jsonArray.length()) {
                 date = "$year-$month-${day}T${jsonArray.get(i)}:00"
@@ -155,15 +152,14 @@ class TimesUtils {
         }
 
 
-        fun getDate(): String {
-            val calendar = Calendar.getInstance().time
+        fun getDate(calendar: Calendar): String {
             val formatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
-            return formatter.format(calendar)
+            return formatter.format(calendar.time)
         }
 
-        fun getHigriDate(): String {
+        fun getHigriDate(hijrahDate: HijrahDate): String {
             var date  = ""
-            date = DateTimeFormatter.ofPattern("MMMM dd, yyyy", Locale.getDefault()).format(HijrahDate.now())
+            date = DateTimeFormatter.ofPattern("MMMM dd, yyyy", Locale.getDefault()).format(hijrahDate)
             return date
         }
 

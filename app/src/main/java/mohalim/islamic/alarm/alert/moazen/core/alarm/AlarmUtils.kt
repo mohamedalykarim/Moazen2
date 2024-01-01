@@ -24,7 +24,7 @@ class AlarmUtils {
          * alarm type example : "AZAN_TYPE_FAJR"
          * local date time example : "2023-12-10T23:37:00.908732"
          */
-        fun setAlarm(context: Context, alarmType: String, localDateTime: String) {
+        private fun setAlarm(context: Context, alarmType: String, localDateTime: String) {
             val alarmManager = context.getSystemService(AlarmManager::class.java)
             val intent = Intent(context, AlarmReciever::class.java).apply {
                 putExtra("AZAN_TYPE", alarmType)
