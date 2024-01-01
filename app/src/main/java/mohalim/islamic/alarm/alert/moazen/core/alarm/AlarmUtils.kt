@@ -66,7 +66,12 @@ class AlarmUtils {
 
                     /** date **/
                     val calender = Calendar.getInstance()
-                    val todayString: String = calender.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + "-" + calender.get(Calendar.DAY_OF_MONTH)
+
+                    val dayofMonth = calender.get(Calendar.DAY_OF_MONTH)
+
+                    val todayString: String = calender.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + "-" + if (dayofMonth < 10) "0$dayofMonth" else dayofMonth
+
+                    Log.d("TAG", "setAlarms: "+todayString)
 
                     for (i in 0 until dateJsonArray.length()) {
                         val item = dateJsonArray.getJSONObject(i)
@@ -84,35 +89,27 @@ class AlarmUtils {
                             day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
 
 
-                            Log.d("TAG", "setAlarms: month "+month)
-                            Log.d("TAG", "setAlarms: day "+day)
-
-                            Log.d("TAG", "setAlarms: month "+monthLong)
-                            Log.d("TAG", "setAlarms: day "+dayLong)
-
 
                             /**
                              * Examle of date 2007-12-03T10:15:30:55.000000.
                              * **/
                             var date = "$year-$month-${day}T${times.get(0)}:00"
+                            Log.d("TAG", "setAlarms: "+date)
                             var dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
                             if (currentMillisecond <= dateMillisecond){
                                 setAlarm(context, "AZAN_TYPE_FAGR", date)
-                                Log.d("TAG", "setAlarms: "+ date)
                             }
 
                             date = "$year-$month-${day}T${times.get(2)}:00"
                             dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
                             if (currentMillisecond <= dateMillisecond){
                                 setAlarm(context, "AZAN_TYPE_ZOHR", date)
-                                Log.d("TAG", "setAlarms: "+ date)
-                            }
+                           }
 
                             date = "$year-$month-${day}T${times.get(3)}:00"
                             dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
                             if (currentMillisecond <= dateMillisecond){
                                 setAlarm(context, "AZAN_TYPE_ASR", date)
-                                Log.d("TAG", "setAlarms: "+ date)
                             }
 
                             date = "$year-$month-${day}T${times.get(5)}:00"
@@ -129,7 +126,7 @@ class AlarmUtils {
                                 Log.d("TAG", "setAlarms: "+ date)
                             }
 
-//                            date = "2023-12-29T23:16:00"
+//                            date = "2024-01-01T18:12:00"
 //                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
 //                            if (currentMillisecond <= dateMillisecond){
 //                                setAlarm(context, "AZAN_TYPE_ESHA", date)

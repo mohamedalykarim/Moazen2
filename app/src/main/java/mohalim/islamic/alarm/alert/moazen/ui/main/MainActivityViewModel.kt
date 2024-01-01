@@ -206,6 +206,11 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
                         override fun onFinish() {
                             _timer.value = "00:00:00"
+                            viewModelScope.launch {
+                                withContext(Dispatchers.IO){
+                                    getCurrentCityName(context)
+                                }
+                            }
                         }
 
                     }
