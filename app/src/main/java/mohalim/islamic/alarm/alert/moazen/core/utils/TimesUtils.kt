@@ -32,7 +32,7 @@ class TimesUtils {
 
                 val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
-                val todayString: String = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + "-" + if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth
+                val todayString: String = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + "-" + if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth
                 Log.d("TAG", "getPraysForToday: todayString "+ todayString)
                 for (i in 0 until dateJsonArray.length()) {
                     val item = dateJsonArray.getJSONObject(i)
@@ -154,6 +154,11 @@ class TimesUtils {
 
         fun getDate(calendar: Calendar): String {
             val formatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+            return formatter.format(calendar.time)
+        }
+
+        fun getTimeFormat(calendar: Calendar): String {
+            val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
             return formatter.format(calendar.time)
         }
 

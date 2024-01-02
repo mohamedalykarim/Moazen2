@@ -3,6 +3,7 @@ package mohalim.islamic.alarm.alert.moazen.ui.main
 import android.content.Context
 import android.graphics.Color.parseColor
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -71,8 +72,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
 
         setContent {
             MainActivityUi(context = this@MainActivity, viewModel, dataStore)
@@ -390,6 +389,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                     ) {
                         val calendar = Calendar.getInstance()
                         var hijrahDate = HijrahDate.now()
+
 
                         if (isNextDay){
                             calendar.timeInMillis = calendar.timeInMillis + 24*60*60*1000
@@ -760,19 +760,45 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     .height(40.dp)
                                     .background(Color(parseColor("#dadada")))){}
 
+                                if (isNextDay) calendar.timeInMillis = calendar.timeInMillis + 24*60*60*1000
+                                val year = calendar.get(Calendar.YEAR)
+                                val monthLong = calendar.get(Calendar.MONTH) + 1
+                                val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
+                                var month = ""
+                                var day = ""
+                                month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
+                                day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
+
+                                val sunriseString = prayersForToday[1].replace(" AM", "").replace(" PM", "")
+                                val sunsetString = prayersForToday[4].replace(" AM", "").replace(" PM", "")
+                                var dateSunrise = "$year-$month-${day}T${sunriseString}:00"
+                                var dateSunset = "$year-$month-${day}T${sunsetString}:00"
+
+
+                                val calendarSunrise = TimesUtils.localDateTimeStringToCalender(dateSunrise)
+                                val calendarSunset = TimesUtils.localDateTimeStringToCalender(dateSunset)
+                                calendarSunset.timeInMillis = calendarSunset.timeInMillis + 12*60*60*1000
+
+                                Log.d("TAG", "MainActivityUi: Hour "+calendarSunset.get(Calendar.HOUR_OF_DAY))
+                                Log.d("TAG", "MainActivityUi: Hour "+calendarSunset.get(Calendar.MINUTE))
+
+                                val millisecondDifference = calendarSunset.timeInMillis - calendarSunrise.timeInMillis
+                                val calendarMidday = Calendar.getInstance()
+                                calendarMidday.timeInMillis = calendarSunrise.timeInMillis + (millisecondDifference/2)
+
                                 Column(Modifier.width(100.dp), horizontalAlignment  = Alignment.CenterHorizontally) {
                                     Spacer(modifier = Modifier.height(5.dp))
 
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = "Mid Day",
+                                        text = "MidDay",
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Center,
                                         color = Color(parseColor("#969498")))
 
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = LocalTime.NOON.toString(),
+                                        text = TimesUtils.getTimeFormat(calendarMidday),
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Center,
                                         color = Color(parseColor("#313131")))
