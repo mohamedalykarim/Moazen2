@@ -1,0 +1,16 @@
+{
+  "Cities": [
+    {
+      "name": "Luxor",
+      "ar_name": "الأقصر",
+      "country": "Egypt",
+      "ar_country": "مصر"
+    },
+    {
+      "name": "Nottingham",
+      "ar_name": "نوتنجهام",
+      "country": "UK",
+      "ar_country": "انجلترا"
+    }
+  ]
+}

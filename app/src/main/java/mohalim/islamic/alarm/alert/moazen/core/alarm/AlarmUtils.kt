@@ -5,14 +5,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
-import mohalim.islamic.alarm.alert.moazen.core.reciever.AlarmReciever
+import mohalim.islamic.alarm.alert.moazen.core.receiver.AlarmReceiver
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import org.json.JSONObject
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
@@ -26,7 +23,7 @@ class AlarmUtils {
          */
         private fun setAlarm(context: Context, alarmType: String, localDateTime: String) {
             val alarmManager = context.getSystemService(AlarmManager::class.java)
-            val intent = Intent(context, AlarmReciever::class.java).apply {
+            val intent = Intent(context, AlarmReceiver::class.java).apply {
                 putExtra("AZAN_TYPE", alarmType)
             }
             val time  = LocalDateTime.parse(localDateTime)

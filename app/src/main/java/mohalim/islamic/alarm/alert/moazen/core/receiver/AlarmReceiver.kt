@@ -1,11 +1,8 @@
-package mohalim.islamic.alarm.alert.moazen.core.reciever
+package mohalim.islamic.alarm.alert.moazen.core.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.provider.SyncStateContract
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -15,11 +12,8 @@ import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
-import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.service.MediaPlayerService
 import mohalim.islamic.alarm.alert.moazen.core.service.TimerWorker
@@ -28,7 +22,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class AlarmReciever : BroadcastReceiver() {
+class AlarmReceiver : BroadcastReceiver() {
     @Inject lateinit var dataStore: DataStore<Preferences>;
 
 

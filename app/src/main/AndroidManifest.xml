@@ -21,12 +21,16 @@
         android:theme="@style/Theme.Moazen"
         tools:targetApi="31">
         <activity
+            android:name=".ui.setting.SettingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.more.MoreScreenActivity"
             android:exported="false" />
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,12 +40,12 @@
 
         <service android:name=".core.service.MediaPlayerService" />
 
-        <receiver android:name=".core.reciever.AlarmReciever" />
+        <receiver android:name=".core.receiver.AlarmReceiver" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
-            tools:node="remove"></provider>
+            tools:node="remove" />
     </application>
 
 </manifest>

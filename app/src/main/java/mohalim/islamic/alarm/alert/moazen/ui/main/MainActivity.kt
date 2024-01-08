@@ -58,12 +58,15 @@ import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
+import mohalim.islamic.alarm.alert.moazen.core.model.City
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
+import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import mohalim.islamic.alarm.alert.moazen.ui.more.MoreScreenActivity
 import java.time.LocalTime
 import java.time.chrono.HijrahDate
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -297,8 +300,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
 
 
         if (showCityBottomSheet) {
-            val cities : MutableList<String>  = ArrayList()
-            cities.add("Luxor")
+            val cities = Utils.getCitiesFromAssets(context)
 
             /** First Open Bottom Sheet to choose the city */
             ModalBottomSheet(
@@ -323,7 +325,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                     .fillMaxWidth(), textAlign = TextAlign.Center)
 
                 LazyColumn(content = {
-                    cities.forEach { cityName ->
+                    cities.forEach { city ->
 
                         item {
                             Column(
@@ -334,11 +336,11 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                         coroutineScope.launch {
                                             withContext(Dispatchers.IO) {
                                                 /** Set Alarm for first time after choosing city **/
-                                                AlarmUtils.setAlarmForFirstTime(context, cityName)
+                                                AlarmUtils.setAlarmForFirstTime(context, city.name)
                                                 PreferencesUtils.setIsFirstOpen(dataStore, false)
                                                 PreferencesUtils.setCurrentCityName(
                                                     dataStore,
-                                                    cityName
+                                                    city.name
                                                 )
                                             }
                                         }
@@ -347,6 +349,13 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     }
                                     .background(Color(parseColor("#e389a5")))
                                     .padding(16.dp)) {
+
+                                val cityName =
+                                    when (Locale.getDefault().language){
+                                        "en"->{"${city.country} - ${city.name}"}
+                                        "ar"->{"${city.arCountry} - ${city.arName}"}
+                                        else -> {"${city.country} - ${city.name}"}
+                                    }
                                 Text(cityName, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = Color(parseColor("#932f3a")
                                 ))
                             }
@@ -362,7 +371,6 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
 
 
         }
-
         if (showPrayersBottomSheet){
             /** Prayer Times Bottom Sheet to show today times **/
             ModalBottomSheet(
