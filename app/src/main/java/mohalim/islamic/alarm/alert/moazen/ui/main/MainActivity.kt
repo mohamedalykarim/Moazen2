@@ -113,6 +113,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
     val currentCity by viewModel.currentCity.collectAsState()
     val prayersForToday by viewModel.prayersForToday.collectAsState()
     val isNextDay by viewModel.isNextDay.collectAsState()
+    val midday by viewModel.midday.collectAsState()
 
     val isFagerAlertWork by viewModel.isFagerAlertWork.collectAsState()
     val isDuhurAlertWork by viewModel.isDuhurAlertWork.collectAsState()
@@ -760,28 +761,6 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                     .height(40.dp)
                                     .background(Color(parseColor("#dadada")))){}
 
-                                if (isNextDay) calendar.timeInMillis = calendar.timeInMillis + 24*60*60*1000
-                                val year = calendar.get(Calendar.YEAR)
-                                val monthLong = calendar.get(Calendar.MONTH) + 1
-                                val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
-                                var month = ""
-                                var day = ""
-                                month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
-                                day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
-
-                                val sunriseString = prayersForToday[1].replace(" AM", "").replace(" PM", "")
-                                val sunsetString = prayersForToday[4].replace(" AM", "").replace(" PM", "")
-                                var dateSunrise = "$year-$month-${day}T${sunriseString}:00"
-                                var dateSunset = "$year-$month-${day}T${sunsetString}:00"
-
-
-                                val calendarSunrise = TimesUtils.localDateTimeStringToCalender(dateSunrise)
-                                val calendarSunset = TimesUtils.localDateTimeStringToCalender(dateSunset)
-                                calendarSunset.timeInMillis = calendarSunset.timeInMillis + 12*60*60*1000
-
-                                val millisecondDifference = calendarSunset.timeInMillis - calendarSunrise.timeInMillis
-                                val calendarMidday = Calendar.getInstance()
-                                calendarMidday.timeInMillis = calendarSunrise.timeInMillis + (millisecondDifference/2)
 
                                 Column(Modifier.width(100.dp), horizontalAlignment  = Alignment.CenterHorizontally) {
                                     Spacer(modifier = Modifier.height(5.dp))
@@ -795,7 +774,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
 
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = TimesUtils.getTimeFormat(calendarMidday),
+                                        text = midday,
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Center,
                                         color = Color(parseColor("#313131")))

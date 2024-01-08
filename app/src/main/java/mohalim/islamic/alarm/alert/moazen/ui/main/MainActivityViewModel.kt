@@ -26,6 +26,7 @@ import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.model.NextPray
 import mohalim.islamic.alarm.alert.moazen.core.service.TimerWorker
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -54,6 +55,10 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
     private val _currentCity = MutableStateFlow("")
     val currentCity : StateFlow<String> = _currentCity.asStateFlow()
+
+    private val _midday = MutableStateFlow("")
+    val midday : StateFlow<String> = _midday.asStateFlow()
+
 
     private val _isFagerAlertWork = MutableStateFlow(true)
     val isFagerAlertWork : StateFlow<Boolean> = _isFagerAlertWork.asStateFlow()
@@ -182,26 +187,6 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
                     _nextPrayerType.value = nextPray!!.azanType
 
-                    withContext(Dispatchers.IO){
-                        val setAlarmsRequest: PeriodicWorkRequest =
-                            PeriodicWorkRequest
-                                .Builder(
-                                    TimerWorker::class.java,
-                                    1,
-                                    TimeUnit.HOURS
-                                )
-                                .build()
-
-
-                        WorkManager
-                            .getInstance(context)
-                            .enqueueUniquePeriodicWork(
-                                "TimerWorker",
-                                ExistingPeriodicWorkPolicy.UPDATE,
-                                setAlarmsRequest
-                            )
-                    }
-
                     val countDownTimer = object : CountDownTimer(nextPray.millisecondDifference, 1000){
                         override fun onTick(millisUntilFinished: Long) {
                             val (hours, minutes, seconds) = TimesUtils.convertMillisecondsToTime(millisUntilFinished)
@@ -221,6 +206,58 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     }
 
                     countDownTimer.start()
+
+
+                    /** Calculating Midday **/
+
+                    val calendar = Calendar.getInstance()
+
+                    if (_isNextDay.value) calendar.timeInMillis = calendar.timeInMillis + 24*60*60*1000
+                    val year = calendar.get(Calendar.YEAR)
+                    val monthLong = calendar.get(Calendar.MONTH) + 1
+                    val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
+                    var month = ""
+                    var day = ""
+                    month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
+                    day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
+
+                    val sunriseString = _prayersForToday.value[1].replace(" AM", "").replace(" PM", "")
+                    val sunsetString = _prayersForToday.value[4].replace(" AM", "").replace(" PM", "")
+                    var dateSunrise = "$year-$month-${day}T${sunriseString}:00"
+                    var dateSunset = "$year-$month-${day}T${sunsetString}:00"
+
+                    val calendarSunrise = TimesUtils.localDateTimeStringToCalender(dateSunrise)
+                    val calendarSunset = TimesUtils.localDateTimeStringToCalender(dateSunset)
+                    calendarSunset.timeInMillis = calendarSunset.timeInMillis + 12*60*60*1000
+
+                    val millisecondDifference = calendarSunset.timeInMillis - calendarSunrise.timeInMillis
+                    val calendarMidday = Calendar.getInstance()
+                    calendarMidday.timeInMillis = calendarSunrise.timeInMillis + (millisecondDifference/2)
+
+                    _midday.value = TimesUtils.getTimeFormat(calendarMidday)
+
+
+                    /** Workmanager for azan times */
+
+                    withContext(Dispatchers.IO){
+                        val setAlarmsRequest: PeriodicWorkRequest =
+                            PeriodicWorkRequest
+                                .Builder(
+                                    TimerWorker::class.java,
+                                    1,
+                                    TimeUnit.HOURS
+                                )
+                                .build()
+
+
+                        WorkManager
+                            .getInstance(context)
+                            .enqueueUniquePeriodicWork(
+                                "TimerWorker",
+                                ExistingPeriodicWorkPolicy.UPDATE,
+                                setAlarmsRequest
+                            )
+                    }
 
 
                 }

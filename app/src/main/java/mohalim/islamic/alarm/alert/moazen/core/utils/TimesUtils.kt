@@ -109,13 +109,32 @@ class TimesUtils {
             return NextPray(nextCalendar, azanType, millisecondDifference)
         }
 
-        fun localDateTimeStringToCalender(input: String): Calendar {
+        fun localDateTimeStringToCalender(string : String): Calendar {
+            val input = replaceArabicToEnglish(string)
+            Log.d("TAG", "localDateTimeStringToCalender: "+input)
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
             val localDateTime =  LocalDateTime.parse(input, formatter)
             val millis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = millis
             return calendar
+        }
+
+        private fun replaceArabicToEnglish(string: String): CharSequence? {
+            return string
+                .replace("٠", "0")
+                .replace("١", "1")
+                .replace("٢", "2")
+                .replace("٣", "3")
+                .replace("٤", "4")
+                .replace("٥", "5")
+                .replace("٦", "6")
+                .replace("٧", "7")
+                .replace("٨", "8")
+                .replace("٩", "9")
+                .replace(" ", "")
+                .replace("ص", "")
+                .replace("م", "")
         }
 
         fun convertMillisecondsToTime(totalMilliseconds: Long): Triple<String, String, String> {
