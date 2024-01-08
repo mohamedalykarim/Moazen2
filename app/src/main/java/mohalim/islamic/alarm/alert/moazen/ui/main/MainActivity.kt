@@ -1,6 +1,7 @@
 package mohalim.islamic.alarm.alert.moazen.ui.main
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color.parseColor
 import android.os.Bundle
 import android.util.Log
@@ -58,6 +59,7 @@ import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
+import mohalim.islamic.alarm.alert.moazen.ui.more.MoreScreenActivity
 import java.time.LocalTime
 import java.time.chrono.HijrahDate
 import java.time.temporal.ChronoUnit
@@ -242,9 +244,7 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                         interactionSource = interactionMore,
                                         indication = null,
                                         onClick = {
-                                            Toast
-                                                .makeText(context, "Soon", Toast.LENGTH_LONG)
-                                                .show()
+                                            context.startActivity(Intent(context, MoreScreenActivity::class.java))
                                         }
                                     )
                                     .clip(RoundedCornerShape(10.dp))
