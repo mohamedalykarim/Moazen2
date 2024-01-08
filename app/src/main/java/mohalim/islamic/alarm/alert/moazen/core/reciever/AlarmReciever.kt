@@ -92,6 +92,7 @@ class AlarmReciever : BroadcastReceiver() {
             }
 
             "AZAN_TYPE_ESHA" -> {
+                Log.d("TAG", "onReceive: AZAN_TYPE_ESHA")
                 CoroutineScope(Dispatchers.IO).launch {
                     PreferencesUtils.getIsIshaaAlertWork(dataStore).collect {
                         if (it){
@@ -99,12 +100,16 @@ class AlarmReciever : BroadcastReceiver() {
                             playerIntent.putExtra("Media", R.raw.elharam_elmekky)
                             playerIntent.putExtra("AZAN_TYPE", "AZAN_TYPE_ESHA")
                             context!!.startForegroundService(playerIntent)
+                            Log.d("TAG", "onReceive: AZAN_TYPE_ESHA")
+
                         }
                     }
                 }
 
             }
         }
+
+        Log.d("TAG", "onReceive: received ")
 
         val setAlarmsRequest : PeriodicWorkRequest = PeriodicWorkRequest.Builder(TimerWorker::class.java, 1, TimeUnit.HOURS).build()
         WorkManager.getInstance(context!!).enqueueUniquePeriodicWork("TimerWorker", ExistingPeriodicWorkPolicy.UPDATE, setAlarmsRequest)

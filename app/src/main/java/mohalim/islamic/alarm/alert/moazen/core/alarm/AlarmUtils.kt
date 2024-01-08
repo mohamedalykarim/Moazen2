@@ -69,7 +69,7 @@ class AlarmUtils {
 
                     val dayofMonth = calender.get(Calendar.DAY_OF_MONTH)
 
-                    val todayString: String = calender.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + "-" + if (dayofMonth < 10) "0$dayofMonth" else dayofMonth
+                    val todayString: String = calender.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + "-" + if (dayofMonth < 10) "0$dayofMonth" else dayofMonth
 
                     Log.d("TAG", "setAlarms: "+todayString)
 
@@ -126,7 +126,7 @@ class AlarmUtils {
                                 Log.d("TAG", "setAlarms: "+ date)
                             }
 
-//                            date = "2024-01-01T18:12:00"
+//                            date = "2024-01-08T10:50:00"
 //                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
 //                            if (currentMillisecond <= dateMillisecond){
 //                                setAlarm(context, "AZAN_TYPE_ESHA", date)

@@ -779,9 +779,6 @@ fun MainActivityUi (context: Context, viewModel: MainActivityViewModel, dataStor
                                 val calendarSunset = TimesUtils.localDateTimeStringToCalender(dateSunset)
                                 calendarSunset.timeInMillis = calendarSunset.timeInMillis + 12*60*60*1000
 
-                                Log.d("TAG", "MainActivityUi: Hour "+calendarSunset.get(Calendar.HOUR_OF_DAY))
-                                Log.d("TAG", "MainActivityUi: Hour "+calendarSunset.get(Calendar.MINUTE))
-
                                 val millisecondDifference = calendarSunset.timeInMillis - calendarSunrise.timeInMillis
                                 val calendarMidday = Calendar.getInstance()
                                 calendarMidday.timeInMillis = calendarSunrise.timeInMillis + (millisecondDifference/2)
