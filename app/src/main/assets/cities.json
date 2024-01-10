@@ -1,16 +1,40 @@
 {
   "Cities": [
-    {
-      "name": "Luxor",
-      "ar_name": "الأقصر",
-      "country": "Egypt",
-      "ar_country": "مصر"
-    },
-    {
-      "name": "Nottingham",
-      "ar_name": "نوتنجهام",
-      "country": "UK",
-      "ar_country": "انجلترا"
-    }
+    {"name": "Luxor", "en_name": "Luxor", "ar_name": "الأقصر", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "AbuZenima", "en_name": "Abu Zenima", "ar_name": "أبو زنيمة", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Alexandria", "en_name": "Alexandria", "ar_name": "الأسكندرية", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Arish", "en_name": "Arish", "ar_name": "العريش", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Assiut", "en_name": "Assiut", "ar_name": "أسيوط", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Aswan", "en_name": "Aswan", "ar_name": "أسوان", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Badr", "en_name": "Badr", "ar_name": "بدر", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "BahariyaOasis", "en_name": "Bahariya Oasis", "ar_name": "الواحات البحرية", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Baltim", "en_name": "Baltim", "ar_name": "بلطيم", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "BaniSweif", "en_name": "Bani Sweif", "ar_name": "بني سويف", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "BarisEgypt", "en_name": "Baris", "ar_name": "باريس", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Beheira", "en_name": "Beheira", "ar_name": "البحيرة", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Berenice", "en_name": "Berenice", "ar_name": "برنيس", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Cairo", "en_name": "Cairo", "ar_name": "القاهرة", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "CapitalGardens", "en_name": "Capital Gardens", "ar_name": "حدائق العاصمة", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Dahab", "en_name": "Dahab", "ar_name": "دهب", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "DakhlaOasis", "en_name": "Dakhla Oasis", "ar_name": "واحات الداخلة", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Damanhur", "en_name": "Damanhur", "ar_name": "دمنهور", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Domyat", "en_name": "Domyat", "ar_name": "دمياط", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Edfu", "en_name": "Edfu", "ar_name": "ادفو", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "ElAlamein", "en_name": "ElAlamein", "ar_name": "العلمين", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "ElDabaa", "en_name": "ElDabaa", "ar_name": "الضبعة", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "ElHamam", "en_name": "ElHamam", "ar_name": "الحمام", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "ElMahallaElKubra", "en_name": "El Mahalla ElKubra", "ar_name": "المحلة الكبرى", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "ElQoseir", "en_name": "El Qoseir", "ar_name": "القصير", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "ElSalheyaElGedida", "en_name": "El Salheya El Gedida", "ar_name": "الصالحية الجديدة", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "ElTor", "en_name": "El Tor", "ar_name": "الطور", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "ElUweinatEast", "en_name": "East of El Uweinat", "ar_name": "شرق العوينات", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Esna", "en_name": "Esna", "ar_name": "اسنا", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Faiyum", "en_name": "Faiyum", "ar_name": "الفيوم", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Farafra", "en_name": "Farafra", "ar_name": "الفرافرة", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Halaib", "en_name": "Halaib", "ar_name": "حلايب", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Hamool", "en_name": "Hamool", "ar_name": "الحامول", "country": "Egypt", "ar_country": "مصر"},
+
+  
+    {"name": "Nottingham", "en_name": "Luxor", "ar_name": "نوتنجهام", "country": "UK", "ar_country": "انجلترا"}
   ]
 }
