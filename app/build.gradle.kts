@@ -14,8 +14,8 @@ android {
         applicationId = "mohalim.islamic.alarm.alert.moazen"
         minSdk = 26
         targetSdk = 33
-        versionCode = 11
-        versionName = "1.11"
+        versionCode = 12
+        versionName = "1.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

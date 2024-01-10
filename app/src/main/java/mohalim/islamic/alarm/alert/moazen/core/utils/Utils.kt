@@ -16,6 +16,7 @@ class Utils {
                     val item = citiesJsonArray.getJSONObject(i)
                     val city = City(
                         item.getString("name"),
+                        item.getString("en_name"),
                         item.getString("ar_name"),
                         item.getString("country"),
                         item.getString("ar_country")

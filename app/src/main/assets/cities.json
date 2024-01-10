@@ -35,7 +35,7 @@
     {"name": "Hamool", "en_name": "Hamool", "ar_name": "الحامول", "country": "Egypt", "ar_country": "مصر"},
     {"name": "Hurghada", "en_name": "Hurghada", "ar_name": "الغردقة", "country": "Egypt", "ar_country": "مصر"},
     {"name": "Ismailia", "en_name": "Ismailia", "ar_name": "الاسماعيلية", "country": "Egypt", "ar_country": "مصر"},
-    {"name": "KafrElSheikh", "en_name": "KafrElSheikh", "ar_name": "كفر الشيخ", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "KafrElSheikh", "en_name": "Kafr El Sheikh", "ar_name": "كفر الشيخ", "country": "Egypt", "ar_country": "مصر"},
     {"name": "KhargaOasis", "en_name": "Kharga Oasis", "ar_name": "واحات الخارجة", "country": "Egypt", "ar_country": "مصر"},
     {"name": "Mansoura", "en_name": "Mansoura", "ar_name": "المنصورة", "country": "Egypt", "ar_country": "مصر"},
     {"name": "MarsaAlam", "en_name": "Marsa Alam", "ar_name": "مرسى علم", "country": "Egypt", "ar_country": "مصر"},
@@ -80,6 +80,6 @@
     {"name": "Zagazig", "en_name": "Zagazig", "ar_name": "الزقازيق", "country": "Egypt", "ar_country": "مصر"},
 
   
-    {"name": "Nottingham", "en_name": "Luxor", "ar_name": "نوتنجهام", "country": "UK", "ar_country": "انجلترا"}
+    {"name": "Nottingham", "en_name": "Nottingham", "ar_name": "نوتنجهام", "country": "UK", "ar_country": "انجلترا"}
   ]
 }
