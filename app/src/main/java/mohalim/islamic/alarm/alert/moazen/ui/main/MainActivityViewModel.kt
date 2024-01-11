@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
@@ -187,7 +186,12 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
                     _nextPrayerType.value = nextPray!!.azanType
 
-                    val countDownTimer = object : CountDownTimer(nextPray.millisecondDifference, 1000){
+                    if (this@MainActivityViewModel::countDownTimer.isInitialized){
+                        countDownTimer.cancel()
+
+                    }
+
+                    countDownTimer = object : CountDownTimer(nextPray.millisecondDifference, 1000){
                         override fun onTick(millisUntilFinished: Long) {
                             val (hours, minutes, seconds) = TimesUtils.convertMillisecondsToTime(millisUntilFinished)
 
@@ -216,15 +220,13 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     val year = calendar.get(Calendar.YEAR)
                     val monthLong = calendar.get(Calendar.MONTH) + 1
                     val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
-                    var month = ""
-                    var day = ""
-                    month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
-                    day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
+                    val month: String = if(monthLong < 10) "0$monthLong" else monthLong.toString()
+                    val day : String = if(dayLong < 10) "0$dayLong" else dayLong.toString()
 
                     val sunriseString = _prayersForToday.value[1].replace(" AM", "").replace(" PM", "")
                     val sunsetString = _prayersForToday.value[4].replace(" AM", "").replace(" PM", "")
-                    var dateSunrise = "$year-$month-${day}T${sunriseString}:00"
-                    var dateSunset = "$year-$month-${day}T${sunsetString}:00"
+                    val dateSunrise = "$year-$month-${day}T${sunriseString}:00"
+                    val dateSunset = "$year-$month-${day}T${sunsetString}:00"
 
                     val calendarSunrise = TimesUtils.localDateTimeStringToCalender(dateSunrise)
                     val calendarSunset = TimesUtils.localDateTimeStringToCalender(dateSunset)

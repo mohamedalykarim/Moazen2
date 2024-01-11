@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color.parseColor
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -20,27 +18,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -50,9 +40,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,10 +52,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
-import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
-import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
+import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseCityBottomUIMainActivity
 import mohalim.islamic.alarm.alert.moazen.ui.more.MoreScreenActivity
 import java.time.chrono.HijrahDate
 import java.time.temporal.ChronoUnit
@@ -138,8 +125,9 @@ fun MainActivityUi(
     val isIshaaAlertWork by viewModel.isIshaaAlertWork.collectAsState()
 
 
-    val sheetState = rememberModalBottomSheetState()
     val prayersSheetState = rememberModalBottomSheetState()
+
+    val language = Locale.getDefault().language
 
 
 
@@ -356,133 +344,13 @@ fun MainActivityUi(
 
 
         if (showCityBottomSheet) {
-            val cities = Utils.getCitiesFromAssets(context)
-
-            /** First Open Bottom Sheet to choose the city */
-            ModalBottomSheet(
-                modifier = Modifier.padding(10.dp),
-                onDismissRequest = {
-                    viewModel.setShowCityBottomSheet(false)
-                    if (currentCity == "") {
-                        coroutineScope.launch {
-                            withContext(Dispatchers.IO) {
-                                /** Set Alarm for first time after choosing city **/
-                                AlarmUtils.setAlarmForFirstTime(context, "Luxor")
-                                PreferencesUtils.setIsFirstOpen(dataStore, false)
-                                PreferencesUtils.setCurrentCityName(dataStore, "Luxor")
-                            }
-                        }
-                    }
-                },
-                sheetState = sheetState
-            ) {
-
-                Text(
-                    "Choose Current City", modifier = Modifier
-                        .padding(0.dp, 0.dp, 0.dp, 16.dp)
-                        .fillMaxWidth(), textAlign = TextAlign.Center
-                )
-
-                /**
-                 * Search for city
-                 */
-
-                val textState = remember { mutableStateOf(TextFieldValue("")) }
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .padding(start = 8.dp,  end = 8.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(parseColor("#f5ceda")),
-                        unfocusedBorderColor = Color(parseColor("#f5ceda")),
-                    ),
-                    placeholder = {
-                        Text("Search for specific city", fontSize = 12.sp, color = Color(parseColor("#b5b5b5")))
-                    },
-                    textStyle = TextStyle.Default.copy(fontSize = 12.sp),
-
-                    value = textState.value,
-                    onValueChange = { value ->
-                        textState.value = value
-
-                    }
-                )
-                val searchedText = textState.value.text
-
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-
-                LazyColumn(content = {
-
-                    val filteredItems =  cities.filter {
-                        it.enName.contains(searchedText,ignoreCase = true)
-                                || it.arName.contains(searchedText,ignoreCase = true)
-                    }
-
-                    items(filteredItems) { city ->
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(8.dp, 0.dp, 8.dp, 8.dp)
-                                    .clickable {
-                                        /** set first open false **/
-                                        coroutineScope.launch {
-                                            withContext(Dispatchers.IO) {
-                                                /** Set Alarm for first time after choosing city **/
-                                                AlarmUtils.setAlarmForFirstTime(context, city.name)
-                                                PreferencesUtils.setIsFirstOpen(dataStore, false)
-                                                PreferencesUtils.setCurrentCityName(
-                                                    dataStore,
-                                                    city.name
-                                                )
-                                            }
-                                        }
-
-                                        viewModel.setShowCityBottomSheet(false)
-                                    }
-                                    .background(Color(parseColor("#f5ceda")))
-                                    .padding(5.dp)) {
-
-                                val cityName =
-                                    when (Locale.getDefault().language) {
-                                        "en" -> {
-                                            "${city.country} - ${city.enName}"
-                                        }
-
-                                        "ar" -> {
-                                            "${city.arCountry} - ${city.arName}"
-                                        }
-
-                                        else -> {
-                                            "${city.country} - ${city.enName}"
-                                        }
-                                    }
-                                Text(
-                                    cityName,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Start,
-                                    color = Color(
-                                        parseColor("#932f3a")
-                                    )
-                                )
-                            }
-
-
-                    }
-                    
-                    item { 
-                        Spacer(modifier = Modifier.height(32.dp))
-                    }
-                })
-
-
-
-                Spacer(modifier = Modifier.height(50.dp))
-            }
-
-
+            ChooseCityBottomUIMainActivity(
+                context = context,
+                dataStore = dataStore,
+                currentCity = currentCity,
+                language = language,
+                viewModel = viewModel
+            )
         }
         if (showPrayersBottomSheet) {
             /** Prayer Times Bottom Sheet to show today times **/
@@ -553,6 +421,24 @@ fun MainActivityUi(
                                     contentDescription = "Prayer Times"
                                 )
                                 Column {
+                                    val city = Utils.getCurrentCity(context, ""+ currentCity)
+                                    var cityText : String
+
+                                    cityText = when (language) {
+                                        "en" -> {
+                                            "Prayer Times for ${city.enName}"
+                                        }
+
+                                        "ar" -> {
+                                            "مواقيت الصلاة لمدينة ${city.arName}"
+                                        }
+
+                                        else -> {
+                                            "Prayer Times for ${city.enName}"
+                                        }
+                                    }
+
+
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
                                         text = "Prayer Times",
@@ -563,7 +449,7 @@ fun MainActivityUi(
                                     )
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = "Prayer Times for $currentCity",
+                                        text = cityText,
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Start,
                                         color = Color(parseColor("#969498"))
@@ -581,10 +467,10 @@ fun MainActivityUi(
                                 Column(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .padding(8.dp, 8.dp, 0.dp, 0.dp)
+                                        .padding(14.dp, 8.dp, 0.dp, 0.dp)
                                 ) {
                                     Image(
-                                        modifier = Modifier.width(32.dp),
+                                        modifier = Modifier.width(20.dp),
                                         painter = painterResource(id = R.drawable.ic_fajr_icon),
                                         contentDescription = "Prayer Times"
                                     )
@@ -652,7 +538,7 @@ fun MainActivityUi(
                                 Column(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .padding(8.dp, 8.dp, 0.dp, 0.dp)
+                                        .padding(7.dp, 8.dp, 0.dp, 0.dp)
                                 ) {
                                     Image(
                                         modifier = Modifier.width(32.dp),
@@ -722,7 +608,7 @@ fun MainActivityUi(
                                 Column(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .padding(8.dp, 8.dp, 0.dp, 0.dp)
+                                        .padding(10.dp, 8.dp, 0.dp, 0.dp)
                                 ) {
                                     Image(
                                         modifier = Modifier.width(25.dp),
@@ -793,10 +679,10 @@ fun MainActivityUi(
                                 Column(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .padding(8.dp, 8.dp, 0.dp, 0.dp)
+                                        .padding(12.dp, 8.dp, 0.dp, 0.dp)
                                 ) {
                                     Image(
-                                        modifier = Modifier.width(25.dp),
+                                        modifier = Modifier.width(20.dp),
                                         painter = painterResource(id = R.drawable.ic_maghrib_icon),
                                         contentDescription = "Prayer Times"
                                     )
@@ -864,7 +750,7 @@ fun MainActivityUi(
                                 Column(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .padding(16.dp, 11.dp, 0.dp, 40.dp)
+                                        .padding(13.dp, 11.dp, 0.dp, 32.dp)
                                 ) {
                                     Image(
                                         modifier = Modifier.width(16.dp),
@@ -1025,3 +911,5 @@ fun MainActivityUi(
         }
     }
 }
+
+

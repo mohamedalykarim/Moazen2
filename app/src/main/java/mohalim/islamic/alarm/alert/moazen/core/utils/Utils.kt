@@ -29,5 +29,27 @@ class Utils {
             return cities
 
         }
+
+        fun getCurrentCity(context: Context, currentCity: String): City {
+            var city = City("","","","","")
+            context.resources.assets.open("cities.json").bufferedReader().use {
+                val jsonString = it.readText()
+                val jsonObject = JSONObject(jsonString)
+                val citiesJsonArray = jsonObject.getJSONArray("Cities")
+                for (i in 0 until citiesJsonArray.length()) {
+                    val item = citiesJsonArray.getJSONObject(i)
+                    if (item.getString("name") == currentCity)
+                    city = City(
+                        item.getString("name"),
+                        item.getString("en_name"),
+                        item.getString("ar_name"),
+                        item.getString("country"),
+                        item.getString("ar_country")
+                    )
+                }
+            }
+
+            return city
+        }
     }
 }
