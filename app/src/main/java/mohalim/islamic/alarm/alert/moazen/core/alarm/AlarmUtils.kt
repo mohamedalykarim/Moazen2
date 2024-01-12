@@ -5,7 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.compose.ui.unit.Constraints
 import mohalim.islamic.alarm.alert.moazen.core.receiver.AlarmReceiver
+import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import org.json.JSONObject
 import java.time.LocalDateTime
@@ -31,11 +33,11 @@ class AlarmUtils {
 
             var alarmId = 1
             when (alarmType) {
-                "AZAN_TYPE_FAGR" -> alarmId = 1
-                "AZAN_TYPE_ZOHR" -> alarmId = 2
-                "AZAN_TYPE_ASR" -> alarmId = 3
-                "AZAN_TYPE_MAGHREB" -> alarmId = 4
-                "AZAN_TYPE_ESHA" -> alarmId = 5
+                Constants.AZAN_TYPE_FAGR -> alarmId = 1
+                Constants.AZAN_TYPE_ZOHR -> alarmId = 2
+                Constants.AZAN_TYPE_ASR -> alarmId = 3
+                Constants.AZAN_TYPE_MAGHREB -> alarmId = 4
+                Constants.AZAN_TYPE_ESHA -> alarmId = 5
             }
 
             alarmManager.setExactAndAllowWhileIdle(

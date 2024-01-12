@@ -55,7 +55,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
+import mohalim.islamic.alarm.alert.moazen.core.utils.SettingUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
+import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseAzanPerformerUI
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseCityBottomUISettingActivity
 import java.util.Locale
 import javax.inject.Inject
@@ -77,7 +80,12 @@ class SettingActivity : AppCompatActivity() {
         super.onResume()
         runBlocking {
             withContext(Dispatchers.IO){
-                viewModel.getCurrentCityName(this@SettingActivity)
+                viewModel.getCurrentCityName()
+                viewModel.getAzanPerformerFagr()
+                viewModel.getAzanPerformerDuhur()
+                viewModel.getAzanPerformerAsr()
+                viewModel.getAzanPerformerMaghrib()
+                viewModel.getAzanPerformerIshaa()
             }
         }
     }
@@ -87,7 +95,16 @@ class SettingActivity : AppCompatActivity() {
 fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStore<Preferences>) {
     val currentCity by viewModel.currentCity.collectAsState()
     val showCityBottomSheet by viewModel.showCityBottomSheet.collectAsState()
+    val showAzanPerformerBottomSheet by viewModel.showAzanPerformerBottomSheet.collectAsState()
 
+    val azanPerformerFagr by viewModel.azanPerformerFagr.collectAsState()
+    val azanPerformerDuhur by viewModel.azanPerformerDuhur.collectAsState()
+    val azanPerformerAsr by viewModel.azanPerformerAsr.collectAsState()
+    val azanPerformerMaghrib by viewModel.azanPerformerMaghrib.collectAsState()
+    val azanPerformerIshaa by viewModel.azanPerformerIshaa.collectAsState()
+
+
+    var azanType by remember { mutableStateOf("") }
 
     val language = Locale.getDefault().language;
 
@@ -122,50 +139,35 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
             )
 
             /**
-             * Main Setting
+             * Current City
              */
 
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .background(Color(parseColor("#fff2f6")))
+                    .background(Color(parseColor("#ffe7ee")))
                     .border(
                         1.dp,
-                        Color(parseColor("#ffd4e2")),
-                        shape = RoundedCornerShape(5)
+                        Color(parseColor("#6c0678")),
+                        shape = RoundedCornerShape(7.dp)
                     )
                     .padding(8.dp)
 
             ) {
 
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Azan settings",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    textAlign = TextAlign.Start,
-                    color = Color(parseColor("#000000"))
-                )
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Current City",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
 
-                /**
-                 * Current City
-                 */
-
-                Row {
-                    Column(modifier = Modifier.height(50.dp).weight(1f), verticalArrangement = Arrangement.Center) {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .height(50.dp)
-                                .wrapContentHeight(align = Alignment.CenterVertically),
-                            text = "Current City",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Start,
-                            color = Color(parseColor("#000000"))
-                        )
-                    }
                     val city = Utils.getCurrentCity(context, currentCity)
                     var cityName: String
                     cityName = when (language) {
@@ -182,36 +184,162 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                         }
                     }
 
-                    Column(modifier = Modifier.height(50.dp).weight(1f), verticalArrangement = Arrangement.Center) {
-                        SettingButton(name = cityName, iconId = R.drawable.ic_masjed_icon) {
-                            Handler(Looper.getMainLooper())
-                                .postDelayed({viewModel.setShowCityBottomSheet(true)}, 200)
-                        }
+                    SettingButton(name = cityName, iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({viewModel.setShowCityBottomSheet(true)}, 200)
+                    }
+
+                }
+
+            }
+
+
+            /**
+             * Azan Performer
+             */
+
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(Color(parseColor("#ffe7ee")))
+                    .border(
+                        1.dp,
+                        Color(parseColor("#6c0678")),
+                        shape = RoundedCornerShape(7.dp)
+                    )
+                    .padding(8.dp)
+
+            ) {
+
+                /** Fagr Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Fagr azan performer",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
+
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerFagr), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_FAGR
+                                viewModel.setShowAzanPerformerSheet(true)
+                                         }, 200)
                     }
 
                 }
 
 
-                /** Line after city  **/
+                /** Duhur Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Duhur azan performer",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerDuhur), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_ZOHR
+                                viewModel.setShowAzanPerformerSheet(true)
+                            }, 200)
+                    }
+
+                }
+
+                /** ASR Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Asr azan performer",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
+
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerAsr), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_ASR
+                                viewModel.setShowAzanPerformerSheet(true)
+                            }, 200)
+                    }
+
+                }
+
+                /** Maghrib Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Maghrib azan performer",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
+
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerMaghrib), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_MAGHREB
+                                viewModel.setShowAzanPerformerSheet(true)
+                            }, 200)
+                    }
+
+                }
 
 
-                Column(
-                    modifier = Modifier
-                        .height(1.dp)
-                        .fillMaxWidth()
-                        .background(
-                            Color(
-                                parseColor("#dadada")
-                            )
-                        )
-                ) {}
+                /** Ishaa Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Ishaa azan performer",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
+
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerIshaa), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_ESHA
+                                viewModel.setShowAzanPerformerSheet(true)
+                            }, 200)
+                    }
+
+                }
+
 
 
 
 
             }
+
+
 
         }
 
@@ -226,6 +354,10 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
             language = language,
             viewModel = viewModel
         )
+    }
+
+    if (showAzanPerformerBottomSheet){
+        ChooseAzanPerformerUI(viewModel = viewModel, dataStore = dataStore, azanType = azanType )
     }
 }
 
@@ -258,8 +390,8 @@ fun SettingButton(name: String, iconId : Int, onClickCard : ()-> Unit) {
     Box (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
-            .height(50.dp)
+            .padding(start = 10.dp, end = 10.dp)
+            .height(40.dp)
             .scale(settingScale)
             .clickable(
                 interactionSource = interactionSetting,
@@ -303,7 +435,9 @@ fun SettingButton(name: String, iconId : Int, onClickCard : ()-> Unit) {
                 text = name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp),
+                    .height(40.dp)
+                    .padding(4.dp)
+                    .wrapContentHeight(Alignment.CenterVertically),
                 color = Color(parseColor("#ffffff")),
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,

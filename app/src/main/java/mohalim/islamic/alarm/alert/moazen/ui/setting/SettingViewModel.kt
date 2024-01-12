@@ -21,8 +21,27 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
     private val _showCityBottomSheet = MutableStateFlow(false)
     val showCityBottomSheet : StateFlow<Boolean> = _showCityBottomSheet.asStateFlow()
 
+    private val _showAzanPerformerBottomSheet = MutableStateFlow(false)
+    val showAzanPerformerBottomSheet : StateFlow<Boolean> = _showAzanPerformerBottomSheet.asStateFlow()
 
-    suspend fun getCurrentCityName(context : Context) {
+    private val _azanPerformerFagr = MutableStateFlow(0)
+    val azanPerformerFagr : StateFlow<Int> = _azanPerformerFagr.asStateFlow()
+
+    private val _azanPerformerDuhur = MutableStateFlow(0)
+    val azanPerformerDuhur : StateFlow<Int> = _azanPerformerDuhur.asStateFlow()
+
+    private val _azanPerformerAsr = MutableStateFlow(0)
+    val azanPerformerAsr : StateFlow<Int> = _azanPerformerAsr.asStateFlow()
+
+    private val _azanPerformerMaghrib = MutableStateFlow(0)
+    val azanPerformerMaghrib : StateFlow<Int> = _azanPerformerMaghrib.asStateFlow()
+
+    private val _azanPerformerIshaa = MutableStateFlow(0)
+    val azanPerformerIshaa : StateFlow<Int> = _azanPerformerIshaa.asStateFlow()
+
+
+
+    suspend fun getCurrentCityName() {
         viewModelScope.launch {
             PreferencesUtils.getCurrentCityName(dataStore).collect{
                 _currentCity.value = it
@@ -31,7 +50,56 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     }
 
+    suspend fun getAzanPerformerFagr() {
+        viewModelScope.launch {
+            PreferencesUtils.getDefaultAzanTypeFagr(dataStore).collect{
+                _azanPerformerFagr.value = it
+            }
+        }
+
+    }
+
+    suspend fun getAzanPerformerDuhur() {
+        viewModelScope.launch {
+            PreferencesUtils.getDefaultAzanTypeDuhur(dataStore).collect{
+                _azanPerformerDuhur.value = it
+            }
+        }
+
+    }
+
+    suspend fun getAzanPerformerAsr() {
+        viewModelScope.launch {
+            PreferencesUtils.getDefaultAzanTypeAsr(dataStore).collect{
+                _azanPerformerAsr.value = it
+            }
+        }
+
+    }
+
+    suspend fun getAzanPerformerMaghrib() {
+        viewModelScope.launch {
+            PreferencesUtils.getDefaultAzanTypeMaghrib(dataStore).collect{
+                _azanPerformerMaghrib.value = it
+            }
+        }
+
+    }
+
+    suspend fun getAzanPerformerIshaa() {
+        viewModelScope.launch {
+            PreferencesUtils.getDefaultAzanTypeIshaa(dataStore).collect{
+                _azanPerformerIshaa.value = it
+            }
+        }
+
+    }
+
     fun setShowCityBottomSheet(value : Boolean){
         _showCityBottomSheet.value = value
+    }
+
+    fun setShowAzanPerformerSheet(value : Boolean){
+        _showAzanPerformerBottomSheet.value = value
     }
 }
