@@ -123,7 +123,7 @@ class AlarmUtils {
                                 Log.d("TAG", "setAlarms: "+ date)
                             }
 
-//                            date = "2024-01-08T10:50:00"
+//                            date = "2024-01-12T02:17:00"
 //                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
 //                            if (currentMillisecond <= dateMillisecond){
 //                                setAlarm(context, "AZAN_TYPE_ESHA", date)

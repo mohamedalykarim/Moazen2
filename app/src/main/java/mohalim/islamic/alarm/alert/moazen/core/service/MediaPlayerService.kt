@@ -111,7 +111,7 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
            mediaPlayer?.setOnInfoListener(this);
 
            /** Prepare file **/
-           val rawFileDescriptor = resources.openRawResourceFd(R.raw.elharam_elmekky)
+           val rawFileDescriptor = resources.openRawResourceFd(rawId)
            mediaPlayer?.setDataSource(rawFileDescriptor.fileDescriptor, rawFileDescriptor.startOffset, rawFileDescriptor.length)
            rawFileDescriptor.close()
 

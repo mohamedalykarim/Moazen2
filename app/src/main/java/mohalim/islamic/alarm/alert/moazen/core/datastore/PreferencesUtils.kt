@@ -7,11 +7,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import mohalim.islamic.alarm.alert.moazen.R
 import javax.inject.Inject
 
 class PreferencesUtils @Inject constructor(val context: Context, private val dataStore: DataStore<Preferences>) {
@@ -27,6 +29,12 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
         val IS_ASR_ALERT_WORK = booleanPreferencesKey("is_asr_alert_work")
         val IS_MAGHRIB_ALERT_WORK = booleanPreferencesKey("is_maghrib_alert_work")
         val IS_ISHAA_ALERT_WORK = booleanPreferencesKey("is_eshaa_alert_work")
+
+        val DEFAULT_AZAN_TYPE_FAGR = intPreferencesKey("default_azan_type_fagr")
+        val DEFAULT_AZAN_TYPE_DUHUR = intPreferencesKey("default_azan_type_duhur")
+        val DEFAULT_AZAN_TYPE_ASR = intPreferencesKey("default_azan_type_asr")
+        val DEFAULT_AZAN_TYPE_MAGHRIB = intPreferencesKey("default_azan_type_maghrib")
+        val DEFAULT_AZAN_TYPE_ISHAA = intPreferencesKey("default_azan_type_ishaa")
 
 
         suspend fun setIsFirstOpen(dataStore: DataStore<Preferences>, isFirstOpen: Boolean){
@@ -119,6 +127,71 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             return dataStore.data
                 .map { preferences ->
                     preferences[IS_ISHAA_ALERT_WORK] ?: true
+                }
+        }
+
+        suspend fun setDefaultAzanTypeFagr(dataStore: DataStore<Preferences>, azanType: Int){
+            dataStore.edit { settings ->
+                settings[DEFAULT_AZAN_TYPE_FAGR] = azanType
+            }
+        }
+
+        fun getDefaultAzanTypeFagr(dataStore: DataStore<Preferences>): Flow<Int> {
+            return dataStore.data
+                .map { preferences ->
+                    preferences[DEFAULT_AZAN_TYPE_FAGR] ?: R.raw.hamdoon_hamady
+                }
+        }
+
+        suspend fun setDefaultAzanTypeDuhur(dataStore: DataStore<Preferences>, azanType: Int){
+            dataStore.edit { settings ->
+                settings[DEFAULT_AZAN_TYPE_DUHUR] = azanType
+            }
+        }
+
+        fun getDefaultAzanTypeDuhur(dataStore: DataStore<Preferences>): Flow<Int> {
+            return dataStore.data
+                .map { preferences ->
+                    preferences[DEFAULT_AZAN_TYPE_DUHUR] ?: R.raw.hamdoon_hamady
+                }
+        }
+
+        suspend fun setDefaultAzanTypeAsr(dataStore: DataStore<Preferences>, azanType: Int){
+            dataStore.edit { settings ->
+                settings[DEFAULT_AZAN_TYPE_ASR] = azanType
+            }
+        }
+
+        fun getDefaultAzanTypeAsr(dataStore: DataStore<Preferences>): Flow<Int> {
+            return dataStore.data
+                .map { preferences ->
+                    preferences[DEFAULT_AZAN_TYPE_ASR] ?: R.raw.hamdoon_hamady
+                }
+        }
+
+        suspend fun setDefaultAzanTypeMaghrib(dataStore: DataStore<Preferences>, azanType: Int){
+            dataStore.edit { settings ->
+                settings[DEFAULT_AZAN_TYPE_MAGHRIB] = azanType
+            }
+        }
+
+        fun getDefaultAzanTypeMaghrib(dataStore: DataStore<Preferences>): Flow<Int> {
+            return dataStore.data
+                .map { preferences ->
+                    preferences[DEFAULT_AZAN_TYPE_MAGHRIB] ?: R.raw.hamdoon_hamady
+                }
+        }
+
+        suspend fun setDefaultAzanTypeIshaa(dataStore: DataStore<Preferences>, azanType: Int){
+            dataStore.edit { settings ->
+                settings[DEFAULT_AZAN_TYPE_ISHAA] = azanType
+            }
+        }
+
+        fun getDefaultAzanTypeIshaa(dataStore: DataStore<Preferences>): Flow<Int> {
+            return dataStore.data
+                .map { preferences ->
+                    preferences[DEFAULT_AZAN_TYPE_ISHAA] ?: R.raw.hamdoon_hamady
                 }
         }
     }
