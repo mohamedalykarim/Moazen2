@@ -38,7 +38,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".core.service.MediaPlayerService" />
+        <service android:name=".core.service.AzanMediaPlayerService" />
 
         <receiver android:name=".core.receiver.AlarmReceiver" />
 

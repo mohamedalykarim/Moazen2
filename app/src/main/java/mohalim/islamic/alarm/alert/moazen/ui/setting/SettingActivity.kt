@@ -357,7 +357,7 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
     }
 
     if (showAzanPerformerBottomSheet){
-        ChooseAzanPerformerUI(viewModel = viewModel, dataStore = dataStore, azanType = azanType )
+        ChooseAzanPerformerUI(context, viewModel = viewModel, dataStore = dataStore, azanType = azanType )
     }
 }
 

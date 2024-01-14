@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import mohalim.islamic.alarm.alert.moazen.R
@@ -136,11 +137,16 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getDefaultAzanTypeFagr(dataStore: DataStore<Preferences>): Flow<Int> {
+        fun observeDefaultAzanTypeFagr(dataStore: DataStore<Preferences>): Flow<Int> {
             return dataStore.data
                 .map { preferences ->
                     preferences[DEFAULT_AZAN_TYPE_FAGR] ?: R.raw.hamdoon_hamady
                 }
+        }
+
+        suspend fun getDefaultAzanTypeFagr(dataStore: DataStore<Preferences>): Int {
+            val performerId =  dataStore.data.first()[DEFAULT_AZAN_TYPE_FAGR] ?: R.raw.hamdoon_hamady
+            return performerId
         }
 
         suspend fun setDefaultAzanTypeDuhur(dataStore: DataStore<Preferences>, azanType: Int){
@@ -149,11 +155,16 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getDefaultAzanTypeDuhur(dataStore: DataStore<Preferences>): Flow<Int> {
+        fun observeDefaultAzanTypeDuhur(dataStore: DataStore<Preferences>): Flow<Int> {
             return dataStore.data
                 .map { preferences ->
                     preferences[DEFAULT_AZAN_TYPE_DUHUR] ?: R.raw.hamdoon_hamady
                 }
+        }
+
+        suspend fun getDefaultAzanTypeDuhur(dataStore: DataStore<Preferences>): Int {
+            val performerId =  dataStore.data.first()[DEFAULT_AZAN_TYPE_DUHUR] ?: R.raw.hamdoon_hamady
+            return performerId
         }
 
         suspend fun setDefaultAzanTypeAsr(dataStore: DataStore<Preferences>, azanType: Int){
@@ -162,11 +173,16 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getDefaultAzanTypeAsr(dataStore: DataStore<Preferences>): Flow<Int> {
+        fun observeDefaultAzanTypeAsr(dataStore: DataStore<Preferences>): Flow<Int> {
             return dataStore.data
                 .map { preferences ->
                     preferences[DEFAULT_AZAN_TYPE_ASR] ?: R.raw.hamdoon_hamady
                 }
+        }
+
+        suspend fun getDefaultAzanTypeAsr(dataStore: DataStore<Preferences>): Int {
+            val performerId =  dataStore.data.first()[DEFAULT_AZAN_TYPE_ASR] ?: R.raw.hamdoon_hamady
+            return performerId
         }
 
         suspend fun setDefaultAzanTypeMaghrib(dataStore: DataStore<Preferences>, azanType: Int){
@@ -175,11 +191,16 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getDefaultAzanTypeMaghrib(dataStore: DataStore<Preferences>): Flow<Int> {
+        fun observeDefaultAzanTypeMaghrib(dataStore: DataStore<Preferences>): Flow<Int> {
             return dataStore.data
                 .map { preferences ->
                     preferences[DEFAULT_AZAN_TYPE_MAGHRIB] ?: R.raw.hamdoon_hamady
                 }
+        }
+
+        suspend fun getDefaultAzanTypeMaghrib(dataStore: DataStore<Preferences>): Int {
+            val performerId =  dataStore.data.first()[DEFAULT_AZAN_TYPE_MAGHRIB] ?: R.raw.hamdoon_hamady
+            return performerId
         }
 
         suspend fun setDefaultAzanTypeIshaa(dataStore: DataStore<Preferences>, azanType: Int){
@@ -188,11 +209,16 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getDefaultAzanTypeIshaa(dataStore: DataStore<Preferences>): Flow<Int> {
+        fun observeDefaultAzanTypeIshaa(dataStore: DataStore<Preferences>): Flow<Int> {
             return dataStore.data
                 .map { preferences ->
                     preferences[DEFAULT_AZAN_TYPE_ISHAA] ?: R.raw.hamdoon_hamady
                 }
+        }
+
+        suspend fun getDefaultAzanTypeIshaa(dataStore: DataStore<Preferences>): Int {
+            val performerId =  dataStore.data.first()[DEFAULT_AZAN_TYPE_ISHAA] ?: R.raw.hamdoon_hamady
+            return performerId
         }
     }
 

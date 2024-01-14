@@ -9,6 +9,10 @@ class Constants {
         const val AZAN_TYPE_MAGHREB = "AZAN_TYPE_MAGHREB"
         const val AZAN_TYPE_ESHA = "AZAN_TYPE_ESHA"
 
+        const val AZAN_TYPE_PLAY_SOUND = "AZAN_TYPE_PLAY_SOUND"
+        const val AZAN_TYPE_STOP_SOUND = "AZAN_TYPE_STOP_SOUND"
+
+
 
 //        const val AZAN_PERFORMER_HAMDOON_HAMDY = 1
 //        const val AZAN_PERFORMER_ABDULRAHMAN_MOSSAD = 2

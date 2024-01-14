@@ -10,17 +10,18 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.MediaPlayer
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
+import mohalim.islamic.alarm.alert.moazen.core.utils.SettingUtils
 
 
 @AndroidEntryPoint
-class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
+class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
     MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
     MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener{
 
@@ -31,7 +32,7 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
 
     inner class LocalBinder : Binder(){
-        fun getService() : MediaPlayerService = this@MediaPlayerService
+        fun getService() : AzanMediaPlayerService = this@AzanMediaPlayerService
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -39,13 +40,6 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-        val rawId = intent?.getIntExtra("Media", 0)
-        val azanType = intent?.getStringExtra("AZAN_TYPE")
-        if (rawId == 0) stopSelf()
-
-        initMediaPlayer(rawId!!)
-
         val filter = IntentFilter().apply {
             addAction("android.media.VOLUME_CHANGED_ACTION")
         }
@@ -53,12 +47,31 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
         // Register receiver for volume press button
         registerReceiver(volumeButtonReceiver, filter)
 
-        notification(azanType)
+        val rawId = intent?.getIntExtra("Media", 0)
+        val azanType = intent?.getStringExtra("AZAN_TYPE")
+        if (rawId == 0) stopSelf()
+        initMediaPlayer(rawId!!)
+
+        if (azanType == Constants.AZAN_TYPE_PLAY_SOUND){
+            val notification = initNotificationForOthers("Masjed App is playing sound")
+            startForeground(1, notification)
+        }else if (azanType == Constants.AZAN_TYPE_STOP_SOUND){
+            val notification = initNotificationForOthers("Masjed App is playing sound")
+            startForeground(1, notification)
+
+            stopSelf()
+        }else{
+            val notification = initNotificationForAzan(azanType)
+            startForeground(1, notification)
+        }
+
+
+
 
         return START_STICKY
     }
 
-    private fun notification(azanType: String?) {
+    private fun initNotificationForAzan(azanType: String?): Notification {
 
         // Create the NotificationChannel.
         val name = "NotificationChannelName"
@@ -92,7 +105,33 @@ class MediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
         val notification = builder.build()
 
         // Start the service as a foreground service with the notification
-        startForeground(1, notification)
+        return notification
+    }
+
+    private fun initNotificationForOthers(text: String?): Notification {
+
+        // Create the NotificationChannel.
+        val name = "NotificationChannelName"
+        val descriptionText = "NotificationChannelDescription"
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val mChannel = NotificationChannel("moazenNotificationChannnel", name, importance)
+        mChannel.description = descriptionText
+        // Register the channel with the system. You can't change the importance
+        // or other notification behaviors after this.
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(mChannel)
+
+        val contentView = RemoteViews(packageName, R.layout.custom_notifications_others)
+        contentView.setTextViewText(R.id.text, text)
+
+        val builder = NotificationCompat.Builder(this, "moazenNotificationChannnel")
+            .setSmallIcon(R.drawable.ic_masjed_icon)
+            .setCustomContentView(contentView)
+
+        val notification = builder.build()
+
+        // Start the service as a foreground service with the notification
+        return notification
     }
 
 

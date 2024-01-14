@@ -52,7 +52,7 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     suspend fun getAzanPerformerFagr() {
         viewModelScope.launch {
-            PreferencesUtils.getDefaultAzanTypeFagr(dataStore).collect{
+            PreferencesUtils.observeDefaultAzanTypeFagr(dataStore).collect{
                 _azanPerformerFagr.value = it
             }
         }
@@ -61,7 +61,7 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     suspend fun getAzanPerformerDuhur() {
         viewModelScope.launch {
-            PreferencesUtils.getDefaultAzanTypeDuhur(dataStore).collect{
+            PreferencesUtils.observeDefaultAzanTypeDuhur(dataStore).collect{
                 _azanPerformerDuhur.value = it
             }
         }
@@ -70,7 +70,7 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     suspend fun getAzanPerformerAsr() {
         viewModelScope.launch {
-            PreferencesUtils.getDefaultAzanTypeAsr(dataStore).collect{
+            PreferencesUtils.observeDefaultAzanTypeAsr(dataStore).collect{
                 _azanPerformerAsr.value = it
             }
         }
@@ -79,7 +79,7 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     suspend fun getAzanPerformerMaghrib() {
         viewModelScope.launch {
-            PreferencesUtils.getDefaultAzanTypeMaghrib(dataStore).collect{
+            PreferencesUtils.observeDefaultAzanTypeMaghrib(dataStore).collect{
                 _azanPerformerMaghrib.value = it
             }
         }
@@ -88,7 +88,7 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     suspend fun getAzanPerformerIshaa() {
         viewModelScope.launch {
-            PreferencesUtils.getDefaultAzanTypeIshaa(dataStore).collect{
+            PreferencesUtils.observeDefaultAzanTypeIshaa(dataStore).collect{
                 _azanPerformerIshaa.value = it
             }
         }
