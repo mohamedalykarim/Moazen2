@@ -126,8 +126,8 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
         val builder = NotificationCompat.Builder(this, "moazenNotificationChannnel")
             .setSmallIcon(R.drawable.ic_masjed_icon)
+            .setSilent(true)
             .setCustomContentView(contentView)
-
         val notification = builder.build()
 
         // Start the service as a foreground service with the notification

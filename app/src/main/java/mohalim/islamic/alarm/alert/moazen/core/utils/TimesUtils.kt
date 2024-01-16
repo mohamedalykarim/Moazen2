@@ -120,6 +120,20 @@ class TimesUtils {
             return calendar
         }
 
+        fun getLocalDateStringFromCalendar(calendar: Calendar, time: String): String {
+            val year = calendar.get(Calendar.YEAR)
+            val monthLong = calendar.get(Calendar.MONTH) + 1
+            val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
+
+            var month : String
+            var day : String
+            month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
+            day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
+           return "$year-$month-${day}T${time}:00"
+
+        }
+
+
         private fun replaceArabicToEnglish(string: String): CharSequence? {
             return string
                 .replace("٠", "0")

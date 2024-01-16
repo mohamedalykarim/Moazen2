@@ -34,10 +34,19 @@ class AlarmUtils {
             var alarmId = 1
             when (alarmType) {
                 Constants.AZAN_TYPE_FAGR -> alarmId = 1
+                Constants.AZAN_TYPE_PRE_FAGR -> alarmId = 11
+
                 Constants.AZAN_TYPE_ZOHR -> alarmId = 2
+                Constants.AZAN_TYPE_PRE_ZOHR -> alarmId = 22
+
                 Constants.AZAN_TYPE_ASR -> alarmId = 3
+                Constants.AZAN_TYPE_PRE_ASR -> alarmId = 33
+
                 Constants.AZAN_TYPE_MAGHREB -> alarmId = 4
+                Constants.AZAN_TYPE_PRE_MAGHREB -> alarmId = 44
+
                 Constants.AZAN_TYPE_ESHA -> alarmId = 5
+                Constants.AZAN_TYPE_PRE_ESHA -> alarmId = 55
             }
 
             alarmManager.setExactAndAllowWhileIdle(
@@ -70,67 +79,85 @@ class AlarmUtils {
 
                     val todayString: String = calender.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + "-" + if (dayofMonth < 10) "0$dayofMonth" else dayofMonth
 
-                    Log.d("TAG", "setAlarms: "+todayString)
 
                     for (i in 0 until dateJsonArray.length()) {
                         val item = dateJsonArray.getJSONObject(i)
 
                         if (item.has(todayString)){
                             val times = item.getJSONArray(todayString)
-                            val year = calender.get(Calendar.YEAR)
-                            val monthLong = calender.get(Calendar.MONTH) + 1
-                            val dayLong = calender.get(Calendar.DAY_OF_MONTH)
                             val currentMillisecond = calender.timeInMillis
-
-                            var month = ""
-                            var day = ""
-                            month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
-                            day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
-
-
 
                             /**
                              * Examle of date 2007-12-03T10:15:30:55.000000.
                              * **/
-                            var date = "$year-$month-${day}T${times.get(0)}:00"
-                            Log.d("TAG", "setAlarms: "+date)
-                            var dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond){
-                                setAlarm(context, "AZAN_TYPE_FAGR", date)
+                            var date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(0).toString())
+                            var calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
+                            if (currentMillisecond <= calendarFromString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_FAGR, date)
+                                calendarFromString.timeInMillis -= 15 * 60 * 1000
+                                if (currentMillisecond <= calendarFromString.timeInMillis){
+                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(0).toString())
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_FAGR, date)
+                                }
                             }
 
-                            date = "$year-$month-${day}T${times.get(2)}:00"
-                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond){
-                                setAlarm(context, "AZAN_TYPE_ZOHR", date)
-                           }
-
-                            date = "$year-$month-${day}T${times.get(3)}:00"
-                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond){
-                                setAlarm(context, "AZAN_TYPE_ASR", date)
+                            date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(2).toString())
+                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
+                            if (currentMillisecond <= calendarFromString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_ZOHR, date)
+                                calendarFromString.timeInMillis -= 15 * 60 * 1000
+                                if (currentMillisecond <= calendarFromString.timeInMillis){
+                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(2).toString())
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ZOHR, date)
+                                }
                             }
 
-                            date = "$year-$month-${day}T${times.get(5)}:00"
-                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond){
-                                setAlarm(context, "AZAN_TYPE_MAGHREB", date)
-                                Log.d("TAG", "setAlarms: "+ date)
+                            date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(3).toString())
+                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
+                            if (currentMillisecond <= calendarFromString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_ASR, date)
+                                calendarFromString.timeInMillis -= 15 * 60 * 1000
+                                if (currentMillisecond <= calendarFromString.timeInMillis){
+                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(3).toString())
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ASR, date)
+                                }
                             }
 
-                            date = "$year-$month-${day}T${times.get(6)}:00"
-                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
-                            if (currentMillisecond <= dateMillisecond){
-                                setAlarm(context, "AZAN_TYPE_ESHA", date)
-                                Log.d("TAG", "setAlarms: "+ date)
+                            date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(5).toString())
+                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
+                            if (currentMillisecond <= calendarFromString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_MAGHREB, date)
+                                calendarFromString.timeInMillis -= 15 * 60 * 1000
+                                if (currentMillisecond <= calendarFromString.timeInMillis){
+                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(5).toString())
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_MAGHREB, date)
+                                }
                             }
 
-//                            date = "2024-01-12T02:17:00"
-//                            dateMillisecond = TimesUtils.localDateTimeStringToCalender(date).timeInMillis
-//                            if (currentMillisecond <= dateMillisecond){
-//                                setAlarm(context, "AZAN_TYPE_ESHA", date)
+                            date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(6).toString())
+                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
+                            if (currentMillisecond <= calendarFromString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_ESHA, date)
+                                calendarFromString.timeInMillis -= 15 * 60 * 1000
+                                if (currentMillisecond <= calendarFromString.timeInMillis){
+                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(6).toString())
+                                    Log.d("TAG", "setAlarms: pre Ishaa : " + date)
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ESHA, date)
+                                }
+                            }
+
+//                            date = "2024-01-16T22:20:00"
+//                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
+//
+//                            if (currentMillisecond <= calendarFromString.timeInMillis){
+//                                setAlarm(context, Constants.AZAN_TYPE_ESHA, date)
+//                                calendarFromString.timeInMillis -= 15 * 60 * 1000
+//                                if (currentMillisecond <= calendarFromString.timeInMillis){
+//                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, "22:05")
+//                                    Log.d("TAG", "setAlarms: pre Ishaa fixed : " + date)
+//                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ESHA, date)
+//                                }
 //                            }
-//                            Log.d("TAG", "setAlarms: "+date)
                         }
 
                     }

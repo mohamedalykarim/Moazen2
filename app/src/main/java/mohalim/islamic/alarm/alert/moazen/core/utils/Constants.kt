@@ -3,6 +3,12 @@ package mohalim.islamic.alarm.alert.moazen.core.utils
 class Constants {
 
     companion object{
+        const val AZAN_TYPE_PRE_FAGR = "AZAN_TYPE_PRE_FAGR"
+        const val AZAN_TYPE_PRE_ZOHR = "AZAN_TYPE_PRE_ZOHR"
+        const val AZAN_TYPE_PRE_ASR = "AZAN_TYPE_PRE_ASR"
+        const val AZAN_TYPE_PRE_MAGHREB = "AZAN_TYPE_PRE_MAGHREB"
+        const val AZAN_TYPE_PRE_ESHA = "AZAN_TYPE_PRE_ESHA"
+
         const val AZAN_TYPE_FAGR = "AZAN_TYPE_FAGR"
         const val AZAN_TYPE_ZOHR = "AZAN_TYPE_ZOHR"
         const val AZAN_TYPE_ASR = "AZAN_TYPE_ASR"
