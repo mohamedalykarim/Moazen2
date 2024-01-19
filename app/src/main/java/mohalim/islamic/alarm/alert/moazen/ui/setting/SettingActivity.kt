@@ -15,6 +15,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +29,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,6 +63,7 @@ import mohalim.islamic.alarm.alert.moazen.core.utils.SettingUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseAzanPerformerUI
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseCityBottomUISettingActivity
+import mohalim.islamic.alarm.alert.moazen.ui.compose.ChoosePreAzanPerformerUI
 import java.util.Locale
 import javax.inject.Inject
 
@@ -81,11 +85,19 @@ class SettingActivity : AppCompatActivity() {
         runBlocking {
             withContext(Dispatchers.IO){
                 viewModel.getCurrentCityName()
+
                 viewModel.getAzanPerformerFagr()
                 viewModel.getAzanPerformerDuhur()
                 viewModel.getAzanPerformerAsr()
                 viewModel.getAzanPerformerMaghrib()
                 viewModel.getAzanPerformerIshaa()
+
+                viewModel.getPreAzanPerformerFagr()
+                viewModel.getPreAzanPerformerDuhur()
+                viewModel.getPreAzanPerformerAsr()
+                viewModel.getPreAzanPerformerMaghrib()
+                viewModel.getPreAzanPerformerIshaa()
+
             }
         }
     }
@@ -96,12 +108,19 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
     val currentCity by viewModel.currentCity.collectAsState()
     val showCityBottomSheet by viewModel.showCityBottomSheet.collectAsState()
     val showAzanPerformerBottomSheet by viewModel.showAzanPerformerBottomSheet.collectAsState()
+    val showPreAzanPerformerBottomSheet by viewModel.showPreAzanPerformerBottomSheet.collectAsState()
 
     val azanPerformerFagr by viewModel.azanPerformerFagr.collectAsState()
     val azanPerformerDuhur by viewModel.azanPerformerDuhur.collectAsState()
     val azanPerformerAsr by viewModel.azanPerformerAsr.collectAsState()
     val azanPerformerMaghrib by viewModel.azanPerformerMaghrib.collectAsState()
     val azanPerformerIshaa by viewModel.azanPerformerIshaa.collectAsState()
+
+    val preAzanPerformerFagr by viewModel.preAzanPerformerFagr.collectAsState()
+    val preAzanPerformerDuhur by viewModel.preAzanPerformerDuhur.collectAsState()
+    val preAzanPerformerAsr by viewModel.preAzanPerformerAsr.collectAsState()
+    val preAzanPerformerMaghrib by viewModel.preAzanPerformerMaghrib.collectAsState()
+    val preAzanPerformerIshaa by viewModel.preAzanPerformerIshaa.collectAsState()
 
 
     var azanType by remember { mutableStateOf("") }
@@ -121,7 +140,10 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
             contentDescription = ""
         )
 
+        val scrollState = rememberScrollState()
+
         Column(
+            modifier = Modifier.verticalScroll(scrollState),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -230,7 +252,7 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_FAGR
                                 viewModel.setShowAzanPerformerSheet(true)
-                                         }, 200)
+                            }, 200)
                     }
 
                 }
@@ -333,9 +355,146 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
 
                 }
 
+            }
+
+            /**
+             * Before Azan Performer
+             */
+
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(Color(parseColor("#ffe7ee")))
+                    .border(
+                        1.dp,
+                        Color(parseColor("#6c0678")),
+                        shape = RoundedCornerShape(7.dp)
+                    )
+                    .padding(8.dp)
+
+            ) {
+
+                /** Fagr Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Fagr before azan notification sound",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
+
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerFagr), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_PRE_FAGR
+                                viewModel.setShowPreAzanPerformerSheet(true)
+                            }, 200)
+                    }
+
+                }
 
 
+                /** Duhur Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Duhur before azan notification sound",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
 
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerDuhur), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_PRE_ZOHR
+                                viewModel.setShowPreAzanPerformerSheet(true)
+                            }, 200)
+                    }
+
+                }
+
+                /** ASR Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Asr Before azan notification sound",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
+
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerAsr), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_PRE_ASR
+                                viewModel.setShowPreAzanPerformerSheet(true)
+                            }, 200)
+                    }
+
+                }
+
+                /** Maghrib Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Maghrib Before azan notification sound",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
+
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerMaghrib), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_PRE_MAGHREB
+                                viewModel.setShowPreAzanPerformerSheet(true)
+                            }, 200)
+                    }
+
+                }
+
+
+                /** Ishaa Azan performer **/
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Ishaa Before azan notification sound",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
+
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerIshaa), iconId = R.drawable.ic_masjed_icon) {
+                        Handler(Looper.getMainLooper())
+                            .postDelayed({
+                                azanType = Constants.AZAN_TYPE_PRE_ESHA
+                                viewModel.setShowPreAzanPerformerSheet(true)
+                            }, 200)
+                    }
+
+                }
 
             }
 
@@ -358,6 +517,10 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
 
     if (showAzanPerformerBottomSheet){
         ChooseAzanPerformerUI(context, viewModel = viewModel, dataStore = dataStore, azanType = azanType )
+    }
+
+    if (showPreAzanPerformerBottomSheet){
+        ChoosePreAzanPerformerUI(context, viewModel = viewModel, dataStore = dataStore, azanType = azanType )
     }
 }
 

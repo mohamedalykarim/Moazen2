@@ -49,6 +49,69 @@ import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun ChoosePreAzanPerformerUI(
+    context: Context,
+    viewModel: SettingViewModel,
+    dataStore: DataStore<Preferences>,
+    azanType: String
+) {
+    val sheetState = rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        modifier = Modifier.padding(10.dp), onDismissRequest = {
+            viewModel.setShowPreAzanPerformerSheet(false)
+        }, sheetState = sheetState
+    ) {
+        LazyColumn(content = {
+            item {
+                AzanPerformerItem(
+                    context,
+                    viewModel,
+                    dataStore = dataStore,
+                    azanType = azanType,
+                    performerName = "Before Pray Notification 1",
+                    rawFile = R.raw.pre_salah_1
+                )
+            }
+
+            item {
+                AzanPerformerItem(
+                    context,
+                    viewModel,
+                    dataStore = dataStore,
+                    azanType = azanType,
+                    performerName = "Before Pray Notification 2",
+                    rawFile = R.raw.pre_salah_2
+                )
+            }
+
+            item {
+                AzanPerformerItem(
+                    context,
+                    viewModel,
+                    dataStore = dataStore,
+                    azanType = azanType,
+                    performerName = "Before Pray Notification 3",
+                    rawFile = R.raw.pre_salah_3
+                )
+            }
+
+
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        })
+
+
+
+        Spacer(modifier = Modifier.height(50.dp))
+
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun ChooseAzanPerformerUI(
     context: Context,
     viewModel: SettingViewModel,
@@ -168,9 +231,29 @@ fun AzanPerformerItem(
         .height(40.dp)
         .clickable {
             when (azanType) {
+                Constants.AZAN_TYPE_PRE_FAGR -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        PreferencesUtils.setDefaultPreAzanTypeFagr(dataStore, rawFile)
+                        viewModel.setShowPreAzanPerformerSheet(false)
+
+                    }
+
+                }
+
                 Constants.AZAN_TYPE_FAGR -> {
                     CoroutineScope(Dispatchers.IO).launch {
                         PreferencesUtils.setDefaultAzanTypeFagr(dataStore, rawFile)
+                        viewModel.setShowAzanPerformerSheet(false)
+
+                    }
+
+                }
+
+                Constants.AZAN_TYPE_PRE_ZOHR -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        PreferencesUtils.setDefaultPreAzanTypeDuhur(dataStore, rawFile)
+                        viewModel.setShowPreAzanPerformerSheet(false)
+
                     }
 
                 }
@@ -178,6 +261,17 @@ fun AzanPerformerItem(
                 Constants.AZAN_TYPE_ZOHR -> {
                     CoroutineScope(Dispatchers.IO).launch {
                         PreferencesUtils.setDefaultAzanTypeDuhur(dataStore, rawFile)
+                        viewModel.setShowAzanPerformerSheet(false)
+
+                    }
+
+                }
+
+                Constants.AZAN_TYPE_PRE_ASR -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        PreferencesUtils.setDefaultPreAzanTypeAsr(dataStore, rawFile)
+                        viewModel.setShowPreAzanPerformerSheet(false)
+
                     }
 
                 }
@@ -185,13 +279,34 @@ fun AzanPerformerItem(
                 Constants.AZAN_TYPE_ASR -> {
                     CoroutineScope(Dispatchers.IO).launch {
                         PreferencesUtils.setDefaultAzanTypeAsr(dataStore, rawFile)
+                        viewModel.setShowAzanPerformerSheet(false)
+
                     }
 
+                }
+
+                Constants.AZAN_TYPE_PRE_MAGHREB -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        PreferencesUtils.setDefaultPreAzanTypeMaghrib(dataStore, rawFile)
+                        viewModel.setShowPreAzanPerformerSheet(false)
+
+                    }
                 }
 
                 Constants.AZAN_TYPE_MAGHREB -> {
                     CoroutineScope(Dispatchers.IO).launch {
                         PreferencesUtils.setDefaultAzanTypeMaghrib(dataStore, rawFile)
+                        viewModel.setShowAzanPerformerSheet(false)
+
+                    }
+
+                }
+
+                Constants.AZAN_TYPE_PRE_ESHA -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        PreferencesUtils.setDefaultPreAzanTypeIshaa(dataStore, rawFile)
+                        viewModel.setShowPreAzanPerformerSheet(false)
+
                     }
 
                 }
@@ -199,12 +314,15 @@ fun AzanPerformerItem(
                 Constants.AZAN_TYPE_ESHA -> {
                     CoroutineScope(Dispatchers.IO).launch {
                         PreferencesUtils.setDefaultAzanTypeIshaa(dataStore, rawFile)
+                        viewModel.setShowAzanPerformerSheet(false)
+
                     }
 
                 }
+
+
             }
 
-            viewModel.setShowAzanPerformerSheet(false)
 
 
         }

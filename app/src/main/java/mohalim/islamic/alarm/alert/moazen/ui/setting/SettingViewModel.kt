@@ -21,6 +21,9 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
     private val _showCityBottomSheet = MutableStateFlow(false)
     val showCityBottomSheet : StateFlow<Boolean> = _showCityBottomSheet.asStateFlow()
 
+    private val _showPreAzanPerformerBottomSheet = MutableStateFlow(false)
+    val showPreAzanPerformerBottomSheet : StateFlow<Boolean> = _showPreAzanPerformerBottomSheet.asStateFlow()
+
     private val _showAzanPerformerBottomSheet = MutableStateFlow(false)
     val showAzanPerformerBottomSheet : StateFlow<Boolean> = _showAzanPerformerBottomSheet.asStateFlow()
 
@@ -38,6 +41,21 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     private val _azanPerformerIshaa = MutableStateFlow(0)
     val azanPerformerIshaa : StateFlow<Int> = _azanPerformerIshaa.asStateFlow()
+
+    private val _preAzanPerformerFagr = MutableStateFlow(0)
+    val preAzanPerformerFagr : StateFlow<Int> = _preAzanPerformerFagr.asStateFlow()
+
+    private val _preAzanPerformerDuhur = MutableStateFlow(0)
+    val preAzanPerformerDuhur : StateFlow<Int> = _preAzanPerformerDuhur.asStateFlow()
+
+    private val _preAzanPerformerAsr = MutableStateFlow(0)
+    val preAzanPerformerAsr : StateFlow<Int> = _preAzanPerformerAsr.asStateFlow()
+
+    private val _preAzanPerformerMaghrib = MutableStateFlow(0)
+    val preAzanPerformerMaghrib : StateFlow<Int> = _preAzanPerformerMaghrib.asStateFlow()
+
+    private val _preAzanPerformerIshaa = MutableStateFlow(0)
+    val preAzanPerformerIshaa : StateFlow<Int> = _preAzanPerformerIshaa.asStateFlow()
 
 
 
@@ -95,11 +113,60 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     }
 
+    suspend fun getPreAzanPerformerFagr() {
+        viewModelScope.launch {
+            PreferencesUtils.observeDefaultPreAzanTypeFagr(dataStore).collect{
+                _preAzanPerformerFagr.value = it
+            }
+        }
+
+    }
+
+    suspend fun getPreAzanPerformerDuhur() {
+        viewModelScope.launch {
+            PreferencesUtils.observeDefaultPreAzanTypeDuhur(dataStore).collect{
+                _preAzanPerformerDuhur.value = it
+            }
+        }
+
+    }
+
+    suspend fun getPreAzanPerformerAsr() {
+        viewModelScope.launch {
+            PreferencesUtils.observeDefaultPreAzanTypeAsr(dataStore).collect{
+                _preAzanPerformerAsr.value = it
+            }
+        }
+
+    }
+
+    suspend fun getPreAzanPerformerMaghrib() {
+        viewModelScope.launch {
+            PreferencesUtils.observeDefaultPreAzanTypeMaghrib(dataStore).collect{
+                _preAzanPerformerMaghrib.value = it
+            }
+        }
+
+    }
+
+    suspend fun getPreAzanPerformerIshaa() {
+        viewModelScope.launch {
+            PreferencesUtils.observeDefaultPreAzanTypeIshaa(dataStore).collect{
+                _preAzanPerformerIshaa.value = it
+            }
+        }
+
+    }
+
     fun setShowCityBottomSheet(value : Boolean){
         _showCityBottomSheet.value = value
     }
 
     fun setShowAzanPerformerSheet(value : Boolean){
         _showAzanPerformerBottomSheet.value = value
+    }
+
+    fun setShowPreAzanPerformerSheet(value : Boolean){
+        _showPreAzanPerformerBottomSheet.value = value
     }
 }

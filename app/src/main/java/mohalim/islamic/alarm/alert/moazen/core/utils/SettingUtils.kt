@@ -20,5 +20,17 @@ class SettingUtils {
 
             return name
         }
+
+        fun getPreAzanPerformerNameByRawId(rawId: Int): String {
+            var name = ""
+            when(rawId){
+                R.raw.pre_salah_1->{ name = "Before Notification Sound 1" }
+                R.raw.pre_salah_2->{ name = "Before Notification Sound 2" }
+                R.raw.pre_salah_3->{ name = "Before Notification Sound 3" }
+
+            }
+
+            return name
+        }
     }
 }

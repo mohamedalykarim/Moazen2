@@ -33,7 +33,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 CoroutineScope(Dispatchers.IO).launch {
                     PreferencesUtils.getIsFagrAlertWork(dataStore).collect {
                         if (it){
-                            val defaultPreAzanTypeFagr = PreferencesUtils.getDefaultPreAzanTypeFagr(dataStore)!!
+                            val defaultPreAzanTypeFagr = PreferencesUtils.getDefaultPreAzanTypeFagr(dataStore)
                             val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
                             playerIntent.putExtra("Media", defaultPreAzanTypeFagr)
                             playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_FAGR)
@@ -48,7 +48,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 CoroutineScope(Dispatchers.IO).launch {
                     PreferencesUtils.getIsFagrAlertWork(dataStore).collect {
                         if (it){
-                            val defaultAzanTypeFagr = PreferencesUtils.getDefaultAzanTypeFagr(dataStore)!!
+                            val defaultAzanTypeFagr = PreferencesUtils.getDefaultAzanTypeFagr(dataStore)
                             val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
                             playerIntent.putExtra("Media", defaultAzanTypeFagr)
                             playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_FAGR)
