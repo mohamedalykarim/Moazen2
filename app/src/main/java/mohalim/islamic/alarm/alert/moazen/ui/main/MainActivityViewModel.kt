@@ -88,31 +88,31 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
     suspend fun observeIsFagrAlertsWorks(){
         viewModelScope.launch {
-            PreferencesUtils.getIsFagrAlertWork(dataStore).collect{ _isFagerAlertWork.value = it }
+            PreferencesUtils.observeIsFagrAlertWork(dataStore).collect{ _isFagerAlertWork.value = it }
         }
     }
 
     suspend fun observeIsDuhurAlertsWorks(){
         viewModelScope.launch {
-            PreferencesUtils.getIsDuhurAlertWork(dataStore).collect{ _isDuhurAlertWork.value = it }
+            PreferencesUtils.observeIsDuhurAlertWork(dataStore).collect{ _isDuhurAlertWork.value = it }
         }
     }
 
     suspend fun observeIsAsrAlertsWorks(){
         viewModelScope.launch {
-            PreferencesUtils.getIsAsrAlertWork(dataStore).collect{ _isAsrAlertWork.value = it }
+            PreferencesUtils.observeIsAsrAlertWork(dataStore).collect{ _isAsrAlertWork.value = it }
         }
     }
 
     suspend fun observeIsMaghribAlertsWorks(){
         viewModelScope.launch {
-            PreferencesUtils.getIsMaghribAlertWork(dataStore).collect{ _isMaghribAlertWork.value = it }
+            PreferencesUtils.observeIsMaghribAlertWork(dataStore).collect{ _isMaghribAlertWork.value = it }
         }
     }
 
     suspend fun observeIsIshaaAlertsWorks(){
         viewModelScope.launch {
-            PreferencesUtils.getIsIshaaAlertWork(dataStore).collect{ _isIshaaAlertWork.value = it }
+            PreferencesUtils.observeIsIshaaAlertWork(dataStore).collect{ _isIshaaAlertWork.value = it }
         }
     }
 
@@ -170,7 +170,7 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
     suspend fun getCurrentCityName(context : Context){
         viewModelScope.launch {
-            PreferencesUtils.getCurrentCityName(dataStore).collect{
+            PreferencesUtils.observeCurrentCityName(dataStore).collect{
                 if (it != ""){
                     _currentCity.value = it
                     var praysForToday = TimesUtils.getPraysForToday(context, it, 0)

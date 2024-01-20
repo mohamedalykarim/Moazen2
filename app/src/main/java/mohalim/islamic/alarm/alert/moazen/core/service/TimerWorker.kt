@@ -16,15 +16,16 @@ import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 
 @HiltWorker
-class TimerWorker @AssistedInject constructor (@Assisted appContext : Context, @Assisted workerParams: WorkerParameters, val dataStore: DataStore<Preferences>) : Worker(appContext, workerParams) {
+class TimerWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    val dataStore: DataStore<Preferences>
+) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
         Log.d("TAG", "getCurrentCityName: test")
 
         CoroutineScope(Dispatchers.IO).launch {
-            PreferencesUtils.getCurrentCityName(dataStore).collect{
-                Log.d("TAG", "doWork: ")
-                AlarmUtils.setAlarms(applicationContext, it)
-            }
+            AlarmUtils.setAlarms(applicationContext, PreferencesUtils.getCurrentCityName(dataStore))
         }
 
         return Result.success()

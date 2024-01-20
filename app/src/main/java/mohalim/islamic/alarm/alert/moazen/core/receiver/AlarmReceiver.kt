@@ -31,45 +31,40 @@ class AlarmReceiver : BroadcastReceiver() {
         when(azanType){
             Constants.AZAN_TYPE_PRE_FAGR ->{
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsFagrAlertWork(dataStore).collect {
-                        if (it){
-                            val defaultPreAzanTypeFagr = PreferencesUtils.getDefaultPreAzanTypeFagr(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultPreAzanTypeFagr)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_FAGR)
-                            context!!.startForegroundService(playerIntent)
-
-                        }
+                    if (PreferencesUtils.getIsFagrAlertWork(dataStore)){
+                        val defaultPreAzanTypeFagr = PreferencesUtils.getDefaultPreAzanTypeFagr(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultPreAzanTypeFagr)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_FAGR)
+                        context!!.startForegroundService(playerIntent)
                     }
+
+
+
                 }
             }
 
             Constants.AZAN_TYPE_FAGR ->{
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsFagrAlertWork(dataStore).collect {
-                        if (it){
-                            val defaultAzanTypeFagr = PreferencesUtils.getDefaultAzanTypeFagr(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultAzanTypeFagr)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_FAGR)
-                            context!!.startForegroundService(playerIntent)
-                        }
+                    if (PreferencesUtils.getIsFagrAlertWork(dataStore)){
+                        val defaultAzanTypeFagr = PreferencesUtils.getDefaultAzanTypeFagr(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultAzanTypeFagr)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_FAGR)
+                        context!!.startForegroundService(playerIntent)
                     }
                 }
             }
 
             Constants.AZAN_TYPE_PRE_ZOHR -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsDuhurAlertWork(dataStore).collect {
+                    if ( PreferencesUtils.getIsDuhurAlertWork(dataStore)){
+                        val defaultPreAzanTypeDuhur = PreferencesUtils.getDefaultPreAzanTypeDuhur(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultPreAzanTypeDuhur)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_ZOHR)
+                        context!!.startForegroundService(playerIntent)
 
-                        if (it){
-                            val defaultPreAzanTypeDuhur = PreferencesUtils.getDefaultPreAzanTypeDuhur(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultPreAzanTypeDuhur)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_ZOHR)
-                            context!!.startForegroundService(playerIntent)
-
-                        }
                     }
                 }
 
@@ -77,15 +72,12 @@ class AlarmReceiver : BroadcastReceiver() {
 
             Constants.AZAN_TYPE_ZOHR -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsDuhurAlertWork(dataStore).collect {
-
-                        if (it){
-                            val defaultAzanTypeDuhur = PreferencesUtils.getDefaultAzanTypeDuhur(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultAzanTypeDuhur)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_ZOHR)
-                            context!!.startForegroundService(playerIntent)
-                        }
+                    if (PreferencesUtils.getIsDuhurAlertWork(dataStore)){
+                        val defaultAzanTypeDuhur = PreferencesUtils.getDefaultAzanTypeDuhur(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultAzanTypeDuhur)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_ZOHR)
+                        context!!.startForegroundService(playerIntent)
                     }
                 }
 
@@ -93,14 +85,12 @@ class AlarmReceiver : BroadcastReceiver() {
 
             Constants.AZAN_TYPE_PRE_ASR -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsAsrAlertWork(dataStore).collect {
-                        if (it){
-                            val defaultPreAzanTypeAsr = PreferencesUtils.getDefaultPreAzanTypeAsr(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultPreAzanTypeAsr)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_ASR)
-                            context!!.startForegroundService(playerIntent)
-                        }
+                    if (PreferencesUtils.getIsAsrAlertWork(dataStore)){
+                        val defaultPreAzanTypeAsr = PreferencesUtils.getDefaultPreAzanTypeAsr(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultPreAzanTypeAsr)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_ASR)
+                        context!!.startForegroundService(playerIntent)
                     }
                 }
 
@@ -108,14 +98,12 @@ class AlarmReceiver : BroadcastReceiver() {
 
             Constants.AZAN_TYPE_ASR -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsAsrAlertWork(dataStore).collect {
-                        if (it){
-                            val defaultAzanTypeAsr = PreferencesUtils.getDefaultAzanTypeAsr(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultAzanTypeAsr)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_ASR)
-                            context!!.startForegroundService(playerIntent)
-                        }
+                    if (PreferencesUtils.getIsAsrAlertWork(dataStore)){
+                        val defaultAzanTypeAsr = PreferencesUtils.getDefaultAzanTypeAsr(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultAzanTypeAsr)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_ASR)
+                        context!!.startForegroundService(playerIntent)
                     }
                 }
 
@@ -124,15 +112,13 @@ class AlarmReceiver : BroadcastReceiver() {
 
             Constants.AZAN_TYPE_PRE_MAGHREB -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsMaghribAlertWork(dataStore).collect {
-                        if (it){
-                            val defaultPreAzanTypeMaghrib = PreferencesUtils.getDefaultPreAzanTypeMaghrib(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultPreAzanTypeMaghrib)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_MAGHREB)
-                            context!!.startForegroundService(playerIntent)
+                    if (PreferencesUtils.getIsMaghribAlertWork(dataStore)){
+                        val defaultPreAzanTypeMaghrib = PreferencesUtils.getDefaultPreAzanTypeMaghrib(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultPreAzanTypeMaghrib)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_MAGHREB)
+                        context!!.startForegroundService(playerIntent)
 
-                        }
                     }
                 }
 
@@ -140,15 +126,13 @@ class AlarmReceiver : BroadcastReceiver() {
 
             Constants.AZAN_TYPE_MAGHREB -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsMaghribAlertWork(dataStore).collect {
-                        if (it){
-                            val defaultAzanTypeMaghrib = PreferencesUtils.getDefaultAzanTypeMaghrib(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultAzanTypeMaghrib)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_MAGHREB)
-                            context!!.startForegroundService(playerIntent)
+                    if (PreferencesUtils.getIsMaghribAlertWork(dataStore)){
+                        val defaultAzanTypeMaghrib = PreferencesUtils.getDefaultAzanTypeMaghrib(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultAzanTypeMaghrib)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_MAGHREB)
+                        context!!.startForegroundService(playerIntent)
 
-                        }
                     }
                 }
 
@@ -157,30 +141,25 @@ class AlarmReceiver : BroadcastReceiver() {
 
             Constants.AZAN_TYPE_PRE_ESHA -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsIshaaAlertWork(dataStore).collect {
-                        if (it){
-                            val defaultPreAzanTypeIshaa = PreferencesUtils.getDefaultPreAzanTypeIshaa(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultPreAzanTypeIshaa)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_ESHA)
-                            context!!.startForegroundService(playerIntent)
-                        }
+                    if (PreferencesUtils.getIsIshaaAlertWork(dataStore)){
+                        val defaultPreAzanTypeIshaa = PreferencesUtils.getDefaultPreAzanTypeIshaa(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultPreAzanTypeIshaa)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_ESHA)
+                        context!!.startForegroundService(playerIntent)
                     }
                 }
 
             }
 
             Constants.AZAN_TYPE_ESHA -> {
-                Log.d("TAG", "onReceive: AZAN_TYPE_ESHA")
                 CoroutineScope(Dispatchers.IO).launch {
-                    PreferencesUtils.getIsIshaaAlertWork(dataStore).collect {
-                        if (it){
-                            val defaultAzanTypeIshaa = PreferencesUtils.getDefaultAzanTypeIshaa(dataStore)
-                            val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
-                            playerIntent.putExtra("Media", defaultAzanTypeIshaa)
-                            playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_ESHA)
-                            context!!.startForegroundService(playerIntent)
-                        }
+                    if (PreferencesUtils.getIsIshaaAlertWork(dataStore)){
+                        val defaultAzanTypeIshaa = PreferencesUtils.getDefaultAzanTypeIshaa(dataStore)
+                        val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
+                        playerIntent.putExtra("Media", defaultAzanTypeIshaa)
+                        playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_ESHA)
+                        context!!.startForegroundService(playerIntent)
                     }
                 }
 

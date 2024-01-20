@@ -24,6 +24,7 @@ class AlarmUtils {
          * local date time example : "2023-12-10T23:37:00.908732"
          */
         private fun setAlarm(context: Context, alarmType: String, localDateTime: String) {
+            Log.d("TAG", "setAlarm: " + alarmType + " : " + localDateTime)
             val alarmManager = context.getSystemService(AlarmManager::class.java)
             val intent = Intent(context, AlarmReceiver::class.java).apply {
                 putExtra("AZAN_TYPE", alarmType)
@@ -90,58 +91,66 @@ class AlarmUtils {
                             /**
                              * Examle of date 2007-12-03T10:15:30:55.000000.
                              * **/
-                            var date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(0).toString())
-                            var calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
-                            if (currentMillisecond <= calendarFromString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_FAGR, date)
-                                calendarFromString.timeInMillis = calendarFromString.timeInMillis - 15 * 60 * 1000
-                                if (currentMillisecond <= calendarFromString.timeInMillis){
-                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(0).toString())
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_FAGR, date)
+                            var localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(0).toString())
+                            var calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_FAGR, localDateString)
+                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_FAGR, localDateString)
                                 }
                             }
 
-                            date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(2).toString())
-                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
-                            if (currentMillisecond <= calendarFromString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_ZOHR, date)
-                                calendarFromString.timeInMillis = calendarFromString.timeInMillis - 15 * 60 * 1000
-                                if (currentMillisecond <= calendarFromString.timeInMillis){
-                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(2).toString())
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ZOHR, date)
+                            localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(2).toString())
+                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_ZOHR, localDateString)
+                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ZOHR, localDateString)
                                 }
                             }
 
-                            date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(3).toString())
-                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
-                            if (currentMillisecond <= calendarFromString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_ASR, date)
-                                calendarFromString.timeInMillis = calendarFromString.timeInMillis - 15 * 60 * 1000
-                                if (currentMillisecond <= calendarFromString.timeInMillis){
-                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(3).toString())
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ASR, date)
+                            localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(3).toString())
+                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_ASR, localDateString)
+                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ASR, localDateString)
                                 }
                             }
 
-                            date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(5).toString())
-                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
-                            if (currentMillisecond <= calendarFromString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_MAGHREB, date)
-                                calendarFromString.timeInMillis = calendarFromString.timeInMillis - 15 * 60 * 1000
-                                if (currentMillisecond <= calendarFromString.timeInMillis){
-                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(5).toString())
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_MAGHREB, date)
+                            localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(5).toString())
+                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_MAGHREB, localDateString)
+                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_MAGHREB, localDateString)
                                 }
                             }
 
-                            date = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(6).toString())
-                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
-                            if (currentMillisecond <= calendarFromString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_ESHA, date)
-                                calendarFromString.timeInMillis = calendarFromString.timeInMillis - 15 * 60 * 1000
-                                if (currentMillisecond <= calendarFromString.timeInMillis){
-                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, times.get(6).toString())
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ESHA, date)
+                            localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(6).toString())
+                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                setAlarm(context, Constants.AZAN_TYPE_ESHA, localDateString)
+                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
+                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ESHA, localDateString)
                                 }
                             }
 

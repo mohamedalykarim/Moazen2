@@ -125,16 +125,30 @@ class TimesUtils {
             val monthLong = calendar.get(Calendar.MONTH) + 1
             val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
 
-            var month : String
-            var day : String
-            month = if(monthLong < 10) "0$monthLong" else monthLong.toString()
-            day = if(dayLong < 10) "0$dayLong" else dayLong.toString()
-           return "$year-$month-${day}T${time}:00"
+            val month : String = if(monthLong < 10) "0$monthLong" else monthLong.toString()
+            val day : String = if(dayLong < 10) "0$dayLong" else dayLong.toString()
+            return "$year-$month-${day}T${time}:00"
+        }
 
+        fun getLocalDateStringFromCalendarHourAndMinutes(calendar: Calendar): String {
+            val year = calendar.get(Calendar.YEAR)
+            val monthLong = calendar.get(Calendar.MONTH) + 1
+            val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
+            var hourString = ""
+            var minuteString = ""
+            val hours = calendar.get(Calendar.HOUR_OF_DAY)
+            val minutes = calendar.get(Calendar.MINUTE)
+
+            hourString = if (hours < 10) "0${hours}" else ""+hours
+            minuteString = if (minutes < 10) "0${minutes}" else ""+minutes
+
+            val month : String = if(monthLong < 10) "0$monthLong" else monthLong.toString()
+            val day : String = if(dayLong < 10) "0$dayLong" else dayLong.toString()
+            return "$year-$month-${day}T${hourString}:${minuteString}:00"
         }
 
 
-        private fun replaceArabicToEnglish(string: String): CharSequence? {
+        private fun replaceArabicToEnglish(string: String): CharSequence {
             return string
                 .replace("٠", "0")
                 .replace("١", "1")

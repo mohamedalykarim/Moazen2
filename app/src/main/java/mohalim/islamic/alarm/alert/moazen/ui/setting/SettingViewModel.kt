@@ -61,7 +61,7 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     suspend fun getCurrentCityName() {
         viewModelScope.launch {
-            PreferencesUtils.getCurrentCityName(dataStore).collect{
+            PreferencesUtils.observeCurrentCityName(dataStore).collect{
                 _currentCity.value = it
             }
         }

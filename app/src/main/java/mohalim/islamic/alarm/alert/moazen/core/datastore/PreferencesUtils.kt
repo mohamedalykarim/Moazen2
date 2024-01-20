@@ -64,11 +64,16 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getCurrentCityName(dataStore: DataStore<Preferences>): Flow<String> {
+        fun observeCurrentCityName(dataStore: DataStore<Preferences>): Flow<String> {
             return dataStore.data
                 .map { preferences ->
                     preferences[CURRENT_CITY_NAME] ?: ""
                 }
+        }
+
+        suspend fun getCurrentCityName(dataStore: DataStore<Preferences>): String {
+            val preferences =  dataStore.data.first()
+            return preferences[CURRENT_CITY_NAME] ?: "Luxor"
         }
 
         suspend fun setIsFagrAlertWork(dataStore: DataStore<Preferences>, isWork: Boolean){
@@ -77,11 +82,16 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getIsFagrAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
+        fun observeIsFagrAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
             return dataStore.data
                 .map { preferences ->
                     preferences[IS_FAGR_ALERT_WORK] ?: true
                 }
+        }
+
+        suspend fun getIsFagrAlertWork(dataStore: DataStore<Preferences>): Boolean {
+            return dataStore.data.first()[IS_FAGR_ALERT_WORK] ?: true
+
         }
 
         suspend fun setIsDuhurAlertWork(dataStore: DataStore<Preferences>, isWork: Boolean){
@@ -91,11 +101,15 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getIsDuhurAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
+        fun observeIsDuhurAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
             return dataStore.data
                 .map { preferences ->
                     preferences[IS_DUHUR_ALERT_WORK] ?: true
                 }
+        }
+
+        suspend fun getIsDuhurAlertWork(dataStore: DataStore<Preferences>): Boolean {
+            return dataStore.data.first()[IS_DUHUR_ALERT_WORK] ?: true
         }
 
         suspend fun setIsAsrAlertWork(dataStore: DataStore<Preferences>, isWork: Boolean){
@@ -104,11 +118,15 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getIsAsrAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
+        fun observeIsAsrAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
             return dataStore.data
                 .map { preferences ->
                     preferences[IS_ASR_ALERT_WORK] ?: true
                 }
+        }
+
+        suspend fun getIsAsrAlertWork(dataStore: DataStore<Preferences>): Boolean {
+            return dataStore.data.first()[IS_ASR_ALERT_WORK] ?: true
         }
 
         suspend fun setIsMaghribAlertWork(dataStore: DataStore<Preferences>, isWork: Boolean){
@@ -117,11 +135,15 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getIsMaghribAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
+        fun observeIsMaghribAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
             return dataStore.data
                 .map { preferences ->
                     preferences[IS_MAGHRIB_ALERT_WORK] ?: true
                 }
+        }
+
+        suspend fun getIsMaghribAlertWork(dataStore: DataStore<Preferences>): Boolean {
+            return dataStore.data.first()[IS_MAGHRIB_ALERT_WORK] ?: true
         }
 
         suspend fun setIsIshaaAlertWork(dataStore: DataStore<Preferences>, isWork: Boolean){
@@ -130,11 +152,15 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             }
         }
 
-        fun getIsIshaaAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
+        fun observeIsIshaaAlertWork(dataStore: DataStore<Preferences>): Flow<Boolean> {
             return dataStore.data
                 .map { preferences ->
                     preferences[IS_ISHAA_ALERT_WORK] ?: true
                 }
+        }
+
+        suspend fun getIsIshaaAlertWork(dataStore: DataStore<Preferences>): Boolean {
+            return dataStore.data.first()[IS_ISHAA_ALERT_WORK] ?: true
         }
 
         suspend fun setDefaultPreAzanTypeFagr(dataStore: DataStore<Preferences>, resource: Int){
@@ -151,7 +177,7 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
         }
 
         suspend fun getDefaultPreAzanTypeFagr(dataStore: DataStore<Preferences>): Int {
-            val performerId =  dataStore.data.first()[DEFAULT_AZAN_TYPE_FAGR] ?: R.raw.pre_salah_1
+            val performerId =  dataStore.data.first()[DEFAULT_PRE_AZAN_TYPE_FAGR] ?: R.raw.pre_salah_1
             return performerId
         }
 
@@ -188,7 +214,7 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
         }
 
         suspend fun getDefaultPreAzanTypeDuhur(dataStore: DataStore<Preferences>): Int {
-            val performerId =  dataStore.data.first()[DEFAULT_AZAN_TYPE_DUHUR] ?: R.raw.pre_salah_1
+            val performerId =  dataStore.data.first()[DEFAULT_PRE_AZAN_TYPE_DUHUR] ?: R.raw.pre_salah_1
             return performerId
         }
 
