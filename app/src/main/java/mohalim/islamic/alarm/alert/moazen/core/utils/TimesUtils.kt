@@ -89,7 +89,7 @@ class TimesUtils {
                         1 -> azanType = "AZAN_TYPE_SHROUQ"
                         2 -> azanType = "AZAN_TYPE_ZOHR"
                         3 -> azanType = "AZAN_TYPE_ASR"
-                        4 -> azanType = "AZAN_TYPE_GHROUB"
+                        4 -> continue
                         5 -> azanType = "AZAN_TYPE_MAGHREB"
                         6 -> azanType = "AZAN_TYPE_ESHA"
                     }
