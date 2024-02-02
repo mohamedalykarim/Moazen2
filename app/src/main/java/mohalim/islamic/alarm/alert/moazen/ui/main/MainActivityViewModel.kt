@@ -3,6 +3,7 @@ package mohalim.islamic.alarm.alert.moazen.ui.main
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.CountDownTimer
 import androidx.core.app.ActivityCompat
@@ -24,6 +25,7 @@ import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.model.NextPray
 import mohalim.islamic.alarm.alert.moazen.core.service.TimerWorker
+import mohalim.islamic.alarm.alert.moazen.core.service.WorkManagerService
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -238,28 +240,8 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
                     _midday.value = TimesUtils.getTimeFormat(calendarMidday)
 
-
-                    /** Workmanager for azan times */
-
-                    withContext(Dispatchers.IO){
-                        val setAlarmsRequest: PeriodicWorkRequest =
-                            PeriodicWorkRequest
-                                .Builder(
-                                    TimerWorker::class.java,
-                                    1,
-                                    TimeUnit.HOURS
-                                )
-                                .build()
-
-
-                        WorkManager
-                            .getInstance(context)
-                            .enqueueUniquePeriodicWork(
-                                "TimerWorker",
-                                ExistingPeriodicWorkPolicy.UPDATE,
-                                setAlarmsRequest
-                            )
-                    }
+                    val workerService = Intent(context, WorkManagerService::class.java)
+                    ContextCompat.startForegroundService(context, workerService)
 
 
                 }

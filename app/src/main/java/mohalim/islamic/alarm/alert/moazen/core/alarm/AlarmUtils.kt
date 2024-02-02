@@ -154,15 +154,15 @@ class AlarmUtils {
                                 }
                             }
 
-//                            date = "2024-01-19T19:00:00"
-//                            calendarFromString = TimesUtils.localDateTimeStringToCalender(date)
+//                            localDateString = "2024-02-01T20:17:00"
+//                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
 //
-//                            if (currentMillisecond <= calendarFromString.timeInMillis){
-//                                setAlarm(context, Constants.AZAN_TYPE_ESHA, date)
-//                                calendarFromString.timeInMillis = calendarFromString.timeInMillis - 15 * 60 * 1000
-//                                if (currentMillisecond <= calendarFromString.timeInMillis){
-//                                    date = TimesUtils.getLocalDateStringFromCalendar(calendarFromString, "18:45")
-//                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ESHA, date)
+//                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+//                                setAlarm(context, Constants.AZAN_TYPE_ESHA, localDateString)
+//                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+//                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
+//                                    localDateString = TimesUtils.getLocalDateStringFromCalendar(calendarFromlocalDateString, "18:45")
+//                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ESHA, localDateString)
 //                                }
 //                            }
                         }
