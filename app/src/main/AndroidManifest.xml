@@ -21,6 +21,9 @@
         android:theme="@style/Theme.Moazen"
         tools:targetApi="31">
         <activity
+            android:name=".ui.azkar.AzkarActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.setting.SettingActivity"
             android:exported="false" />
         <activity
@@ -39,7 +42,6 @@
         </activity>
 
         <service android:name=".core.service.AzanMediaPlayerService" />
-
         <service android:name=".core.service.WorkManagerService" />
 
         <receiver android:name=".core.receiver.AlarmReceiver" />
