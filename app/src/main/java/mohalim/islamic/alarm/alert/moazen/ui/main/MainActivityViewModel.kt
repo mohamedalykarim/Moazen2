@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
@@ -22,13 +23,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.model.NextPray
-import mohalim.islamic.alarm.alert.moazen.core.service.TimerWorker
-import mohalim.islamic.alarm.alert.moazen.core.service.WorkManagerService
+import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -222,8 +222,15 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     val year = calendar.get(Calendar.YEAR)
                     val monthLong = calendar.get(Calendar.MONTH) + 1
                     val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
+                    val hoursLong = calendar.get(Calendar.HOUR_OF_DAY)
+                    Log.d("TAG", "getCurrentCityName: HOUR_OF_DAY " + hoursLong)
+                    val minutesLong = calendar.get(Calendar.MINUTE)
+
                     val month: String = if(monthLong < 10) "0$monthLong" else monthLong.toString()
                     val day : String = if(dayLong < 10) "0$dayLong" else dayLong.toString()
+
+                    val hour : String = if(hoursLong < 10) "0$hoursLong" else hoursLong.toString()
+                    val minutes : String = if(minutesLong < 10) "0$minutesLong" else minutesLong.toString()
 
                     val sunriseString = _prayersForToday.value[1].replace(" AM", "").replace(" PM", "")
                     val sunsetString = _prayersForToday.value[4].replace(" AM", "").replace(" PM", "")
@@ -240,9 +247,30 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
                     _midday.value = TimesUtils.getTimeFormat(calendarMidday)
 
-                    val workerService = Intent(context, WorkManagerService::class.java)
-                    ContextCompat.startForegroundService(context, workerService)
+                    var count = 1;
+                    // reserve all times
+                    repeat(24) {
+                        if (count == 24) count = 0
+                        var localDateString = if (count < 10)
+                            TimesUtils.getLocalDateStringFromCalendar(calendar, "0"+count+":00")
+                        else TimesUtils.getLocalDateStringFromCalendar(calendar, "${count}:00")
 
+                        AlarmUtils.setRepeatedAlarm(
+                            context,
+                            Constants.RESERVE_ALL_TIMES,
+                            1000+count,
+                            localDateString
+                        )
+
+                        Log.d("TAG", "getCurrentCityName: Alarm reservation at : "+ localDateString)
+
+                        count += 1
+                    }
+
+
+
+                    var localDateString = TimesUtils.getLocalDateStringFromCalendar(calendar, "${hour}:${minutes}")
+                    AlarmUtils.setRepeatedAlarm(context, Constants.RESERVE_ALL_TIMES, 1001, localDateString)
 
                 }
             }

@@ -24,7 +24,6 @@ class AlarmUtils {
          * local date time example : "2023-12-10T23:37:00.908732"
          */
         private fun setAlarm(context: Context, alarmType: String, localDateTime: String) {
-            Log.d("TAG", "setAlarm: " + alarmType + " : " + localDateTime)
             val alarmManager = context.getSystemService(AlarmManager::class.java)
             val intent = Intent(context, AlarmReceiver::class.java).apply {
                 putExtra("AZAN_TYPE", alarmType)
@@ -61,6 +60,28 @@ class AlarmUtils {
                 )
             )
         }
+
+        public fun setRepeatedAlarm(context: Context, alarmType: String, alarmId: Int,  localDateTime: String) {
+            val alarmManager = context.getSystemService(AlarmManager::class.java)
+            val intent = Intent(context, AlarmReceiver::class.java).apply {
+                putExtra("AZAN_TYPE", alarmType)
+            }
+            val time  = LocalDateTime.parse(localDateTime)
+            val alarmTime = time.atZone(ZoneId.systemDefault()).toEpochSecond()*1000L
+
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                alarmTime,
+                24*60*60*1000,
+                PendingIntent.getBroadcast(
+                    context,
+                    alarmId,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            )
+        }
+
 
         fun setAlarmForFirstTime(context: Context, cityName: String){
             setAlarms(context, cityName)
@@ -154,7 +175,7 @@ class AlarmUtils {
                                 }
                             }
 
-//                            localDateString = "2024-02-01T20:17:00"
+//                            localDateString = "2024-04-13T22:05:00"
 //                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
 //
 //                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
@@ -165,6 +186,7 @@ class AlarmUtils {
 //                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ESHA, localDateString)
 //                                }
 //                            }
+
                         }
 
                     }

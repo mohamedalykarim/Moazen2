@@ -3,23 +3,16 @@ package mohalim.islamic.alarm.alert.moazen.core.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.service.AzanMediaPlayerService
-import mohalim.islamic.alarm.alert.moazen.core.service.TimerWorker
-import mohalim.islamic.alarm.alert.moazen.core.service.WorkManagerService
 import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -166,12 +159,16 @@ class AlarmReceiver : BroadcastReceiver() {
                 }
 
             }
+
+            Constants.RESERVE_ALL_TIMES ->{
+                if (context != null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        AlarmUtils.setAlarms(context, PreferencesUtils.getCurrentCityName(dataStore))
+                    }
+                }
+
+            }
         }
-
-        val workerService = Intent(context, WorkManagerService::class.java)
-        ContextCompat.startForegroundService(context!!, workerService)
-
-
 
     }
 }

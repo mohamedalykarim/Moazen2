@@ -17,7 +17,6 @@ import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
-import mohalim.islamic.alarm.alert.moazen.core.utils.SettingUtils
 
 
 @AndroidEntryPoint
@@ -52,17 +51,21 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
         if (rawId == 0) stopSelf()
         initMediaPlayer(rawId!!)
 
-        if (azanType == Constants.AZAN_TYPE_PLAY_SOUND){
-            val notification = initNotificationForOthers("Masjed App is playing sound")
-            startForeground(1, notification)
-        }else if (azanType == Constants.AZAN_TYPE_STOP_SOUND){
-            val notification = initNotificationForOthers("Masjed App is playing sound")
-            startForeground(1, notification)
+        when (azanType) {
+            Constants.AZAN_TYPE_PLAY_SOUND -> {
+                val notification = initNotificationForOthers("Masjed App is playing sound")
+                startForeground(1, notification)
+            }
+            Constants.AZAN_TYPE_STOP_SOUND -> {
+                val notification = initNotificationForOthers("Masjed App is playing sound")
+                startForeground(1, notification)
 
-            stopSelf()
-        }else{
-            val notification = initNotificationForAzan(azanType)
-            startForeground(1, notification)
+                stopSelf()
+            }
+            else -> {
+                val notification = initNotificationForAzan(azanType)
+                startForeground(1, notification)
+            }
         }
 
 
@@ -87,14 +90,14 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
         val contentView = RemoteViews(packageName, R.layout.custom_notifications)
         var azanDrawable = R.drawable.remain
 
-        when(azanType){
-            "AZAN_TYPE_FAGR"-> azanDrawable = R.drawable.till_fagr
-            "AZAN_TYPE_SHROUQ"-> azanDrawable = R.drawable.shrouq
-            "AZAN_TYPE_ZOHR"-> azanDrawable = R.drawable.till_zohr
-            "AZAN_TYPE_ASR"-> azanDrawable = R.drawable.till_asr
-            "AZAN_TYPE_GHROUB"-> azanDrawable = R.drawable.ghroub
-            "AZAN_TYPE_MAGHREB"-> azanDrawable = R.drawable.till_maghreb
-            "AZAN_TYPE_ESHA"-> azanDrawable = R.drawable.till_eshaa
+        when (azanType) {
+            "AZAN_TYPE_FAGR" -> azanDrawable = R.drawable.till_fagr
+            "AZAN_TYPE_SHROUQ" -> azanDrawable = R.drawable.shrouq
+            "AZAN_TYPE_ZOHR" -> azanDrawable = R.drawable.till_zohr
+            "AZAN_TYPE_ASR" -> azanDrawable = R.drawable.till_asr
+            "AZAN_TYPE_GHROUB" -> azanDrawable = R.drawable.ghroub
+            "AZAN_TYPE_MAGHREB" -> azanDrawable = R.drawable.till_maghreb
+            "AZAN_TYPE_ESHA" -> azanDrawable = R.drawable.till_eshaa
         }
         contentView.setImageViewResource(R.id.image, azanDrawable)
 
@@ -102,10 +105,8 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
             .setSmallIcon(R.drawable.ic_masjed_icon)
             .setCustomContentView(contentView)
 
-        val notification = builder.build()
-
         // Start the service as a foreground service with the notification
-        return notification
+        return builder.build()
     }
 
     private fun initNotificationForOthers(text: String?): Notification {

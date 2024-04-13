@@ -40,8 +40,6 @@
 
         <service android:name=".core.service.AzanMediaPlayerService" />
 
-        <service android:name=".core.service.WorkManagerService" />
-
         <receiver android:name=".core.receiver.AlarmReceiver" />
 
         <provider
