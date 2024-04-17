@@ -2,9 +2,11 @@ package mohalim.islamic.alarm.alert.moazen.ui.main
 
 import android.Manifest
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.CountDownTimer
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -13,9 +15,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -150,20 +149,8 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
     suspend fun checkIfFirstOpen(context: Context) {
         viewModelScope.launch {
-            PreferencesUtils.getIsFirstOpen(dataStore).collect{isFirstOpen ->
+            PreferencesUtils.observeIsFirstOpen(dataStore).collect{isFirstOpen ->
                 if (isFirstOpen){
-                    val permissionState = ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    )
-                    // If the permission is not granted, request it.
-                    if (permissionState == PackageManager.PERMISSION_DENIED) {
-                        ActivityCompat.requestPermissions(
-                            context as Activity,
-                            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                            1
-                        )
-                    }
                     setShowCityBottomSheet(true)
                 }
             }
@@ -223,7 +210,6 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     val monthLong = calendar.get(Calendar.MONTH) + 1
                     val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
                     val hoursLong = calendar.get(Calendar.HOUR_OF_DAY)
-                    Log.d("TAG", "getCurrentCityName: HOUR_OF_DAY " + hoursLong)
                     val minutesLong = calendar.get(Calendar.MINUTE)
 
                     val month: String = if(monthLong < 10) "0$monthLong" else monthLong.toString()

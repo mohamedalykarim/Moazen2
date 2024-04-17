@@ -1,8 +1,10 @@
 package mohalim.islamic.alarm.alert.moazen.ui.main
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color.parseColor
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -53,6 +55,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseCityBottomUIMainActivity
@@ -72,6 +75,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        runBlocking {
+            withContext(Dispatchers.IO){
+                if (PreferencesUtils.getIsFirstOpen(dataStore)){
+                    startActivity(Intent(this@MainActivity, FirstStartActivity::class.java))
+                }
+            }
+        }
 
         setContent {
             MainActivityUi(context = this@MainActivity, viewModel, dataStore)

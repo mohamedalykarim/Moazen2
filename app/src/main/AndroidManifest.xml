@@ -8,6 +8,14 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
+    </queries>
 
     <application
         android:name=".core.hilt.App"
@@ -20,6 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moazen"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.main.FirstStartActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.setting.SettingActivity"
             android:exported="false" />
@@ -41,6 +52,22 @@
         <service android:name=".core.service.AzanMediaPlayerService" />
 
         <receiver android:name=".core.receiver.AlarmReceiver" />
+        <receiver
+            android:name=".core.receiver.StartUpReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="android.intent.action.BOOT" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.startup.InitializationProvider"

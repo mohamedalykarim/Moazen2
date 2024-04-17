@@ -47,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.ui.azkar.AzkarActivity
+import mohalim.islamic.alarm.alert.moazen.ui.azkar.AzkarViewModel
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingActivity
 
 @AndroidEntryPoint
@@ -81,6 +83,9 @@ fun MoreScreenUI(context: Context, viewModel: MoreScreenViewModel) {
                 /** Azkar **/
                 item {
                     ItemContainer("Azkar", R.drawable.azkar_icon, onClickCard = {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            context.startActivity(Intent(context, AzkarActivity::class.java))
+                        },200)
 
                     })
                 }

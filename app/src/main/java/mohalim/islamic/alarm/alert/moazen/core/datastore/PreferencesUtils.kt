@@ -49,11 +49,18 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
                 settings[IS_FIRST_OPEN] = isFirstOpen
             }
         }
-        fun getIsFirstOpen(dataStore: DataStore<Preferences>): Flow<Boolean> {
+        fun observeIsFirstOpen(dataStore: DataStore<Preferences>): Flow<Boolean> {
             return dataStore.data
                 .map { preferences ->
                     preferences[IS_FIRST_OPEN] ?: true
                 }
+        }
+
+        suspend fun getIsFirstOpen(dataStore: DataStore<Preferences>): Boolean {
+            return dataStore.data
+                .map { preferences ->
+                    preferences[IS_FIRST_OPEN] ?: true
+                }.first()
         }
 
 
