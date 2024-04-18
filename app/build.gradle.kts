@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id ("kotlin-kapt")
     id ("com.google.dagger.hilt.android")
-
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -64,6 +64,7 @@ dependencies {
     androidTestImplementation(composeBom)
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.8.1")
+    implementation("androidx.compose.animation:animation-graphics:1.6.6")
 
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
 
@@ -76,6 +77,14 @@ dependencies {
 
     val work_version = "2.9.0"
     implementation("androidx.work:work-runtime-ktx:$work_version")
+
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    annotationProcessor ("androidx.room:room-compiler:2.6.1")
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt ("androidx.room:room-compiler:2.6.1")
+
 
 
 }

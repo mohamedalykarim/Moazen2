@@ -1,6 +1,136 @@
 <animated-vector
-    xmlns:android="http://schemas.android.com/apk/res/android" android:drawable="@drawable/azkar_animated_drawable">
+    xmlns:android="http://schemas.android.com/apk/res/android" android:drawable="@drawable/azkar_drawable">
     <target
         android:animation="@animator/animate1"
-        android:name="item1" />
+        android:name="circle1" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle2" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle3" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle4" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle5" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle6" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle7" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle8" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle9" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle10" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle11" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle12" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle13" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle14" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle15" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle16" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle17" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle18" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle19" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle20" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle21" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle22" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle23" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle24" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle25" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle26" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle27" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle28" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle29" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle30" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle31" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle32" />
+
+    <target
+        android:animation="@animator/animate1"
+        android:name="circle33" />
+
+
 </animated-vector>

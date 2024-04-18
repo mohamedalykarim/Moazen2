@@ -37,6 +37,10 @@
         <activity
             android:name=".ui.more.MoreScreenActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.azkar.AzkarActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"

@@ -65,6 +65,8 @@ class FirstStartActivity : AppCompatActivity() {
             FirstStartActivityUI(this, viewModel)
         }
 
+        viewModel.addDefaultAzkar()
+
     }
 
     override fun onResume() {
