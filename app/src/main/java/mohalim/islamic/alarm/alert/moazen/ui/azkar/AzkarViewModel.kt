@@ -30,9 +30,9 @@ class AzkarViewModel @Inject constructor(val azkarDao: AzkarDao) : ViewModel(){
     val count : StateFlow<Int> = _count.asStateFlow()
 
 
-    fun setCurrentZekr(azkarEntity: AzkarEntity){
+    fun setCurrentZekr(azkarEntity: AzkarEntity?){
         _currentZekr.value = azkarEntity
-        _count.value = azkarEntity.count
+        if (azkarEntity != null) _count.value = azkarEntity!!.count
     }
 
     fun getAllAzkarFromRoom() {

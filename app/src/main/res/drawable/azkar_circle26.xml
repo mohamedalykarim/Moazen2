@@ -1,0 +1,23 @@
+<vector
+    android:height="200dp"
+    android:width="200dp"
+    android:viewportHeight="485"
+    android:viewportWidth="485"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:name="azkar_circle26"
+        android:pivotX="242"
+        android:pivotY="242"
+        android:rotation="0.0">
+
+        <path
+            android:name="azkar_circle26_path"
+            android:fillColor="#fff"
+            android:pathData="M29.71,169.85m-18.01,0a18.01,18.01 0,1 1,36.02 0a18.01,18.01 0,1 1,-36.02 0"
+            android:strokeColor="#92278f" android:strokeWidth="2"/>
+
+    </group>
+
+
+</vector>
