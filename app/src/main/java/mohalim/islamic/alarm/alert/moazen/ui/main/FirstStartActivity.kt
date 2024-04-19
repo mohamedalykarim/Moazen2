@@ -3,6 +3,7 @@ package mohalim.islamic.alarm.alert.moazen.ui.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color.parseColor
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -53,6 +55,7 @@ import javax.inject.Inject
 class FirstStartActivity : AppCompatActivity() {
     private val viewModel: FirstStartViewModel by viewModels()
     val PERMISSION_REQUEST_CODE = 112
+    val manufacturer = Build.MANUFACTURER.lowercase(Locale.ROOT)
 
 
     @Inject
@@ -76,7 +79,7 @@ class FirstStartActivity : AppCompatActivity() {
         }
     }
 
-    private val requestPermissionLauncher =
+    private val requestPermissionLauncherForNotificiationPermission =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
@@ -85,6 +88,18 @@ class FirstStartActivity : AppCompatActivity() {
 
             } else {
                 Toast.makeText(this, "You refused to grant the permission, please grant it from the setting so you can get the application notification", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    private val requestPermissionLauncherForScheduleAlarmPermission =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                viewModel.setScheduleAlarmPermissionGranted(true)
+
+            } else {
+                Toast.makeText(this, "You refused to grant the permission, please grant it from the setting so the app can work fine", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -110,7 +125,7 @@ class FirstStartActivity : AppCompatActivity() {
                     else -> {
                         // You can directly ask for the permission.
                         // The registered ActivityResultCallback gets the result of this request.
-                        requestPermissionLauncher.launch(
+                        requestPermissionLauncherForNotificiationPermission.launch(
                             Manifest.permission.POST_NOTIFICATIONS)
                     }
                 }
@@ -119,9 +134,26 @@ class FirstStartActivity : AppCompatActivity() {
         }
     }
 
+    private fun getScheduleAlarmPermission() {
+        try {
+            if (Build.VERSION.SDK_INT > 33) {
+
+                val alarmManager = ContextCompat.getSystemService(this@FirstStartActivity, AlarmManager::class.java)
+                if (alarmManager?.canScheduleExactAlarms() == false) {
+                    Intent().also { intent ->
+                        intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                        startActivity(intent)
+                    }
+                }else{
+                    viewModel.setScheduleAlarmPermissionGranted(true)
+                }
+            }
+        } catch (_: Exception) {
+        }
+    }
+
 
     fun isAutoStartPermissionGranted(context: Context): Boolean {
-        val manufacturer = Build.MANUFACTURER.lowercase(Locale.ROOT)
         return when {
             manufacturer.contains("xiaomi") -> isXiaomiAutoStartPermissionGranted(context)
             manufacturer.contains("oppo") -> isOppoAutoStartPermissionGranted(context)
@@ -175,6 +207,7 @@ class FirstStartActivity : AppCompatActivity() {
 
         val autoStartPermissionGranted by viewModel.autoStartPermissionGranted.collectAsState()
         val notificationPermissionGranted by viewModel.notificationPermissionGranted.collectAsState()
+        val scheduleAlarmPermissionGranted by viewModel.scheduleAlarmPermissionGranted.collectAsState()
 
         Box(
             modifier = Modifier
@@ -189,92 +222,104 @@ class FirstStartActivity : AppCompatActivity() {
             )
             Column(modifier = Modifier.fillMaxSize()) {
 
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .background(Color(android.graphics.Color.parseColor("#fff2f6")))
-                        .border(
-                            1.dp,
-                            Color(android.graphics.Color.parseColor("#ffd4e2")),
-                            shape = RoundedCornerShape(5)
-                        )
+                if(manufacturer.contains("xiaomi") || manufacturer.contains("oppo") || manufacturer.contains("vivo")
+                    || manufacturer.contains("letv") || manufacturer.contains("leeco") || manufacturer.contains("huawei")){
 
-                ) {
 
-                    Text(
-                        text = "You should grant auto start permission for the application so it can launch after rebooting system",
+
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                    )
+                            .padding(16.dp)
+                            .background(Color(android.graphics.Color.parseColor("#fff2f6")))
+                            .border(
+                                1.dp,
+                                Color(android.graphics.Color.parseColor("#ffd4e2")),
+                                shape = RoundedCornerShape(5)
+                            )
 
-                    if (autoStartPermissionGranted){
+                    ) {
+
                         Text(
-                            text = "Permission Granted",
+                            text = "You should grant auto start permission for the application so it can launch after rebooting system",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp),
-                            color = Color(parseColor("#007400")),
-                            fontWeight = FontWeight.Bold
+                                .padding(10.dp)
                         )
-                    }else{
-                        SettingButton(name = "Auto Start permission", iconId = R.drawable.ic_masjed_icon, onClickCard = {
-                            val intent = Intent()
-                            if ("xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)) {
-                                intent.setComponent(
-                                    ComponentName(
-                                        "com.miui.securitycenter",
-                                        "com.miui.permcenter.autostart.AutoStartManagementActivity"
-                                    )
-                                )
-                                startActivity(intent)
 
-                            } else if ("oppo".equals(Build.MANUFACTURER, ignoreCase = true)) {
-                                intent.setComponent(
-                                    ComponentName(
-                                        "com.coloros.safecenter",
-                                        "com.coloros.safecenter.permission.startup.StartupAppListActivity"
+                        if (autoStartPermissionGranted){
+                            Text(
+                                text = "Permission Granted",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                color = Color(parseColor("#007400")),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }else{
+                            SettingButton(name = "Auto Start permission", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                                val intent = Intent()
+                                if ("xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)) {
+                                    intent.setComponent(
+                                        ComponentName(
+                                            "com.miui.securitycenter",
+                                            "com.miui.permcenter.autostart.AutoStartManagementActivity"
+                                        )
                                     )
-                                )
-                                startActivity(intent)
+                                    startActivity(intent)
 
-                            } else if ("vivo".equals(Build.MANUFACTURER, ignoreCase = true)) {
-                                intent.setComponent(
-                                    ComponentName(
-                                        "com.vivo.permissionmanager",
-                                        "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"
+                                } else if ("oppo".equals(Build.MANUFACTURER, ignoreCase = true)) {
+                                    intent.setComponent(
+                                        ComponentName(
+                                            "com.coloros.safecenter",
+                                            "com.coloros.safecenter.permission.startup.StartupAppListActivity"
+                                        )
                                     )
-                                )
-                                startActivity(intent)
+                                    startActivity(intent)
 
-                            } else if ("Letv".equals(Build.MANUFACTURER, ignoreCase = true)) {
-                                intent.setComponent(
-                                    ComponentName(
-                                        "com.letv.android.letvsafe",
-                                        "com.letv.android.letvsafe.AutobootManageActivity"
+                                } else if ("vivo".equals(Build.MANUFACTURER, ignoreCase = true)) {
+                                    intent.setComponent(
+                                        ComponentName(
+                                            "com.vivo.permissionmanager",
+                                            "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"
+                                        )
                                     )
-                                )
-                                startActivity(intent)
+                                    startActivity(intent)
 
-                            } else if ("Honor".equals(Build.MANUFACTURER, ignoreCase = true)) {
-                                intent.setComponent(
-                                    ComponentName(
-                                        "com.huawei.systemmanager",
-                                        "com.huawei.systemmanager.optimize.process.ProtectActivity"
+                                } else if ("Letv".equals(Build.MANUFACTURER, ignoreCase = true)) {
+                                    intent.setComponent(
+                                        ComponentName(
+                                            "com.letv.android.letvsafe",
+                                            "com.letv.android.letvsafe.AutobootManageActivity"
+                                        )
                                     )
-                                )
-                                startActivity(intent)
+                                    startActivity(intent)
 
-                            }else{
-                                Toast.makeText(context, "Not Required for all Phones", Toast.LENGTH_LONG).show()
-                            }
-                        } )
+                                } else if ("Honor".equals(Build.MANUFACTURER, ignoreCase = true)) {
+                                    intent.setComponent(
+                                        ComponentName(
+                                            "com.huawei.systemmanager",
+                                            "com.huawei.systemmanager.optimize.process.ProtectActivity"
+                                        )
+                                    )
+                                    startActivity(intent)
+
+                                }else{
+                                    Toast.makeText(context, "Not Required for all Phones", Toast.LENGTH_LONG).show()
+                                }
+                            } )
+                        }
+
+
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+
 
 
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+
 
 
                 /**
@@ -327,9 +372,60 @@ class FirstStartActivity : AppCompatActivity() {
                 }
 
 
+                if (Build.VERSION.SDK_INT > 33) {
+
+                    /**
+                     * Notification permission
+                     */
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .background(Color(android.graphics.Color.parseColor("#fff2f6")))
+                            .border(
+                                1.dp,
+                                Color(android.graphics.Color.parseColor("#ffd4e2")),
+                                shape = RoundedCornerShape(5)
+                            )
+
+                    ) {
+
+                        Text(
+                            text = "You should grant alarm permission ",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                        )
+
+                        if (scheduleAlarmPermissionGranted){
+                            Text(
+                                text = "Permission Granted",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                color = Color(parseColor("#007400")),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }else{
+                            SettingButton(name = "Schedule Alarm Permission", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                                if (Build.VERSION.SDK_INT > 33) {
+                                        getScheduleAlarmPermission();
+                                }
+                            } )
+                        }
 
 
-            }
+
+
+
+                    }
+
+                }
+
+
+
+
+
+                }
         }
     }
 

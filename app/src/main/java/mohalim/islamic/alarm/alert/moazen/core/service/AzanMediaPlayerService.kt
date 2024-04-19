@@ -139,8 +139,11 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private fun initMediaPlayer(rawId : Int) {
        try {
-           mediaPlayer?.reset()
-           mediaPlayer?.release()
+           if (mediaPlayer != null){
+               mediaPlayer?.reset()
+               mediaPlayer?.release()
+
+           }
 
            mediaPlayer = MediaPlayer()
            mediaPlayer?.setOnCompletionListener(this);

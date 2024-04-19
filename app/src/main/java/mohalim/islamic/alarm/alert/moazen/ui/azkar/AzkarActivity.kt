@@ -54,7 +54,6 @@ import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingButton
 @AndroidEntryPoint
 class AzkarActivity : AppCompatActivity() {
     private val viewModel : AzkarViewModel by viewModels()
-    var start = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,7 +132,7 @@ fun AzkarActivityUI(context: Context, viewModel: AzkarViewModel) {
                            Row(){
                                Image(painterResource(id = R.drawable.azkar_icon2), contentDescription = "azkar icon", Modifier.height(50.dp).width(50.dp))
                                Text(text = azkar[index].zekrString,  Modifier.weight(3f).padding(start = 10.dp, end = 10.dp).height(50.dp).wrapContentHeight(align = Alignment.CenterVertically),  textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                               Text(text = "${azkar[index].count}",  Modifier.weight(1f),  textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                               Text(text = "${azkar[index].count}",  Modifier.weight(1f).padding(start = 5.dp, end = 5.dp).height(50.dp).wrapContentHeight(align = Alignment.CenterVertically),  textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                            }
                        }
 

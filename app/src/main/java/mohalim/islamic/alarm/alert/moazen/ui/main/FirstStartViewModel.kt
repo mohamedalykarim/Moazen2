@@ -25,6 +25,9 @@ class FirstStartViewModel @Inject constructor(val dataStore: DataStore<Preferenc
     private val _notificationPermissionGranted = MutableStateFlow(false)
     val notificationPermissionGranted : StateFlow<Boolean> = _notificationPermissionGranted.asStateFlow()
 
+    private val _scheduleAlarmPermissionGranted = MutableStateFlow(false)
+    val scheduleAlarmPermissionGranted : StateFlow<Boolean> = _scheduleAlarmPermissionGranted.asStateFlow()
+
 
     fun setAutoStartPermissionGranted(boolean: Boolean){
         _autoStartPermissionGranted.value = boolean
@@ -32,6 +35,10 @@ class FirstStartViewModel @Inject constructor(val dataStore: DataStore<Preferenc
 
     fun setNotificationPermissionGranted(boolean: Boolean){
         _notificationPermissionGranted.value = boolean
+    }
+
+    fun setScheduleAlarmPermissionGranted(boolean: Boolean){
+        _scheduleAlarmPermissionGranted.value = boolean
     }
 
     fun addDefaultAzkar(){
