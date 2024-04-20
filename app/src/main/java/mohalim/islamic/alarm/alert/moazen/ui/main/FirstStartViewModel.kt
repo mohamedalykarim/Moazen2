@@ -44,12 +44,12 @@ class FirstStartViewModel @Inject constructor(val dataStore: DataStore<Preferenc
     fun addDefaultAzkar(){
         viewModelScope.launch {
             runBlocking { withContext(Dispatchers.IO){
-                azkarDao.addNew(AzkarEntity(null,"لا اله الا الله", 0))
-                azkarDao.addNew(AzkarEntity(null,"سبحان الله", 0))
-                azkarDao.addNew(AzkarEntity(null,"الحمدلله", 0))
-                azkarDao.addNew(AzkarEntity(null,"الله اكبر", 0))
-                azkarDao.addNew(AzkarEntity(null,"استغفر الله العظيم واتوب اليه", 0))
-                azkarDao.addNew(AzkarEntity(null,"سبحان الله وبحمده عدد خلقه ورضا نفسه ومداد كلماته", 0))
+                azkarDao.addNew(AzkarEntity(1,"لا اله الا الله", 0))
+                azkarDao.addNew(AzkarEntity(2,"سبحان الله", 0))
+                azkarDao.addNew(AzkarEntity(3,"الحمدلله", 0))
+                azkarDao.addNew(AzkarEntity(4,"الله اكبر", 0))
+                azkarDao.addNew(AzkarEntity(5,"استغفر الله العظيم واتوب اليه", 0))
+                azkarDao.addNew(AzkarEntity(6,"سبحان الله وبحمده عدد خلقه ورضا نفسه وزنة عرشه ومداد كلماته", 0))
             } }
         }
     }
