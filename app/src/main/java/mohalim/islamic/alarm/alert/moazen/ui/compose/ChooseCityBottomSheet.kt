@@ -63,7 +63,7 @@ fun ChooseCityBottomUIMainActivity(
                 CoroutineScope(Dispatchers.IO).launch {
 
                     /** Set Alarm for first time after choosing city **/
-                    AlarmUtils.setAlarmForFirstTime(context, "Luxor")
+                    AlarmUtils.setAlarmForFirstTime(context, "Luxor", dataStore)
                     PreferencesUtils.setIsFirstOpen(dataStore, false)
                     PreferencesUtils.setCurrentCityName(dataStore, "Luxor")
 
@@ -132,7 +132,7 @@ fun ChooseCityBottomUIMainActivity(
                             CoroutineScope(Dispatchers.IO).launch {
 
                                 /** Set Alarm for first time after choosing city **/
-                                AlarmUtils.setAlarmForFirstTime(context, city.name)
+                                AlarmUtils.setAlarmForFirstTime(context, city.name, dataStore)
                                 PreferencesUtils.setIsFirstOpen(dataStore, false)
                                 PreferencesUtils.setCurrentCityName(
                                     dataStore,
@@ -207,7 +207,7 @@ fun ChooseCityBottomUISettingActivity(
                 CoroutineScope(Dispatchers.IO).launch {
 
                     /** Set Alarm for first time after choosing city **/
-                    AlarmUtils.setAlarmForFirstTime(context, "Luxor")
+                    AlarmUtils.setAlarmForFirstTime(context, "Luxor", dataStore)
                     PreferencesUtils.setIsFirstOpen(dataStore, false)
                     PreferencesUtils.setCurrentCityName(dataStore, "Luxor")
 
@@ -276,7 +276,7 @@ fun ChooseCityBottomUISettingActivity(
                             CoroutineScope(Dispatchers.IO).launch {
 
                                 /** Set Alarm for first time after choosing city **/
-                                AlarmUtils.setAlarmForFirstTime(context, city.name)
+                                AlarmUtils.setAlarmForFirstTime(context, city.name, dataStore)
                                 PreferencesUtils.setIsFirstOpen(dataStore, false)
                                 PreferencesUtils.setCurrentCityName(
                                     dataStore,

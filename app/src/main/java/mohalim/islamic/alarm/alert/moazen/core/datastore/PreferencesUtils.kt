@@ -1,7 +1,6 @@
 package mohalim.islamic.alarm.alert.moazen.core.datastore
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -9,7 +8,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -42,6 +40,9 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
         val DEFAULT_AZAN_TYPE_ASR = intPreferencesKey("default_azan_type_asr")
         val DEFAULT_AZAN_TYPE_MAGHRIB = intPreferencesKey("default_azan_type_maghrib")
         val DEFAULT_AZAN_TYPE_ISHAA = intPreferencesKey("default_azan_type_ishaa")
+
+
+        val SUMMER_TIME = booleanPreferencesKey("summer_time")
 
 
         suspend fun setIsFirstOpen(dataStore: DataStore<Preferences>, isFirstOpen: Boolean){
@@ -350,6 +351,25 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             val performerId =  dataStore.data.first()[DEFAULT_AZAN_TYPE_ISHAA] ?: R.raw.hamdoon_hamady
             return performerId
         }
+
+        suspend fun setSummerTime(dataStore: DataStore<Preferences>, isSummerOn: Boolean){
+            dataStore.edit { settings ->
+                settings[SUMMER_TIME] = isSummerOn
+            }
+        }
+
+        fun observeSummerTime(dataStore: DataStore<Preferences>): Flow<Boolean> {
+            return dataStore.data
+                .map { preferences ->
+                    preferences[SUMMER_TIME] ?: false
+                }
+        }
+
+        suspend fun getSummerTime(dataStore: DataStore<Preferences>): Boolean {
+            val performerId =  dataStore.data.first()[SUMMER_TIME] ?: false
+            return performerId
+        }
+
 
     }
 

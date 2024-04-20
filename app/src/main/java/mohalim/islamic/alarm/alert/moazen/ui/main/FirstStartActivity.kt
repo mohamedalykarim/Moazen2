@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color.parseColor
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -46,6 +47,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
+import mohalim.islamic.alarm.alert.moazen.ui.compose.SummerTime
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingButton
 import java.util.Locale
 import javax.inject.Inject
@@ -74,32 +77,31 @@ class FirstStartActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        viewModel.observeSummerTime()
+        viewModel.observeIsFirstTimeOpen()
+
         if (isAutoStartPermissionGranted(this)){
             viewModel.setAutoStartPermissionGranted(true)
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            viewModel.setNotificationPermissionGranted(true)
         }
     }
 
     private val requestPermissionLauncherForNotificiationPermission =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            isGranted: Boolean ->
             if (isGranted) {
                 viewModel.setNotificationPermissionGranted(true)
-
             } else {
                 Toast.makeText(this, "You refused to grant the permission, please grant it from the setting so you can get the application notification", Toast.LENGTH_SHORT).show()
-            }
-        }
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivity(intent)
 
-    private val requestPermissionLauncherForScheduleAlarmPermission =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                viewModel.setScheduleAlarmPermissionGranted(true)
-
-            } else {
-                Toast.makeText(this, "You refused to grant the permission, please grant it from the setting so the app can work fine", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -108,25 +110,23 @@ class FirstStartActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT > 32) {
 
                 when {
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) == PackageManager.PERMISSION_GRANTED -> {
-                        // You can use the API that requires the permission.
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED -> {
+                        Log.d("TAG", "getNotificationPermission: 1")
+
                     }
-                    ActivityCompat.shouldShowRequestPermissionRationale(
-                        this, Manifest.permission.POST_NOTIFICATIONS) -> {
-                        // In an educational UI, explain to the user why your app requires this
-                        // permission for a specific feature to behave as expected, and what
-                        // features are disabled if it's declined. In this UI, include a
-                        // "cancel" or "no thanks" button that lets the user continue
-                        // using your app without granting the permission.
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS) -> {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        val uri = Uri.fromParts("package", packageName, null)
+                        intent.data = uri
+                        startActivity(intent)
+
                     }
                     else -> {
+                        Log.d("TAG", "getNotificationPermission: 3")
+
                         // You can directly ask for the permission.
                         // The registered ActivityResultCallback gets the result of this request.
-                        requestPermissionLauncherForNotificiationPermission.launch(
-                            Manifest.permission.POST_NOTIFICATIONS)
+                        requestPermissionLauncherForNotificiationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
                     }
                 }
             }
@@ -205,6 +205,9 @@ class FirstStartActivity : AppCompatActivity() {
         viewModel: FirstStartViewModel
     ) {
 
+        val summerTimeState by viewModel.summerTimeState.collectAsState()
+        val isFirstTimeOpen by viewModel.isFirstTimeOpen.collectAsState()
+
         val autoStartPermissionGranted by viewModel.autoStartPermissionGranted.collectAsState()
         val notificationPermissionGranted by viewModel.notificationPermissionGranted.collectAsState()
         val scheduleAlarmPermissionGranted by viewModel.scheduleAlarmPermissionGranted.collectAsState()
@@ -222,9 +225,21 @@ class FirstStartActivity : AppCompatActivity() {
             )
             Column(modifier = Modifier.fillMaxSize()) {
 
+
+                /**
+                 * Summer Time
+                 */
+
+                if (isFirstTimeOpen){
+                    SummerTime(dataStore = dataStore, summerTimeState = summerTimeState)
+                }
+
+
+                /**
+                 * Auto Start Permission
+                 */
                 if(manufacturer.contains("xiaomi") || manufacturer.contains("oppo") || manufacturer.contains("vivo")
                     || manufacturer.contains("letv") || manufacturer.contains("leeco") || manufacturer.contains("huawei")){
-
 
 
                     Column(
@@ -420,6 +435,7 @@ class FirstStartActivity : AppCompatActivity() {
                     }
 
                 }
+
 
 
 

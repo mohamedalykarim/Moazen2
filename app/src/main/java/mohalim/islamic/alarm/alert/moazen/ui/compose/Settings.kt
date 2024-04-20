@@ -2,9 +2,13 @@ package mohalim.islamic.alarm.alert.moazen.ui.compose
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +19,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,19 +38,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.service.AzanMediaPlayerService
 import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
+import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
+import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingButton
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingViewModel
 
 
@@ -324,7 +340,6 @@ fun AzanPerformerItem(
             }
 
 
-
         }
         .background(Color(android.graphics.Color.parseColor("#f5ceda")))
         .padding(5.dp)) {
@@ -374,4 +389,109 @@ fun AzanPerformerItem(
     }
 
 
+}
+
+
+@Composable
+fun SummerTime(dataStore: DataStore<Preferences>, summerTimeState : Boolean){
+
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .background(Color(android.graphics.Color.parseColor("#ffe7ee")))
+            .border(
+                1.dp,
+                Color(android.graphics.Color.parseColor("#6c0678")),
+                shape = RoundedCornerShape(7.dp)
+            )
+            .padding(8.dp)
+
+    ) {
+
+        Text(
+            modifier = Modifier
+                .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                .fillMaxWidth()
+                .wrapContentHeight(align = Alignment.CenterVertically),
+            text = "When summer time is on, Prayer times will add 60 minutes for every pray notification",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            textAlign = TextAlign.Start,
+            color = Color(android.graphics.Color.parseColor("#000000"))
+        )
+
+
+        Box (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, end = 10.dp)
+                .height(40.dp)
+
+                .clip(RoundedCornerShape(7.dp))
+                .background(
+                    Color(
+                        android.graphics.Color.parseColor("#66236e")
+                    )
+                )
+                .border(
+                    1.dp,
+                    Color(android.graphics.Color.parseColor("#4e1e54")),
+                    shape = RoundedCornerShape(7.dp)
+                )
+
+        ) {
+            Image(
+                modifier = Modifier.fillMaxWidth(),
+                painter = painterResource(id = R.drawable.transparent_bg),
+                contentScale = ContentScale.Crop,
+                contentDescription = ""
+            )
+
+            Row (modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .clickable {
+                    runBlocking {
+                        withContext(Dispatchers.IO){
+                            PreferencesUtils.setSummerTime(dataStore, !summerTimeState)
+                        }
+                    }
+                }
+            ) {
+
+                Checkbox(
+                    modifier = Modifier.height(40.dp),
+                    checked = summerTimeState,
+                    onCheckedChange = {
+                        runBlocking {
+                            withContext(Dispatchers.IO){
+                                PreferencesUtils.setSummerTime(dataStore, !summerTimeState)
+                            }
+                        }
+                    },
+                    colors = CheckboxDefaults.colors(uncheckedColor = Color.White)
+                )
+
+                Text(
+                    text = "Summer Time",
+                    modifier = Modifier
+                        .padding(end = 40.dp)
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .padding(4.dp)
+                        .wrapContentHeight(Alignment.CenterVertically),
+                    color = Color(android.graphics.Color.parseColor("#ffffff")),
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                )
+
+            }
+
+        }
+
+
+
+
+
+    }
 }

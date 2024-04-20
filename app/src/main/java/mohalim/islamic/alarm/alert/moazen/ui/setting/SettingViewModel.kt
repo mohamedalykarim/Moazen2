@@ -57,6 +57,16 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
     private val _preAzanPerformerIshaa = MutableStateFlow(0)
     val preAzanPerformerIshaa : StateFlow<Int> = _preAzanPerformerIshaa.asStateFlow()
 
+    private val _summerTimeState = MutableStateFlow(false)
+    val summerTimeState : StateFlow<Boolean> = _summerTimeState.asStateFlow()
+
+    fun observeSummerTime(){
+        viewModelScope.launch {
+            PreferencesUtils.observeSummerTime(dataStore).collect{
+                _summerTimeState.value = it
+            }
+        }
+    }
 
 
     suspend fun getCurrentCityName() {

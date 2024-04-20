@@ -2,6 +2,9 @@ package mohalim.islamic.alarm.alert.moazen.core.utils
 
 import android.content.Context
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.model.NextPray
 import org.json.JSONArray
 import org.json.JSONObject
@@ -10,7 +13,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.chrono.HijrahDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 
@@ -30,6 +32,8 @@ class TimesUtils {
                     calendar.timeInMillis = calendar.timeInMillis + millisecondsDifference
                 }
 
+
+
                 val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
                 val todayString: String = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + "-" + if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth
@@ -46,7 +50,9 @@ class TimesUtils {
 
         }
 
-        fun getNextPray(jsonArray : JSONArray, daysDifference: Int): NextPray? {
+        suspend fun getNextPray(jsonArray : JSONArray, daysDifference: Int, dataStore: DataStore<Preferences>): NextPray? {
+            val isSummerTimeOn = PreferencesUtils.getSummerTime(dataStore)
+
             var date = ""
             var nextDayDate = ""
             var azanType = ""
@@ -81,7 +87,7 @@ class TimesUtils {
             for (i in 0 until jsonArray.length()) {
                 date = "$year-$month-${day}T${jsonArray.get(i)}:00"
                 Log.d("TAG", "getNextPray1: "+date)
-                val dateCalendar = localDateTimeStringToCalender(date)
+                val dateCalendar = localDateTimeStringToCalender(date, isSummerTimeOn)
                 if (calendarToday.timeInMillis < dateCalendar.timeInMillis){
                     nextDayDate = "$year-$month-${day}T${jsonArray.get(i)}:00"
                     when (i) {
@@ -102,14 +108,14 @@ class TimesUtils {
             }
 
 
-            val nextCalendar =  localDateTimeStringToCalender(nextDayDate)
+            val nextCalendar =  localDateTimeStringToCalender(nextDayDate, isSummerTimeOn)
 
             val millisecondDifference = nextCalendar.timeInMillis - calendarToday.timeInMillis
 
             return NextPray(nextCalendar, azanType, millisecondDifference)
         }
 
-        fun localDateTimeStringToCalender(string : String): Calendar {
+        fun localDateTimeStringToCalender(string: String, isSummerTimeOn: Boolean): Calendar {
             val input = replaceArabicToEnglish(string)
             Log.d("TAG", "localDateTimeStringToCalender: "+input)
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
@@ -117,6 +123,10 @@ class TimesUtils {
             val millis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = millis
+
+            if (isSummerTimeOn) calendar.timeInMillis = calendar.timeInMillis + 60*60*1000
+
+
             return calendar
         }
 
@@ -179,7 +189,9 @@ class TimesUtils {
             return Triple(hoursString, minutesString, secondsString)
         }
 
-        fun getPrayersInTimeFormat(prayers : JSONArray): MutableList<String> {
+        suspend fun getPrayersInTimeFormat(prayers : JSONArray, dataStore: DataStore<Preferences>): MutableList<String> {
+            val isSummerTimeOn = PreferencesUtils.getSummerTime(dataStore)
+
             val calendar = Calendar.getInstance()
             val list : MutableList<String> = ArrayList()
             for (i in 0 until prayers.length()) {
@@ -190,6 +202,9 @@ class TimesUtils {
 
                 calendar.set(Calendar.HOUR_OF_DAY, hour)
                 calendar.set(Calendar.MINUTE, minute)
+
+                if (isSummerTimeOn) calendar.timeInMillis = calendar.timeInMillis + 60*60*1000
+
                 val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
                 list.add(formatter.format(calendar.time).replace("am", "AM").replace("pm", "PM"))
             }

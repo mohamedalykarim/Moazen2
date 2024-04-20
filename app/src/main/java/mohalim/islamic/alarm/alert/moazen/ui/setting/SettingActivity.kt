@@ -1,6 +1,7 @@
 package mohalim.islamic.alarm.alert.moazen.ui.setting
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color.parseColor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -64,6 +65,8 @@ import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseAzanPerformerUI
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseCityBottomUISettingActivity
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChoosePreAzanPerformerUI
+import mohalim.islamic.alarm.alert.moazen.ui.compose.SummerTime
+import mohalim.islamic.alarm.alert.moazen.ui.main.FirstStartActivity
 import java.util.Locale
 import javax.inject.Inject
 
@@ -75,6 +78,8 @@ class SettingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         setContent {
             SettingUI(this, viewModel, dataStore)
         }
@@ -82,6 +87,11 @@ class SettingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        viewModel.observeSummerTime()
+        viewModel.observeSummerTime()
+
+
         runBlocking {
             withContext(Dispatchers.IO){
                 viewModel.getCurrentCityName()
@@ -121,6 +131,8 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
     val preAzanPerformerAsr by viewModel.preAzanPerformerAsr.collectAsState()
     val preAzanPerformerMaghrib by viewModel.preAzanPerformerMaghrib.collectAsState()
     val preAzanPerformerIshaa by viewModel.preAzanPerformerIshaa.collectAsState()
+
+    val summerTimeState by viewModel.summerTimeState.collectAsState()
 
 
     var azanType by remember { mutableStateOf("") }
@@ -215,6 +227,11 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
 
             }
 
+
+            /**
+             *  Summer Time
+             */
+            SummerTime(dataStore = dataStore, summerTimeState)
 
             /**
              * Azan Performer
@@ -497,6 +514,47 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                 }
 
             }
+
+
+            /**
+             * Permission
+             */
+
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(Color(parseColor("#ffe7ee")))
+                    .border(
+                        1.dp,
+                        Color(parseColor("#6c0678")),
+                        shape = RoundedCornerShape(7.dp)
+                    )
+                    .padding(8.dp)
+
+            ) {
+                Column {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = "Required permissions for the application",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = Color(parseColor("#000000"))
+                    )
+
+                    SettingButton(name = "Permissions", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                        context.startActivity(Intent(context, FirstStartActivity::class.java))
+                    })
+
+                }
+
+            }
+
+
+
 
 
 

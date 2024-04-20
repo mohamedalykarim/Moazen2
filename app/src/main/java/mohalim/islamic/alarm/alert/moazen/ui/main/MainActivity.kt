@@ -95,8 +95,10 @@ class MainActivity : AppCompatActivity() {
 
         runBlocking {
             withContext(Dispatchers.IO) {
+                val isSummerTimeOn = PreferencesUtils.getSummerTime(dataStore)
+
                 viewModel.checkIfFirstOpen(this@MainActivity)
-                viewModel.getCurrentCityName(this@MainActivity)
+                viewModel.getCurrentCityName(this@MainActivity, isSummerTimeOn)
                 viewModel.observeIsFagrAlertsWorks()
                 viewModel.observeIsDuhurAlertsWorks()
                 viewModel.observeIsAsrAlertsWorks()

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.room.dao.AzkarDao
 import mohalim.islamic.alarm.alert.moazen.core.room.entity.AzkarEntity
 import javax.inject.Inject
@@ -28,6 +29,28 @@ class FirstStartViewModel @Inject constructor(val dataStore: DataStore<Preferenc
     private val _scheduleAlarmPermissionGranted = MutableStateFlow(false)
     val scheduleAlarmPermissionGranted : StateFlow<Boolean> = _scheduleAlarmPermissionGranted.asStateFlow()
 
+    private val _summerTimeState = MutableStateFlow(false)
+    val summerTimeState : StateFlow<Boolean> = _summerTimeState.asStateFlow()
+
+    private val _isFirstTimeOpen = MutableStateFlow(false)
+    val isFirstTimeOpen : StateFlow<Boolean> = _isFirstTimeOpen.asStateFlow()
+
+
+    fun observeSummerTime(){
+        viewModelScope.launch {
+            PreferencesUtils.observeSummerTime(dataStore).collect{
+                _summerTimeState.value = it
+            }
+        }
+    }
+
+    fun observeIsFirstTimeOpen(){
+        viewModelScope.launch {
+            PreferencesUtils.observeIsFirstOpen(dataStore).collect{
+                _isFirstTimeOpen.value = it
+            }
+        }
+    }
 
     fun setAutoStartPermissionGranted(boolean: Boolean){
         _autoStartPermissionGranted.value = boolean

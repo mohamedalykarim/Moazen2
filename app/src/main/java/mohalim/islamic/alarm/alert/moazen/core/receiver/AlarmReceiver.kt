@@ -23,6 +23,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val azanType = intent?.getStringExtra("AZAN_TYPE") ?: return
+
         when(azanType){
             Constants.AZAN_TYPE_PRE_FAGR ->{
                 CoroutineScope(Dispatchers.IO).launch {
@@ -163,7 +164,7 @@ class AlarmReceiver : BroadcastReceiver() {
             Constants.RESERVE_ALL_TIMES ->{
                 if (context != null) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        AlarmUtils.setAlarms(context, PreferencesUtils.getCurrentCityName(dataStore))
+                        AlarmUtils.setAlarms(context, PreferencesUtils.getCurrentCityName(dataStore), dataStore)
                     }
                 }
 

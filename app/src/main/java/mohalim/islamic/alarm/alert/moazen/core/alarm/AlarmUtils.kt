@@ -5,7 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.compose.ui.unit.Constraints
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.receiver.AlarmReceiver
 import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
@@ -83,11 +85,13 @@ class AlarmUtils {
         }
 
 
-        fun setAlarmForFirstTime(context: Context, cityName: String){
-            setAlarms(context, cityName)
+        suspend fun setAlarmForFirstTime(context: Context, cityName: String, dataStore : DataStore<Preferences>){
+            setAlarms(context, cityName, dataStore)
         }
 
-        fun setAlarms(context: Context, cityName: String){
+        suspend fun setAlarms(context: Context, cityName: String, dataStore : DataStore<Preferences>){
+            val isSummerTimeOn = PreferencesUtils.getSummerTime(dataStore)
+
             try {
                 context.resources.assets.open("$cityName.json").bufferedReader().use {
                     val jsonString = it.readText()
@@ -113,7 +117,7 @@ class AlarmUtils {
                              * Examle of date 2007-12-03T10:15:30:55.000000.
                              * **/
                             var localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(0).toString())
-                            var calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+                            var calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString, isSummerTimeOn)
 
                             if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
                                 setAlarm(context, Constants.AZAN_TYPE_FAGR, localDateString)
@@ -125,7 +129,10 @@ class AlarmUtils {
                             }
 
                             localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(2).toString())
-                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(
+                                localDateString,
+                                isSummerTimeOn
+                            )
 
                             if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
                                 setAlarm(context, Constants.AZAN_TYPE_ZOHR, localDateString)
@@ -137,7 +144,10 @@ class AlarmUtils {
                             }
 
                             localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(3).toString())
-                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(
+                                localDateString,
+                                isSummerTimeOn
+                            )
 
                             if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
                                 setAlarm(context, Constants.AZAN_TYPE_ASR, localDateString)
@@ -150,7 +160,10 @@ class AlarmUtils {
                             }
 
                             localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(5).toString())
-                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(
+                                localDateString,
+                                isSummerTimeOn
+                            )
 
                             if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
                                 setAlarm(context, Constants.AZAN_TYPE_MAGHREB, localDateString)
@@ -163,7 +176,10 @@ class AlarmUtils {
                             }
 
                             localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(6).toString())
-                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(
+                                localDateString,
+                                isSummerTimeOn
+                            )
 
                             if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
                                 setAlarm(context, Constants.AZAN_TYPE_ESHA, localDateString)

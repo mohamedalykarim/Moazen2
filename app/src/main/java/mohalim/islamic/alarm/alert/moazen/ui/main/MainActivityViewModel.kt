@@ -1,16 +1,8 @@
 package mohalim.islamic.alarm.alert.moazen.ui.main
 
-import android.Manifest
-import android.app.Activity
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.CountDownTimer
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
@@ -157,21 +149,21 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
         }
     }
 
-    suspend fun getCurrentCityName(context : Context){
+    suspend fun getCurrentCityName(context : Context, isSummerTimeOn: Boolean){
         viewModelScope.launch {
             PreferencesUtils.observeCurrentCityName(dataStore).collect{
                 if (it != ""){
                     _currentCity.value = it
                     var praysForToday = TimesUtils.getPraysForToday(context, it, 0)
-                    var nextPray: NextPray? = TimesUtils.getNextPray(praysForToday, 0)
+                    var nextPray: NextPray? = TimesUtils.getNextPray(praysForToday, 0, dataStore)
 
                     if (nextPray == null){
                         praysForToday = TimesUtils.getPraysForToday(context, it, 1)
-                        nextPray = TimesUtils.getNextPray(praysForToday, 1)
+                        nextPray = TimesUtils.getNextPray(praysForToday, 1, dataStore)
                         _isNextDay.value = true
                     }
 
-                    _prayersForToday.value = TimesUtils.getPrayersInTimeFormat(praysForToday)
+                    _prayersForToday.value = TimesUtils.getPrayersInTimeFormat(praysForToday, dataStore)
 
                     _nextPrayerType.value = nextPray!!.azanType
 
@@ -191,7 +183,7 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                             _timer.value = "00:00:00"
                             viewModelScope.launch {
                                 withContext(Dispatchers.IO){
-                                    getCurrentCityName(context)
+                                    getCurrentCityName(context, isSummerTimeOn)
                                 }
                             }
                         }
@@ -223,8 +215,15 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     val dateSunrise = "$year-$month-${day}T${sunriseString}:00"
                     val dateSunset = "$year-$month-${day}T${sunsetString}:00"
 
-                    val calendarSunrise = TimesUtils.localDateTimeStringToCalender(dateSunrise)
-                    val calendarSunset = TimesUtils.localDateTimeStringToCalender(dateSunset)
+
+                    val calendarSunrise = TimesUtils.localDateTimeStringToCalender(
+                        dateSunrise,
+                        isSummerTimeOn
+                    )
+                    val calendarSunset = TimesUtils.localDateTimeStringToCalender(
+                        dateSunset,
+                        isSummerTimeOn
+                    )
                     calendarSunset.timeInMillis = calendarSunset.timeInMillis + 12*60*60*1000
 
                     val millisecondDifference = calendarSunset.timeInMillis - calendarSunrise.timeInMillis
