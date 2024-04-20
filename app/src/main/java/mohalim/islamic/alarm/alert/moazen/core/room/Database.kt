@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import mohalim.islamic.alarm.alert.moazen.core.room.dao.AzkarDao
 import mohalim.islamic.alarm.alert.moazen.core.room.entity.AzkarEntity
 
-@Database(entities = [AzkarEntity::class], version = 1, exportSchema = false)
+@Database(entities = [AzkarEntity::class], version = 2, exportSchema = false)
 abstract class Database : RoomDatabase() {
     abstract fun azkarDao() : AzkarDao
 
