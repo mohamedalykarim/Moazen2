@@ -1,6 +1,5 @@
 package mohalim.islamic.alarm.alert.moazen.ui.azkar
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
@@ -29,16 +28,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -61,12 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import mohalim.islamic.alarm.alert.moazen.R
-import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
-import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.room.entity.AzkarEntity
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingButton
 
@@ -77,7 +65,7 @@ class AzkarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AzkarActivityUI(this@AzkarActivity, viewModel)
+            AzkarActivityUI(viewModel)
         }
 
 
@@ -107,7 +95,7 @@ class AzkarActivity : AppCompatActivity() {
 
 
 @Composable
-fun AzkarActivityUI(context: Context, viewModel: AzkarViewModel) {
+fun AzkarActivityUI(viewModel: AzkarViewModel) {
     val currentZekr by viewModel.currentZekr.collectAsState()
     val azkar by viewModel.azkar.collectAsState()
     val showAddZekrSheet by viewModel.showAddZekrSheet.collectAsState()
@@ -151,7 +139,7 @@ fun AzkarActivityUI(context: Context, viewModel: AzkarViewModel) {
                                }
 
                        ) {
-                           Row(){
+                           Row{
                                Image(painterResource(id = R.drawable.azkar_icon2), contentDescription = "azkar icon",
                                    Modifier
                                        .padding(top=5.dp, bottom = 5.dp)
@@ -376,7 +364,7 @@ fun Sebha(viewModel: AzkarViewModel, currentZekr: AzkarEntity, resetSebha: Boole
     var index by remember { mutableIntStateOf(1) }
 
 
-    var atEnd by remember { mutableStateOf(false) }
+    val atEnd by remember { mutableStateOf(false) }
     val interaction = remember { MutableInteractionSource() }
 
     if (resetSebha){
@@ -387,10 +375,10 @@ fun Sebha(viewModel: AzkarViewModel, currentZekr: AzkarEntity, resetSebha: Boole
         atEnd13 = false; atEnd14 = false; atEnd15 = false; atEnd16 =
             false; atEnd17 = false; atEnd18 = false; atEnd19 =
             false; atEnd20 = false; atEnd21 = false; atEnd22 =
-            false; atEnd23 = false; atEnd24 = false;
+            false; atEnd23 = false; atEnd24 = false
         atEnd25 = false; atEnd26 = false; atEnd27 = false; atEnd28 =
             false; atEnd29 = false; atEnd30 = false; atEnd31 =
-            false; atEnd32 = false;atEnd33 = false;
+            false; atEnd32 = false;atEnd33 = false
 
         index = 1
 
@@ -454,10 +442,10 @@ fun Sebha(viewModel: AzkarViewModel, currentZekr: AzkarEntity, resetSebha: Boole
                                 atEnd13 = false; atEnd14 = false; atEnd15 = false; atEnd16 =
                                     false; atEnd17 = false; atEnd18 = false; atEnd19 =
                                     false; atEnd20 = false; atEnd21 = false; atEnd22 =
-                                    false; atEnd23 = false; atEnd24 = false;
+                                    false; atEnd23 = false; atEnd24 = false
                                 atEnd25 = false; atEnd26 = false; atEnd27 = false; atEnd28 =
                                     false; atEnd29 = false; atEnd30 = false; atEnd31 =
-                                    false; atEnd32 = false;atEnd33 = false;
+                                    false; atEnd32 = false;atEnd33 = false
 
                                 index = 1
                             }
