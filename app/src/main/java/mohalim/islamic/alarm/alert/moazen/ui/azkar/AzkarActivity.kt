@@ -152,10 +152,11 @@ fun AzkarActivityUI(context: Context, viewModel: AzkarViewModel) {
 
                        ) {
                            Row(){
-                               Image(painterResource(id = R.drawable.azkar_icon), contentDescription = "azkar icon",
+                               Image(painterResource(id = R.drawable.azkar_icon2), contentDescription = "azkar icon",
                                    Modifier
-                                       .height(50.dp)
-                                       .width(50.dp))
+                                       .padding(top=5.dp, bottom = 5.dp)
+                                       .height(40.dp)
+                                       .width(40.dp))
                                Text(text = azkar[index].zekrString,
                                    Modifier
                                        .weight(3f)
