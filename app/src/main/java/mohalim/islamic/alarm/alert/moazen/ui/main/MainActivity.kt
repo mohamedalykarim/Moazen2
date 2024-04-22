@@ -72,6 +72,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
+
     @Inject
     lateinit var dataStore: DataStore<Preferences>
 
@@ -97,9 +98,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     else ->{
-                        PreferencesUtils.setIsFirstOpen(dataStore, true)
-                        PreferencesUtils.setLastVersion(dataStore, versionCode)
-                        viewModel.isAppIntiatedbefore = true
+                        viewModel.addDefaultAzkar()
                     }
                 }
 

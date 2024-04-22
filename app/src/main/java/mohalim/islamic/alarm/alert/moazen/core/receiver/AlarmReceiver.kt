@@ -1,14 +1,23 @@
 package mohalim.islamic.alarm.alert.moazen.core.receiver
 
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.service.AzanMediaPlayerService
@@ -161,6 +170,38 @@ class AlarmReceiver : BroadcastReceiver() {
 
             }
 
+            Constants.ALKAHF_READ_REMINDER->{
+
+
+                val name = "NotificationChannelName"
+                val descriptionText = "NotificationChannelDescription"
+                val importance = NotificationManager.IMPORTANCE_HIGH
+                val mChannel = NotificationChannel("moazenNotificationChannnel", name, importance)
+                mChannel.description = descriptionText
+                // Register the channel with the system. You can't change the importance
+                // or other notification behaviors after this.
+                val notificationManager = context!!.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.createNotificationChannel(mChannel)
+
+                if(notificationManager.areNotificationsEnabled()){
+                    val notification = NotificationCompat.Builder(context, "moazenNotificationChannnel")
+                        .setSmallIcon(R.drawable.ic_masjed_icon)
+                        .setContentTitle("Suruh AL_KAHF REMINDER")
+                        .setContentText("Its Friday Morining, Could you please read Suruh Al-Kahf")
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setAutoCancel(true)
+                        .build()
+
+                    if(ContextCompat.checkSelfPermission( context,android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+                        NotificationManagerCompat.from(context).notify(Constants.ALARM_ID_ALKAHF_REMINDER, notification)
+                    }
+
+                }
+
+
+
+            }
+
             Constants.RESERVE_ALL_TIMES ->{
                 if (context != null) {
                     CoroutineScope(Dispatchers.IO).launch {
@@ -169,6 +210,8 @@ class AlarmReceiver : BroadcastReceiver() {
                 }
 
             }
+
+
         }
 
     }

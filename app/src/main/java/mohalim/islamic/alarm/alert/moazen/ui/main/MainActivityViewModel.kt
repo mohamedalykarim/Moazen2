@@ -13,10 +13,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.model.NextPray
+import mohalim.islamic.alarm.alert.moazen.core.room.dao.AzkarDao
+import mohalim.islamic.alarm.alert.moazen.core.room.entity.AzkarEntity
 import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import java.util.Calendar
@@ -24,7 +27,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Preferences>) : ViewModel() {
+class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Preferences>, val azkarDao: AzkarDao) : ViewModel() {
     private val _showCityBottomSheet = MutableStateFlow(false)
     val showCityBottomSheet : StateFlow<Boolean> = _showCityBottomSheet.asStateFlow()
 
@@ -69,9 +72,6 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
 
     private lateinit var countDownTimer: CountDownTimer
-
-    var isAppIntiatedbefore = false
-
 
     fun setShowCityBottomSheet(value : Boolean){
         _showCityBottomSheet.value = value
@@ -144,7 +144,7 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
     suspend fun checkIfFirstOpen(context: Context) {
         viewModelScope.launch {
             PreferencesUtils.observeIsFirstOpen(dataStore).collect{isFirstOpen ->
-                if (isFirstOpen && !isAppIntiatedbefore){
+                if (isFirstOpen){
                     setShowCityBottomSheet(true)
                 }
             }
@@ -266,6 +266,21 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
     fun stopCounter(){
         if (this::countDownTimer.isInitialized) countDownTimer.cancel()
+    }
+
+    fun addDefaultAzkar(){
+        viewModelScope.launch {
+            runBlocking { withContext(Dispatchers.IO){
+                azkarDao.addNew(AzkarEntity(1,"لا اله الا الله", 0))
+                azkarDao.addNew(AzkarEntity(2,"سبحان الله", 0))
+                azkarDao.addNew(AzkarEntity(3,"الحمدلله", 0))
+                azkarDao.addNew(AzkarEntity(4,"الله اكبر", 0))
+                azkarDao.addNew(AzkarEntity(5,"اللهم صلي علي محمد", 0))
+                azkarDao.addNew(AzkarEntity(6,"استغفر الله العظيم واتوب اليه", 0))
+                azkarDao.addNew(AzkarEntity(7,"سبحان الله وبحمده عدد خلقه ورضا نفسه وزنة عرشه ومداد كلماته", 0))
+                azkarDao.addNew(AzkarEntity(8,"لا حول ولا قوة الا بالله", 0))
+            } }
+        }
     }
 
 

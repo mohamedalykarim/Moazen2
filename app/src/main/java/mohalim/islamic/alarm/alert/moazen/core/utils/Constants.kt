@@ -3,6 +3,8 @@ package mohalim.islamic.alarm.alert.moazen.core.utils
 class Constants {
 
     companion object{
+        val ALARM_ID_ALKAHF_REMINDER: Int = 26141001
+
         const val RESERVE_ALL_TIMES = "RESERVE_ALL_TIMES"
 
         const val AZAN_TYPE_PRE_FAGR = "AZAN_TYPE_PRE_FAGR"
@@ -16,6 +18,9 @@ class Constants {
         const val AZAN_TYPE_ASR = "AZAN_TYPE_ASR"
         const val AZAN_TYPE_MAGHREB = "AZAN_TYPE_MAGHREB"
         const val AZAN_TYPE_ESHA = "AZAN_TYPE_ESHA"
+
+        val ALKAHF_READ_REMINDER = "alkahf_read_reminder"
+
 
         const val AZAN_TYPE_PLAY_SOUND = "AZAN_TYPE_PLAY_SOUND"
         const val AZAN_TYPE_STOP_SOUND = "AZAN_TYPE_STOP_SOUND"

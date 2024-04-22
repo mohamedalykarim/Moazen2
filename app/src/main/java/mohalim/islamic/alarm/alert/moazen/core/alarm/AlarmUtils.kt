@@ -209,6 +209,34 @@ class AlarmUtils {
 
                 }
 
+
+                /**
+                 * Friday Notification
+                 */
+
+                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val intent = Intent(context, AlarmReceiver::class.java).apply {
+                    putExtra("AZAN_TYPE", Constants.ALKAHF_READ_REMINDER)
+                }
+
+                val calendar = Calendar.getInstance()
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
+                calendar.set(Calendar.HOUR_OF_DAY, 10)
+                calendar.set(Calendar.MINUTE, 0)
+                calendar.set(Calendar.SECOND, 0)
+
+                alarmManager.setRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    AlarmManager.INTERVAL_DAY * 7,
+                    PendingIntent.getBroadcast(
+                        context,
+                        Constants.ALARM_ID_ALKAHF_REMINDER,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
+
             }catch (exception : Exception){
                 Log.d("TAG", "setAlarmForFirstTime: "+ exception.message)
             }
