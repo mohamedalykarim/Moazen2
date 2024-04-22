@@ -70,6 +70,8 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
     private lateinit var countDownTimer: CountDownTimer
 
+    var isAppIntiatedbefore = false
+
 
     fun setShowCityBottomSheet(value : Boolean){
         _showCityBottomSheet.value = value
@@ -142,7 +144,7 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
     suspend fun checkIfFirstOpen(context: Context) {
         viewModelScope.launch {
             PreferencesUtils.observeIsFirstOpen(dataStore).collect{isFirstOpen ->
-                if (isFirstOpen){
+                if (isFirstOpen && !isAppIntiatedbefore){
                     setShowCityBottomSheet(true)
                 }
             }

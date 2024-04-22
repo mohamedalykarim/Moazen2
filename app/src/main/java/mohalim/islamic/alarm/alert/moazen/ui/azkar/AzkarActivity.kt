@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +29,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,13 +53,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
+import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.room.entity.AzkarEntity
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingButton
 
@@ -91,8 +110,10 @@ class AzkarActivity : AppCompatActivity() {
 fun AzkarActivityUI(context: Context, viewModel: AzkarViewModel) {
     val currentZekr by viewModel.currentZekr.collectAsState()
     val azkar by viewModel.azkar.collectAsState()
+    val showAddZekrSheet by viewModel.showAddZekrSheet.collectAsState()
 
     var resetSebha by remember { mutableStateOf(false) }
+
 
     Box(
         modifier = Modifier
@@ -105,11 +126,12 @@ fun AzkarActivityUI(context: Context, viewModel: AzkarViewModel) {
             contentScale = ContentScale.Crop,
             contentDescription = ""
         )
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
 
            if (currentZekr == null){
+
                viewModel.getAllAzkarFromRoom()
-               LazyColumn {
+               LazyColumn(modifier = Modifier.padding(bottom = 10.dp).weight(1f, false)) {
                    items(azkar.size){index ->
 
                        Column(
@@ -130,14 +152,36 @@ fun AzkarActivityUI(context: Context, viewModel: AzkarViewModel) {
 
                        ) {
                            Row(){
-                               Image(painterResource(id = R.drawable.azkar_icon2), contentDescription = "azkar icon", Modifier.height(50.dp).width(50.dp))
-                               Text(text = azkar[index].zekrString,  Modifier.weight(3f).padding(start = 10.dp, end = 10.dp).height(50.dp).wrapContentHeight(align = Alignment.CenterVertically),  textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                               Text(text = "${azkar[index].count}",  Modifier.weight(1f).padding(start = 5.dp, end = 5.dp).height(50.dp).wrapContentHeight(align = Alignment.CenterVertically),  textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                               Image(painterResource(id = R.drawable.azkar_icon), contentDescription = "azkar icon",
+                                   Modifier
+                                       .height(50.dp)
+                                       .width(50.dp))
+                               Text(text = azkar[index].zekrString,
+                                   Modifier
+                                       .weight(3f)
+                                       .padding(start = 10.dp, end = 10.dp)
+                                       .height(50.dp)
+                                       .wrapContentHeight(align = Alignment.CenterVertically),  textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                               Text(text = "${azkar[index].count}",
+                                   Modifier
+                                       .weight(1f)
+                                       .padding(start = 5.dp, end = 5.dp)
+                                       .height(50.dp)
+                                       .wrapContentHeight(align = Alignment.CenterVertically),  textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                            }
                        }
 
                    }
                }
+
+               Column(modifier = Modifier.height(40.dp)) {
+                   SettingButton(name = "Add New", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                       viewModel.setShowAddZekrSheet(true)
+                   })
+               }
+
+
+
                
            }else{
                Column (
@@ -188,8 +232,71 @@ fun AzkarActivityUI(context: Context, viewModel: AzkarViewModel) {
 
            }
 
+            if (showAddZekrSheet){
+                AddNewZekrBottomSheet(viewModel = viewModel)
+            }
+
         }
+
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddNewZekrBottomSheet(viewModel: AzkarViewModel){
+    val sheetState = rememberModalBottomSheetState()
+    val zekrString = remember { mutableStateOf(TextFieldValue("")) }
+
+
+
+    ModalBottomSheet(
+        modifier = Modifier.padding(10.dp),
+        onDismissRequest = {
+            viewModel.setShowAddZekrSheet(false)
+        },
+        sheetState = sheetState
+    ) {
+
+        Text(
+            "Add New zekr", modifier = Modifier
+                .padding(0.dp, 0.dp, 0.dp, 16.dp)
+                .fillMaxWidth(), textAlign = TextAlign.Center
+        )
+
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .padding(start = 8.dp, end = 8.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(android.graphics.Color.parseColor("#f5ceda")),
+                unfocusedBorderColor = Color(android.graphics.Color.parseColor("#f5ceda")),
+            ),
+            placeholder = {
+                Text("Type zekr here", fontSize = 12.sp, color = Color(android.graphics.Color.parseColor("#b5b5b5")))
+            },
+            textStyle = TextStyle.Default.copy(fontSize = 12.sp),
+
+            value = zekrString.value,
+            onValueChange = { value ->
+                zekrString.value = value
+            }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        SettingButton(name = "Add new", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+            viewModel.addNewZekr(zekrString.value.text)
+            viewModel.getAllAzkarFromRoom()
+            viewModel.setShowAddZekrSheet(false)
+
+        } )
+
+        Spacer(modifier = Modifier.height(50.dp))
+
+    }
+
+
 }
 
 @OptIn(ExperimentalAnimationGraphicsApi::class)

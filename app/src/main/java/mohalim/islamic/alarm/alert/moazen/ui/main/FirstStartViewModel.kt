@@ -71,8 +71,10 @@ class FirstStartViewModel @Inject constructor(val dataStore: DataStore<Preferenc
                 azkarDao.addNew(AzkarEntity(2,"سبحان الله", 0))
                 azkarDao.addNew(AzkarEntity(3,"الحمدلله", 0))
                 azkarDao.addNew(AzkarEntity(4,"الله اكبر", 0))
-                azkarDao.addNew(AzkarEntity(5,"استغفر الله العظيم واتوب اليه", 0))
-                azkarDao.addNew(AzkarEntity(6,"سبحان الله وبحمده عدد خلقه ورضا نفسه وزنة عرشه ومداد كلماته", 0))
+                azkarDao.addNew(AzkarEntity(5,"اللهم صلي علي محمد", 0))
+                azkarDao.addNew(AzkarEntity(6,"استغفر الله العظيم واتوب اليه", 0))
+                azkarDao.addNew(AzkarEntity(7,"سبحان الله وبحمده عدد خلقه ورضا نفسه وزنة عرشه ومداد كلماته", 0))
+                azkarDao.addNew(AzkarEntity(8,"لا حول ولا قوة الا بالله", 0))
             } }
         }
     }

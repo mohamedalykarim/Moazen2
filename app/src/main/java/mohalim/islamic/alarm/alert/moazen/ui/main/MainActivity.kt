@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color.parseColor
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -54,6 +55,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import mohalim.islamic.alarm.alert.moazen.BuildConfig
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
@@ -73,11 +75,35 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var dataStore: DataStore<Preferences>
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
         runBlocking {
             withContext(Dispatchers.IO){
+
+                val versionCode = BuildConfig.VERSION_CODE
+                when(PreferencesUtils.getLastVersion(dataStore)){
+                    0->{
+                        PreferencesUtils.setIsFirstOpen(dataStore, true)
+                        PreferencesUtils.setLastVersion(dataStore, versionCode)
+                    }
+
+                    versionCode->{
+                        Log.d("TAG", "onCreate: else versionCode :"+versionCode)
+                        Log.d("TAG", "onCreate: else pref versionCode"+PreferencesUtils.getLastVersion(dataStore))
+                    }
+
+                    else ->{
+                        PreferencesUtils.setIsFirstOpen(dataStore, true)
+                        PreferencesUtils.setLastVersion(dataStore, versionCode)
+                        viewModel.isAppIntiatedbefore = true
+                    }
+                }
+
+
                 if (PreferencesUtils.getIsFirstOpen(dataStore)){
                     startActivity(Intent(this@MainActivity, FirstStartActivity::class.java))
                 }

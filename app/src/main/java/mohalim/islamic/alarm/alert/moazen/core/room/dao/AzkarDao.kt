@@ -12,7 +12,7 @@ interface AzkarDao {
     fun getAll() : List<AzkarEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addNew(azkarEntity: AzkarEntity)
+    fun addNew(azkarEntity: AzkarEntity): Long
 
 
     @Query("UPDATE azkar SET count = :count WHERE id = :id")

@@ -41,6 +41,8 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
         val DEFAULT_AZAN_TYPE_MAGHRIB = intPreferencesKey("default_azan_type_maghrib")
         val DEFAULT_AZAN_TYPE_ISHAA = intPreferencesKey("default_azan_type_ishaa")
 
+        val LAST_VERSION = intPreferencesKey("last_version")
+
 
         val SUMMER_TIME = booleanPreferencesKey("summer_time")
 
@@ -369,6 +371,19 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
             val performerId =  dataStore.data.first()[SUMMER_TIME] ?: false
             return performerId
         }
+
+        suspend fun setLastVersion(dataStore: DataStore<Preferences>, version: Int){
+            dataStore.edit { settings ->
+                settings[LAST_VERSION] = version
+            }
+        }
+
+        suspend fun getLastVersion(dataStore: DataStore<Preferences>): Int {
+            val lastVersion =  dataStore.data.first()[LAST_VERSION] ?: 0
+            return lastVersion
+        }
+
+
 
 
     }

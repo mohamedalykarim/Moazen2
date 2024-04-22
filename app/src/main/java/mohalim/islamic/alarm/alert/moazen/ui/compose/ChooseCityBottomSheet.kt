@@ -79,9 +79,6 @@ fun ChooseCityBottomUIMainActivity(
                 .fillMaxWidth(), textAlign = TextAlign.Center
         )
 
-        /**
-         * Search for city
-         */
 
         /**
          * Search for city

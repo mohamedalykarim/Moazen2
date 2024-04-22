@@ -18,6 +18,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AzkarViewModel @Inject constructor(val azkarDao: AzkarDao) : ViewModel(){
+    private val _showAddZekrSheet = MutableStateFlow(false)
+    val showAddZekrSheet : StateFlow<Boolean> = _showAddZekrSheet.asStateFlow()
+
+
     private val _currentZekr = MutableStateFlow<AzkarEntity?>(null)
     val currentZekr : StateFlow<AzkarEntity?> = _currentZekr.asStateFlow()
 
@@ -29,6 +33,9 @@ class AzkarViewModel @Inject constructor(val azkarDao: AzkarDao) : ViewModel(){
     private val _count = MutableStateFlow(0)
     val count : StateFlow<Int> = _count.asStateFlow()
 
+    fun setShowAddZekrSheet(isVisible: Boolean){
+        _showAddZekrSheet.value = isVisible
+    }
 
     fun setCurrentZekr(azkarEntity: AzkarEntity?){
         _currentZekr.value = azkarEntity
@@ -87,6 +94,22 @@ class AzkarViewModel @Inject constructor(val azkarDao: AzkarDao) : ViewModel(){
             }
         }
 
+    }
+
+    fun addNewZekr(zekrString: String) {
+        viewModelScope.launch {
+            runBlocking {
+                withContext(Dispatchers.IO){
+                    try {
+                        val zekr = AzkarEntity(null, zekrString, 0)
+                        val newId = azkarDao.addNew(zekr)
+                        zekr.id = newId.toInt()
+                        allAzkarlist.add(zekr)
+                    }catch (ex: Exception){
+                    }
+                }
+            }
+        }
     }
 
 }
