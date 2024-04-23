@@ -231,7 +231,7 @@ class FirstStartActivity : AppCompatActivity() {
                  */
 
                 if (isFirstTimeOpen){
-                    SummerTime(dataStore = dataStore, summerTimeState = summerTimeState)
+                    SummerTime(context, dataStore = dataStore, summerTimeState = summerTimeState)
                 }
 
 

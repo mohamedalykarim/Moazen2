@@ -231,7 +231,7 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
             /**
              *  Summer Time
              */
-            SummerTime(dataStore = dataStore, summerTimeState)
+            SummerTime(context, dataStore = dataStore, summerTimeState)
 
             /**
              * Azan Performer

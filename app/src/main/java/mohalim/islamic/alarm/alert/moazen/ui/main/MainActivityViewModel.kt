@@ -218,14 +218,9 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     val dateSunset = "$year-$month-${day}T${sunsetString}:00"
 
 
-                    val calendarSunrise = TimesUtils.localDateTimeStringToCalender(
-                        dateSunrise,
-                        isSummerTimeOn
-                    )
-                    val calendarSunset = TimesUtils.localDateTimeStringToCalender(
-                        dateSunset,
-                        isSummerTimeOn
-                    )
+                    val calendarSunrise = TimesUtils.localDateTimeStringToCalender(dateSunrise)
+                    val calendarSunset = TimesUtils.localDateTimeStringToCalender(dateSunset)
+
                     calendarSunset.timeInMillis = calendarSunset.timeInMillis + 12*60*60*1000
 
                     val millisecondDifference = calendarSunset.timeInMillis - calendarSunrise.timeInMillis
@@ -239,8 +234,8 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     repeat(24) {
                         if (count == 24) count = 0
                         var localDateString = if (count < 10)
-                            TimesUtils.getLocalDateStringFromCalendar(calendar, "0"+count+":00")
-                        else TimesUtils.getLocalDateStringFromCalendar(calendar, "${count}:00")
+                            TimesUtils.getLocalDateStringFromCalendar(calendar, "0$count:00")
+                        else TimesUtils.getLocalDateStringFromCalendar(calendar, "$count:00")
 
                         AlarmUtils.setRepeatedAlarm(
                             context,

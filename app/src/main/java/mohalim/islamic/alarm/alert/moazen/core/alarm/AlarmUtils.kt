@@ -25,13 +25,13 @@ class AlarmUtils {
          * alarm type example : "AZAN_TYPE_FAJR"
          * local date time example : "2023-12-10T23:37:00.908732"
          */
-        private fun setAlarm(context: Context, alarmType: String, localDateTime: String) {
+        private fun setAlarm(context: Context, alarmType: String, localDateTime: String, isSummerTimeOn: Boolean) {
             val alarmManager = context.getSystemService(AlarmManager::class.java)
             val intent = Intent(context, AlarmReceiver::class.java).apply {
                 putExtra("AZAN_TYPE", alarmType)
             }
             val time  = LocalDateTime.parse(localDateTime)
-            val alarmTime = time.atZone(ZoneId.systemDefault()).toEpochSecond()*1000L
+            var alarmTime = time.atZone(ZoneId.systemDefault()).toEpochSecond()*1000L
 
             var alarmId = 1
             when (alarmType) {
@@ -50,6 +50,9 @@ class AlarmUtils {
                 Constants.AZAN_TYPE_ESHA -> alarmId = 5
                 Constants.AZAN_TYPE_PRE_ESHA -> alarmId = 55
             }
+
+            if (isSummerTimeOn) alarmTime += 60 * 60 * 1000
+
 
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
@@ -89,7 +92,7 @@ class AlarmUtils {
             setAlarms(context, cityName, dataStore)
         }
 
-        suspend fun setAlarms(context: Context, cityName: String, dataStore : DataStore<Preferences>){
+        suspend fun setAlarms(context: Context, cityName: String, dataStore : DataStore<Preferences>) {
             val isSummerTimeOn = PreferencesUtils.getSummerTime(dataStore)
 
             try {
@@ -103,103 +106,204 @@ class AlarmUtils {
 
                     val dayofMonth = calender.get(Calendar.DAY_OF_MONTH)
 
-                    val todayString: String = calender.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + "-" + if (dayofMonth < 10) "0$dayofMonth" else dayofMonth
+                    val todayString: String = calender.getDisplayName(
+                        Calendar.MONTH,
+                        Calendar.LONG,
+                        Locale.ENGLISH
+                    )!! + "-" + if (dayofMonth < 10) "0$dayofMonth" else dayofMonth
 
 
                     for (i in 0 until dateJsonArray.length()) {
                         val item = dateJsonArray.getJSONObject(i)
 
-                        if (item.has(todayString)){
+                        if (item.has(todayString)) {
                             val times = item.getJSONArray(todayString)
                             val currentMillisecond = calender.timeInMillis
 
                             /**
                              * Examle of date 2007-12-03T10:15:30:55.000000.
                              * **/
-                            var localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(0).toString())
-                            var calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString, isSummerTimeOn)
-
-                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_FAGR, localDateString)
-                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
-                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_FAGR, localDateString)
-                                }
-                            }
-
-                            localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(2).toString())
-                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(
-                                localDateString,
-                                isSummerTimeOn
+                            var localDateString = TimesUtils.getLocalDateStringFromCalendar(
+                                calender,
+                                times.get(0).toString()
                             )
+                            var calendarFromlocalDateString =
+                                TimesUtils.localDateTimeStringToCalender(localDateString)
 
-                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_ZOHR, localDateString)
-                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
-                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ZOHR, localDateString)
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                setAlarm(
+                                    context,
+                                    Constants.AZAN_TYPE_FAGR,
+                                    localDateString,
+                                    isSummerTimeOn
+                                )
+                                calendarFromlocalDateString.timeInMillis =
+                                    calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                    localDateString =
+                                        TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(
+                                            calendarFromlocalDateString
+                                        )
+                                    setAlarm(
+                                        context,
+                                        Constants.AZAN_TYPE_PRE_FAGR,
+                                        localDateString,
+                                        isSummerTimeOn
+                                    )
                                 }
                             }
 
-                            localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(3).toString())
-                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(
-                                localDateString,
-                                isSummerTimeOn
+                            localDateString = TimesUtils.getLocalDateStringFromCalendar(
+                                calender,
+                                times.get(2).toString()
                             )
+                            calendarFromlocalDateString =
+                                TimesUtils.localDateTimeStringToCalender(localDateString)
 
-                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_ASR, localDateString)
-                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
-
-                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ASR, localDateString)
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                setAlarm(
+                                    context,
+                                    Constants.AZAN_TYPE_ZOHR,
+                                    localDateString,
+                                    isSummerTimeOn
+                                )
+                                calendarFromlocalDateString.timeInMillis =
+                                    calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                    localDateString =
+                                        TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(
+                                            calendarFromlocalDateString
+                                        )
+                                    setAlarm(
+                                        context,
+                                        Constants.AZAN_TYPE_PRE_ZOHR,
+                                        localDateString,
+                                        isSummerTimeOn
+                                    )
                                 }
                             }
 
-                            localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(5).toString())
-                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(
-                                localDateString,
-                                isSummerTimeOn
+                            localDateString = TimesUtils.getLocalDateStringFromCalendar(
+                                calender,
+                                times.get(3).toString()
                             )
+                            calendarFromlocalDateString =
+                                TimesUtils.localDateTimeStringToCalender(localDateString)
 
-                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_MAGHREB, localDateString)
-                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                setAlarm(
+                                    context,
+                                    Constants.AZAN_TYPE_ASR,
+                                    localDateString,
+                                    isSummerTimeOn
+                                )
+                                calendarFromlocalDateString.timeInMillis =
+                                    calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
 
-                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_MAGHREB, localDateString)
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                    localDateString =
+                                        TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(
+                                            calendarFromlocalDateString
+                                        )
+                                    setAlarm(
+                                        context,
+                                        Constants.AZAN_TYPE_PRE_ASR,
+                                        localDateString,
+                                        isSummerTimeOn
+                                    )
                                 }
                             }
 
-                            localDateString = TimesUtils.getLocalDateStringFromCalendar(calender, times.get(6).toString())
-                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(
-                                localDateString,
-                                isSummerTimeOn
+                            localDateString = TimesUtils.getLocalDateStringFromCalendar(
+                                calender,
+                                times.get(5).toString()
                             )
+                            calendarFromlocalDateString =
+                                TimesUtils.localDateTimeStringToCalender(localDateString)
 
-                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                setAlarm(context, Constants.AZAN_TYPE_ESHA, localDateString)
-                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                setAlarm(
+                                    context,
+                                    Constants.AZAN_TYPE_MAGHREB,
+                                    localDateString,
+                                    isSummerTimeOn
+                                )
+                                calendarFromlocalDateString.timeInMillis =
+                                    calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
 
-                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-                                    localDateString = TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(calendarFromlocalDateString)
-                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ESHA, localDateString)
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                    localDateString =
+                                        TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(
+                                            calendarFromlocalDateString
+                                        )
+                                    setAlarm(
+                                        context,
+                                        Constants.AZAN_TYPE_PRE_MAGHREB,
+                                        localDateString,
+                                        isSummerTimeOn
+                                    )
                                 }
                             }
 
-//                            localDateString = "2024-04-13T22:05:00"
-//                            calendarFromlocalDateString = TimesUtils.localDateTimeStringToCalender(localDateString)
+                            localDateString = TimesUtils.getLocalDateStringFromCalendar(
+                                calender,
+                                times.get(6).toString()
+                            )
+                            calendarFromlocalDateString =
+                                TimesUtils.localDateTimeStringToCalender(localDateString)
+
+                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                setAlarm(
+                                    context,
+                                    Constants.AZAN_TYPE_ESHA,
+                                    localDateString,
+                                    isSummerTimeOn
+                                )
+                                calendarFromlocalDateString.timeInMillis =
+                                    calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+
+                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+                                    localDateString =
+                                        TimesUtils.getLocalDateStringFromCalendarHourAndMinutes(
+                                            calendarFromlocalDateString
+                                        )
+                                    setAlarm(
+                                        context,
+                                        Constants.AZAN_TYPE_PRE_ESHA,
+                                        localDateString,
+                                        isSummerTimeOn
+                                    )
+                                }
+                            }
+
+//                            localDateString = "2024-04-23T10:00:00"
+//                            calendarFromlocalDateString =
+//                                TimesUtils.localDateTimeStringToCalender(localDateString)
 //
-//                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-//                                setAlarm(context, Constants.AZAN_TYPE_ESHA, localDateString)
-//                                calendarFromlocalDateString.timeInMillis = calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
-//                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis){
-//                                    localDateString = TimesUtils.getLocalDateStringFromCalendar(calendarFromlocalDateString, "18:45")
-//                                    setAlarm(context, Constants.AZAN_TYPE_PRE_ESHA, localDateString)
+//                            if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+//                                setAlarm(
+//                                    context,
+//                                    Constants.AZAN_TYPE_ESHA,
+//                                    localDateString,
+//                                    isSummerTimeOn
+//                                )
+//
+//                                calendarFromlocalDateString.timeInMillis =
+//                                    calendarFromlocalDateString.timeInMillis - 15 * 60 * 1000
+//
+//
+//                                if (currentMillisecond <= calendarFromlocalDateString.timeInMillis) {
+//                                    localDateString = TimesUtils.getLocalDateStringFromCalendar(
+//                                        calendarFromlocalDateString,
+//                                        "09:51"
+//                                    )
+//
+//                                    setAlarm(
+//                                        context,
+//                                        Constants.AZAN_TYPE_PRE_ESHA,
+//                                        localDateString,
+//                                        isSummerTimeOn
+//                                    )
 //                                }
 //                            }
 
@@ -214,7 +318,8 @@ class AlarmUtils {
                  * Friday Notification
                  */
 
-                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val alarmManager =
+                    context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                 val intent = Intent(context, AlarmReceiver::class.java).apply {
                     putExtra("AZAN_TYPE", Constants.ALKAHF_READ_REMINDER)
                 }
@@ -238,12 +343,26 @@ class AlarmUtils {
                 )
 
             }catch (exception : Exception){
-                Log.d("TAG", "setAlarmForFirstTime: "+ exception.message)
+                Log.d("TAG", "setAlarmForFirstTime: " + exception.message)
             }
         }
 
-
-
-
     }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

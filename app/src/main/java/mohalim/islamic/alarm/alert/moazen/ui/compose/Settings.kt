@@ -55,6 +55,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.service.AzanMediaPlayerService
 import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
@@ -393,7 +394,7 @@ fun AzanPerformerItem(
 
 
 @Composable
-fun SummerTime(dataStore: DataStore<Preferences>, summerTimeState : Boolean){
+fun SummerTime(context: Context, dataStore: DataStore<Preferences>, summerTimeState : Boolean){
 
     Column(
         modifier = Modifier
@@ -454,6 +455,8 @@ fun SummerTime(dataStore: DataStore<Preferences>, summerTimeState : Boolean){
                     runBlocking {
                         withContext(Dispatchers.IO){
                             PreferencesUtils.setSummerTime(dataStore, !summerTimeState)
+                            val currentCity = PreferencesUtils.getCurrentCityName(dataStore)
+                            AlarmUtils.setAlarms(context, currentCity, dataStore)
                         }
                     }
                 }
@@ -466,7 +469,8 @@ fun SummerTime(dataStore: DataStore<Preferences>, summerTimeState : Boolean){
                         runBlocking {
                             withContext(Dispatchers.IO){
                                 PreferencesUtils.setSummerTime(dataStore, !summerTimeState)
-                            }
+                                val currentCity = PreferencesUtils.getCurrentCityName(dataStore)
+                                AlarmUtils.setAlarms(context, currentCity, dataStore)                            }
                         }
                     },
                     colors = CheckboxDefaults.colors(uncheckedColor = Color.White)

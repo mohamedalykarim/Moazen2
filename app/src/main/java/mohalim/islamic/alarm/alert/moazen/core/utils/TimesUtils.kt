@@ -87,7 +87,8 @@ class TimesUtils {
             for (i in 0 until jsonArray.length()) {
                 date = "$year-$month-${day}T${jsonArray.get(i)}:00"
                 Log.d("TAG", "getNextPray1: "+date)
-                val dateCalendar = localDateTimeStringToCalender(date, isSummerTimeOn)
+                val dateCalendar = localDateTimeStringToCalender(date)
+
                 if (calendarToday.timeInMillis < dateCalendar.timeInMillis){
                     nextDayDate = "$year-$month-${day}T${jsonArray.get(i)}:00"
                     when (i) {
@@ -108,14 +109,15 @@ class TimesUtils {
             }
 
 
-            val nextCalendar =  localDateTimeStringToCalender(nextDayDate, isSummerTimeOn)
+            val nextCalendar =  localDateTimeStringToCalender(nextDayDate)
+            if (isSummerTimeOn) nextCalendar.timeInMillis = nextCalendar.timeInMillis + 60*60*1000
 
             val millisecondDifference = nextCalendar.timeInMillis - calendarToday.timeInMillis
 
             return NextPray(nextCalendar, azanType, millisecondDifference)
         }
 
-        fun localDateTimeStringToCalender(string: String, isSummerTimeOn: Boolean): Calendar {
+        fun localDateTimeStringToCalender(string: String): Calendar {
             val input = replaceArabicToEnglish(string)
             Log.d("TAG", "localDateTimeStringToCalender: "+input)
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
@@ -123,9 +125,6 @@ class TimesUtils {
             val millis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = millis
-
-            if (isSummerTimeOn) calendar.timeInMillis = calendar.timeInMillis + 60*60*1000
-
 
             return calendar
         }
