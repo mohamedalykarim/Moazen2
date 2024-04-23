@@ -88,6 +88,7 @@ class TimesUtils {
                 date = "$year-$month-${day}T${jsonArray.get(i)}:00"
                 Log.d("TAG", "getNextPray1: "+date)
                 val dateCalendar = localDateTimeStringToCalender(date)
+                if (isSummerTimeOn) dateCalendar.timeInMillis += 60*60*1000
 
                 if (calendarToday.timeInMillis < dateCalendar.timeInMillis){
                     nextDayDate = "$year-$month-${day}T${jsonArray.get(i)}:00"
