@@ -29,6 +29,9 @@
         android:theme="@style/Theme.Moazen"
         tools:targetApi="31">
         <activity
+            android:name=".ui.quran.viewer.QuranViewerActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.FirstStartActivity"
             android:exported="false" />
         <activity

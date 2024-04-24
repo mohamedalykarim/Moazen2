@@ -1,10 +1,8 @@
 package mohalim.islamic.alarm.alert.moazen.ui.main
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color.parseColor
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
@@ -62,6 +60,7 @@ import mohalim.islamic.alarm.alert.moazen.core.utils.TimesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseCityBottomUIMainActivity
 import mohalim.islamic.alarm.alert.moazen.ui.more.MoreScreenActivity
+import mohalim.islamic.alarm.alert.moazen.ui.quran.viewer.QuranViewerActivity
 import java.time.chrono.HijrahDate
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
@@ -80,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
+        startActivity(Intent(this, QuranViewerActivity::class.java))
 
         runBlocking {
             withContext(Dispatchers.IO){

@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.core.CubicBezierEasing
@@ -45,26 +47,37 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.android.play.core.splitinstall.SplitInstallManager
+import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
+import com.google.android.play.core.splitinstall.SplitInstallRequest
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.ui.azkar.AzkarActivity
-import mohalim.islamic.alarm.alert.moazen.ui.azkar.AzkarViewModel
+import mohalim.islamic.alarm.alert.moazen.ui.quran.viewer.QuranViewerActivity
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingActivity
 
 @AndroidEntryPoint
 class MoreScreenActivity : AppCompatActivity() {
+    private lateinit var splitInstallManager : SplitInstallManager
+    private val quranModuleName by lazy { getString(R.string.title_quranresources) }
 
     private val viewModel: MoreScreenViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        splitInstallManager = SplitInstallManagerFactory.create(this)
+
         setContent {
-            MoreScreenUI(this@MoreScreenActivity, viewModel)
+            MoreScreenUI(this@MoreScreenActivity, splitInstallManager, quranModuleName)
         }
     }
 }
 
 @Composable
-fun MoreScreenUI(context: Context, viewModel: MoreScreenViewModel) {
+fun MoreScreenUI(
+    context: Context,
+    splitInstallManager: SplitInstallManager,
+    quranModuleName: String,) {
 
     Box (
         modifier = Modifier
@@ -80,6 +93,34 @@ fun MoreScreenUI(context: Context, viewModel: MoreScreenViewModel) {
 
         Column {
             LazyVerticalGrid(columns = GridCells.Fixed(count = 3)) {
+                /** Quran **/
+                item {
+                    ItemContainer("Quran", R.drawable.ic_quran_icon, onClickCard = {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                               if (splitInstallManager.installedModules.contains(quranModuleName)){
+                                   context.startActivity(Intent(context, QuranViewerActivity::class.java))
+                               }else{
+                                   val request = SplitInstallRequest.newBuilder()
+                                       .addModule(quranModuleName)
+                                       .build()
+
+                                   splitInstallManager.startInstall(request)
+                                       .addOnCompleteListener {
+
+                                       }
+                                       .addOnSuccessListener {
+                                           Toast.makeText(context, "Quran Module Downloaded Successfully", Toast.LENGTH_LONG).show()
+                                       }
+                                       .addOnFailureListener {
+                                           Log.d("TAG", "MoreScreenUI: "+ it.message)
+                                       }
+                               }
+
+                        },200)
+
+                    })
+                }
+
                 /** Azkar **/
                 item {
                     ItemContainer("Azkar", R.drawable.azkar_icon, onClickCard = {

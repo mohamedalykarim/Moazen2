@@ -14,8 +14,8 @@ android {
         applicationId = "mohalim.islamic.alarm.alert.moazen"
         minSdk = 26
         targetSdk = 33
-        versionCode = 18
-        versionName = "1.18"
+        versionCode = 19
+        versionName = "1.19"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -49,10 +49,11 @@ android {
     composeOptions{
         kotlinCompilerExtensionVersion = "1.5.4"
     }
+    dynamicFeatures += setOf(":QuranResources")
 }
 
 dependencies {
-
+//    implementation(project(":QuranResources"))
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
@@ -85,6 +86,10 @@ dependencies {
 
     // To use Kotlin annotation processing tool (kapt)
     kapt ("androidx.room:room-compiler:2.6.1")
+
+
+    // Additional Resources
+    implementation ("com.google.android.play:core:1.10.3")
 
 
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Masjed</string>
+    <string name="quran_module_name" translatable="false">title_quranresources</string>
+    <string name="title_quranresources">Quran Resources</string>
 </resources>

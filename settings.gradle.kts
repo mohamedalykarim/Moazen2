@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Moazen"
 include(":app")
+include(":QuranResources")
