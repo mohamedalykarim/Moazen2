@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        startActivity(Intent(this, QuranViewerActivity::class.java))
+//        startActivity(Intent(this, QuranViewerActivity::class.java))
 
         runBlocking {
             withContext(Dispatchers.IO){

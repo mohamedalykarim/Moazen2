@@ -1,4 +1,4 @@
-package mohalim.islamic.alarm.alert.quranresources
+package mohalim.islamic.quran
 
 import org.junit.Test
 

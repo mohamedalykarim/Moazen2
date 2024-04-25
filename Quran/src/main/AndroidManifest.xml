@@ -4,7 +4,7 @@
 
     <dist:module
         dist:instant="false"
-        dist:title="@string/quran_module_name">
+        dist:title="@string/title_quran">
         <dist:delivery>
             <dist:on-demand />
         </dist:delivery>
@@ -12,6 +12,5 @@
     </dist:module>
 
     <application android:hasCode="false" />
-
 
 </manifest>

@@ -59,7 +59,7 @@ import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingActivity
 @AndroidEntryPoint
 class MoreScreenActivity : AppCompatActivity() {
     private lateinit var splitInstallManager : SplitInstallManager
-    private val quranModuleName by lazy { getString(R.string.title_quranresources) }
+    private val quranModuleName by lazy { getString(R.string.title_quran) }
 
     private val viewModel: MoreScreenViewModel by viewModels()
 
@@ -77,7 +77,7 @@ class MoreScreenActivity : AppCompatActivity() {
 fun MoreScreenUI(
     context: Context,
     splitInstallManager: SplitInstallManager,
-    quranModuleName: String,) {
+    quranModuleName: String) {
 
     Box (
         modifier = Modifier
@@ -93,11 +93,15 @@ fun MoreScreenUI(
 
         Column {
             LazyVerticalGrid(columns = GridCells.Fixed(count = 3)) {
-                /** Quran **/
+                /**
+                 * Quran
+                 *
+                 **/
                 item {
                     ItemContainer("Quran", R.drawable.ic_quran_icon, onClickCard = {
                         Handler(Looper.getMainLooper()).postDelayed({
                                if (splitInstallManager.installedModules.contains(quranModuleName)){
+                                   Toast.makeText(context, "Installed", Toast.LENGTH_LONG).show()
                                    context.startActivity(Intent(context, QuranViewerActivity::class.java))
                                }else{
                                    val request = SplitInstallRequest.newBuilder()
@@ -109,6 +113,7 @@ fun MoreScreenUI(
 
                                        }
                                        .addOnSuccessListener {
+                                           context.startActivity(Intent(context, QuranViewerActivity::class.java))
                                            Toast.makeText(context, "Quran Module Downloaded Successfully", Toast.LENGTH_LONG).show()
                                        }
                                        .addOnFailureListener {

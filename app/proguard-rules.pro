@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class kotlinx.coroutines.android.AndroidDispatcherFactory {*;}
+-keep class com.example.test.login.data.model.** { *; }
+-keepclassmembers class com.example.test.login.data.model.** { *; }
+
