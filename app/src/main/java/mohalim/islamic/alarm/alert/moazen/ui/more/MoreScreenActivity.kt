@@ -53,6 +53,7 @@ import com.google.android.play.core.splitinstall.SplitInstallRequest
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.ui.azkar.AzkarActivity
+import mohalim.islamic.alarm.alert.moazen.ui.quran.main.QuranMainActivity
 import mohalim.islamic.alarm.alert.moazen.ui.quran.viewer.QuranViewerActivity
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingActivity
 
@@ -101,8 +102,7 @@ fun MoreScreenUI(
                     ItemContainer("Quran", R.drawable.ic_quran_icon, onClickCard = {
                         Handler(Looper.getMainLooper()).postDelayed({
                                if (splitInstallManager.installedModules.contains(quranModuleName)){
-                                   Toast.makeText(context, "Installed", Toast.LENGTH_LONG).show()
-                                   context.startActivity(Intent(context, QuranViewerActivity::class.java))
+                                   context.startActivity(Intent(context, QuranMainActivity::class.java))
                                }else{
                                    val request = SplitInstallRequest.newBuilder()
                                        .addModule(quranModuleName)
@@ -113,7 +113,7 @@ fun MoreScreenUI(
 
                                        }
                                        .addOnSuccessListener {
-                                           context.startActivity(Intent(context, QuranViewerActivity::class.java))
+                                           context.startActivity(Intent(context, QuranMainActivity::class.java))
                                            Toast.makeText(context, "Quran Module Downloaded Successfully", Toast.LENGTH_LONG).show()
                                        }
                                        .addOnFailureListener {

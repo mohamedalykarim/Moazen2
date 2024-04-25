@@ -135,7 +135,6 @@ fun AzkarActivityUI(viewModel: AzkarViewModel) {
                                .padding(10.dp)
                                .clickable {
                                    viewModel.setCurrentZekr(azkar[index])
-
                                }
 
                        ) {

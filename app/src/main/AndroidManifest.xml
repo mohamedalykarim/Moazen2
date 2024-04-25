@@ -13,6 +13,7 @@
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
+
             <category android:name="android.intent.category.HOME" />
         </intent>
     </queries>
@@ -29,6 +30,9 @@
         android:theme="@style/Theme.Moazen"
         tools:targetApi="33">
         <activity
+            android:name=".ui.quran.main.QuranMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.quran.viewer.QuranViewerActivity"
             android:exported="false" />
         <activity
@@ -40,7 +44,6 @@
         <activity
             android:name=".ui.more.MoreScreenActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.azkar.AzkarActivity"
             android:exported="false" />
