@@ -45,6 +45,7 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
 
 
         val SUMMER_TIME = booleanPreferencesKey("summer_time")
+        val QURAN_PAGE_REFERENCE = intPreferencesKey("quran_page_reference")
 
 
         suspend fun setIsFirstOpen(dataStore: DataStore<Preferences>, isFirstOpen: Boolean){
@@ -381,6 +382,16 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
         suspend fun getLastVersion(dataStore: DataStore<Preferences>): Int {
             val lastVersion =  dataStore.data.first()[LAST_VERSION] ?: 0
             return lastVersion
+        }
+
+        suspend fun setPageReference(dataStore: DataStore<Preferences>, page: Int){
+            dataStore.edit { settings ->
+                settings[QURAN_PAGE_REFERENCE] = page
+            }
+        }
+
+        suspend fun getPageReference(dataStore: DataStore<Preferences>): Int {
+            return dataStore.data.first()[QURAN_PAGE_REFERENCE] ?: 1
         }
 
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -31,16 +32,25 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.google.android.play.core.splitinstall.SplitInstallManager
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class QuranViewerActivity : AppCompatActivity() {
     private lateinit var splitInstallManager : SplitInstallManager
     private val quranModuleName by lazy { getString(R.string.title_quran) }
+    @Inject lateinit var dataStore: DataStore<Preferences>
 
     val viewmodel : QuranViewerViewModel by viewModels()
 
@@ -55,8 +65,24 @@ class QuranViewerActivity : AppCompatActivity() {
         val page = intent.getIntExtra("Surah", 1)
 
         setContent { 
-            QuranViewerActivityUI(this@QuranViewerActivity, viewmodel, splitInstallManager, quranModuleName, page)
+            QuranViewerActivityUI(this@QuranViewerActivity, viewmodel, splitInstallManager, quranModuleName, page, dataStore)
         }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        val callback = object : OnBackPressedCallback(true ) {
+            override fun handleOnBackPressed() {
+                runBlocking {
+                    withContext(Dispatchers.IO){
+                        PreferencesUtils.setPageReference(dataStore, viewmodel.lastPage.value)
+                    }
+                }
+                finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 }
 
@@ -68,7 +94,8 @@ fun QuranViewerActivityUI(
     viewmodel: QuranViewerViewModel,
     splitInstallManager: SplitInstallManager,
     quranModuleName: String,
-    surahPage: Int
+    surahPage: Int,
+    dataStore: DataStore<Preferences>
 ) {
     val scope = rememberCoroutineScope()
 
@@ -82,14 +109,12 @@ fun QuranViewerActivityUI(
         }
     }
 
-
-
+    viewmodel.setLastPage(604 - pagerState.currentPage)
 
 
     HorizontalPager(state = pagerState) { page ->
         var currentPage = 604 - page
 
-        Log.d("TAG", "QuranViewerActivityUI: "+currentPage)
 
 
         Box(modifier = Modifier.fillMaxSize()){
@@ -105,7 +130,6 @@ fun QuranViewerActivityUI(
             Image(
                 painterResource(id = resourceId),
                 contentDescription = "Quran page",
-                contentScale = ContentScale.FillBounds,
                 modifier = Modifier
                     .fillMaxSize()
             )

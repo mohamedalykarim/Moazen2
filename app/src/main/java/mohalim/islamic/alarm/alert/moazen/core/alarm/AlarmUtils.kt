@@ -330,10 +330,9 @@ class AlarmUtils {
                 calendar.set(Calendar.MINUTE, 0)
                 calendar.set(Calendar.SECOND, 0)
 
-                alarmManager.setRepeating(
+                alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     calendar.timeInMillis,
-                    AlarmManager.INTERVAL_DAY * 7,
                     PendingIntent.getBroadcast(
                         context,
                         Constants.ALARM_ID_ALKAHF_REMINDER,

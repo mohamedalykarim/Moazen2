@@ -16,11 +16,18 @@ class QuranViewerViewModel @Inject constructor() : ViewModel() {
     private val _zoomOffset = MutableStateFlow(Offset(1f,1f))
     val zoomOffset : StateFlow<Offset> = _zoomOffset.asStateFlow()
 
+    private val _lastPage = MutableStateFlow(1)
+    val lastPage : StateFlow<Int> = _lastPage.asStateFlow()
+
     fun setZoomScale(scale: Float){
         _zoomScale.value = scale
     }
 
     fun setZoomOffset(offset: Offset){
         _zoomOffset.value = offset
+    }
+
+    fun setLastPage(page: Int){
+        _lastPage.value = page
     }
 }
