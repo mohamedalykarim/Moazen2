@@ -43,6 +43,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
+import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import mohalim.islamic.alarm.alert.moazen.ui.quran.viewer.QuranViewerActivity
 import javax.inject.Inject
 
@@ -53,7 +54,6 @@ class QuranMainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             QuranMainActivityUI(this, viewModel)
         }
@@ -65,7 +65,10 @@ class QuranMainActivity : AppCompatActivity() {
 
         runBlocking {
             withContext(Dispatchers.IO){
-                val pageReference = PreferencesUtils.getPageReference(dataStore)
+                val pageNumberReference = PreferencesUtils.getPageReference(dataStore)
+                viewModel.setPageNumberReference(pageNumberReference)
+
+                val pageReference = Utils.getPageData(this@QuranMainActivity, pageNumberReference)
                 viewModel.setPageReference(pageReference)
             }
         }
@@ -75,12 +78,13 @@ class QuranMainActivity : AppCompatActivity() {
 @Composable
 fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
     val allSurah by viewModel.allSurah.collectAsState()
+    val pageNumberReference by viewModel.pageNumberReference.collectAsState()
     val pageReference by viewModel.pageReference.collectAsState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(android.graphics.Color.parseColor("#ffffff")))
+            .background(color = Color(parseColor("#ffffff")))
     ) {
         Image(
             modifier = Modifier.fillMaxSize(),
@@ -104,7 +108,7 @@ fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
                         )
                         .clickable {
                             val intent = Intent(context, QuranViewerActivity::class.java)
-                            intent.putExtra("Surah", pageReference)
+                            intent.putExtra("Surah", pageNumberReference)
                             context.startActivity(intent)
                         }
 
@@ -121,9 +125,9 @@ fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
                             contentDescription = ""
                         )
 
-                        Text(text = "$pageReference",
+                        Text(text = "$pageNumberReference",
                             Modifier
-                                .padding(top = 5.dp, start = 60.dp)
+                                .padding(top = 0.dp, start = 60.dp)
                                 .fillMaxWidth()
                                 .padding(start = 10.dp, end = 10.dp)
                                 .height(70.dp)
@@ -131,19 +135,32 @@ fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.ExtraBold,
                             color = Color(parseColor("#ffe7ee")),
-                            fontSize = 60.sp
+                            fontSize = 50.sp
+                        )
+
+                        Text(text = "سورة "+pageReference.endSurahArName,
+                            Modifier
+                                .padding(top = 50.dp, start = 60.dp)
+                                .fillMaxWidth()
+                                .padding(start = 10.dp, end = 10.dp)
+                                .height(50.dp)
+                                .wrapContentHeight(align = Alignment.CenterVertically),
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(parseColor("#ffffff")),
+                            fontSize = 25.sp
                         )
 
                         Text(text = "Current Referenced Page",
                             Modifier
-                                .padding(top = 60.dp, start = 60.dp)
+                                .padding(top = 80.dp, start = 60.dp)
                                 .fillMaxWidth()
                                 .padding(start = 10.dp, end = 10.dp)
                                 .height(50.dp)
                                 .wrapContentHeight(align = Alignment.CenterVertically),
                             textAlign = TextAlign.Center,
                             color = Color(parseColor("#dadada")),
-                            fontSize = 14.sp
+                            fontSize = 11.sp
                         )
 
                         Image(

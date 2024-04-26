@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import mohalim.islamic.alarm.alert.moazen.core.model.Page
 import mohalim.islamic.alarm.alert.moazen.core.model.Surah
 import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import javax.inject.Inject
@@ -19,10 +20,18 @@ class QuranMainViewModel @Inject constructor() : ViewModel() {
     private val _allSurah = MutableStateFlow<MutableList<Surah>>(ArrayList())
     val allSurah = _allSurah.asStateFlow()
 
-    private val _pageReference = MutableStateFlow(1)
-    val pageReference : StateFlow<Int> = _pageReference.asStateFlow()
+    private val _pageNumberReference = MutableStateFlow(1)
+    val pageNumberReference : StateFlow<Int> = _pageNumberReference.asStateFlow()
 
-    fun setPageReference(page : Int){
+    private val _pageReference = MutableStateFlow(Page(1, 1, 1, "Al-Fatiha", "الفاتحة", 1, 7, "Al-Fatiha", "الفاتحة",))
+    val pageReference : StateFlow<Page> = _pageReference.asStateFlow()
+
+
+    fun setPageNumberReference(page : Int){
+        _pageNumberReference.value = page
+    }
+
+    fun setPageReference(page : Page){
         _pageReference.value = page
     }
 
