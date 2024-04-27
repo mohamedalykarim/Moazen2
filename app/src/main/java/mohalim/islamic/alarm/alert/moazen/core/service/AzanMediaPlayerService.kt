@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Binder
 import android.os.IBinder
@@ -27,6 +28,8 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private val binder = LocalBinder()
     private var mediaPlayer : MediaPlayer? = null
     private var resumePosition : Int = 0
+
+    private var isFirstVolumeDown = true
 
 
 
@@ -53,11 +56,11 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
         when (azanType) {
             Constants.AZAN_TYPE_PLAY_SOUND -> {
-                val notification = initNotificationForOthers("Masjed App is playing sound")
+                val notification = initNotificationForOthers(getString(R.string.masjed_app_is_playing_sound))
                 startForeground(1, notification)
             }
             Constants.AZAN_TYPE_STOP_SOUND -> {
-                val notification = initNotificationForOthers("Masjed App is playing sound")
+                val notification = initNotificationForOthers(getString(R.string.masjed_app_is_playing_sound))
                 startForeground(1, notification)
 
                 stopSelf()
@@ -183,6 +186,10 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
         }
     }
 
+    private fun setMediaPlayerVolume(volume : Float){
+        mediaPlayer!!.setVolume(volume, volume);
+    }
+
     private fun resumeMedia(){
         if (!mediaPlayer!!.isPlaying){
             mediaPlayer?.seekTo(resumePosition)
@@ -240,8 +247,18 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action
             if (action == "android.media.VOLUME_CHANGED_ACTION") {
-                stopMedia()
-                stopSelf()
+
+                if (intent.extras!!.getInt("EXTRA_VOLUME_STREAM_TYPE") == 3) {
+                    if (isFirstVolumeDown){
+                        setMediaPlayerVolume(.5f)
+                        isFirstVolumeDown = false
+                    }else{
+                        stopMedia()
+                        stopSelf()
+                    }
+                }
+
+
             }
         }
     }
