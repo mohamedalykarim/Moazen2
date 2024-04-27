@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +32,7 @@ import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
@@ -74,7 +76,7 @@ fun ChooseCityBottomUIMainActivity(
     ) {
 
         Text(
-            "Choose Current City", modifier = Modifier
+            stringResource(R.string.choose_current_city), modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 16.dp)
                 .fillMaxWidth(), textAlign = TextAlign.Center
         )
@@ -95,7 +97,7 @@ fun ChooseCityBottomUIMainActivity(
                 unfocusedBorderColor = Color(android.graphics.Color.parseColor("#f5ceda")),
             ),
             placeholder = {
-                Text("Search for specific city", fontSize = 12.sp, color = Color(android.graphics.Color.parseColor("#b5b5b5")))
+                Text(stringResource(R.string.search_for_specific_city), fontSize = 12.sp, color = Color(android.graphics.Color.parseColor("#b5b5b5")))
             },
             textStyle = TextStyle.Default.copy(fontSize = 12.sp),
 
@@ -215,7 +217,7 @@ fun ChooseCityBottomUISettingActivity(
     ) {
 
         Text(
-            "Choose Current City", modifier = Modifier
+            stringResource(id = R.string.choose_current_city), modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 16.dp)
                 .fillMaxWidth(), textAlign = TextAlign.Center
         )
@@ -239,7 +241,7 @@ fun ChooseCityBottomUISettingActivity(
                 unfocusedBorderColor = Color(android.graphics.Color.parseColor("#f5ceda")),
             ),
             placeholder = {
-                Text("Search for specific city", fontSize = 12.sp, color = Color(android.graphics.Color.parseColor("#b5b5b5")))
+                Text(stringResource(id = R.string.search_for_specific_city), fontSize = 12.sp, color = Color(android.graphics.Color.parseColor("#b5b5b5")))
             },
             textStyle = TextStyle.Default.copy(fontSize = 12.sp),
 

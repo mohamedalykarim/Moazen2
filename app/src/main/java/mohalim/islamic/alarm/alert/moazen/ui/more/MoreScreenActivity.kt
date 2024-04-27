@@ -44,6 +44,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -99,7 +101,7 @@ fun MoreScreenUI(
                  *
                  **/
                 item {
-                    ItemContainer("Quran", R.drawable.ic_quran_icon, onClickCard = {
+                    ItemContainer(stringResource(R.string.quran), R.drawable.ic_quran_icon, onClickCard = {
                         Handler(Looper.getMainLooper()).postDelayed({
                                if (splitInstallManager.installedModules.contains(quranModuleName)){
                                    context.startActivity(Intent(context, QuranMainActivity::class.java))
@@ -128,7 +130,7 @@ fun MoreScreenUI(
 
                 /** Azkar **/
                 item {
-                    ItemContainer("Azkar", R.drawable.azkar_icon, onClickCard = {
+                    ItemContainer(stringResource(R.string.azkar), R.drawable.azkar_icon, onClickCard = {
                         Handler(Looper.getMainLooper()).postDelayed({
                             context.startActivity(Intent(context, AzkarActivity::class.java))
                         },200)
@@ -138,7 +140,7 @@ fun MoreScreenUI(
 
                 /** Setting **/
                 item {
-                    ItemContainer("Setting", R.drawable.setting_icon, onClickCard = {
+                    ItemContainer(stringResource(R.string.setting), R.drawable.setting_icon, onClickCard = {
                         Handler(Looper.getMainLooper()).postDelayed({
                             context.startActivity(Intent(context, SettingActivity::class.java))
                         },200)
@@ -180,7 +182,7 @@ fun ItemContainer(name: String, iconId : Int, onClickCard : ()-> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .height(130.dp)
+            .height(160.dp)
             .scale(settingScale)
             .clickable(
                 interactionSource = interactionSetting,
@@ -228,6 +230,7 @@ fun ItemContainer(name: String, iconId : Int, onClickCard : ()-> Unit) {
                     .padding(4.dp),
                 color = Color(parseColor("#ffffff")),
                 fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
 

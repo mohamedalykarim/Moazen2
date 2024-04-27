@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -96,7 +97,8 @@ class FirstStartActivity : AppCompatActivity() {
             if (isGranted) {
                 viewModel.setNotificationPermissionGranted(true)
             } else {
-                Toast.makeText(this, "You refused to grant the permission, please grant it from the setting so you can get the application notification", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,
+                    getString(R.string.you_refused_to_grant_the_permission_please_grant_it_from_the_setting_so_you_can_get_the_application_notification), Toast.LENGTH_SHORT).show()
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri = Uri.fromParts("package", packageName, null)
                 intent.data = uri
@@ -255,7 +257,7 @@ class FirstStartActivity : AppCompatActivity() {
                     ) {
 
                         Text(
-                            text = "You should grant auto start permission for the application so it can launch after rebooting system",
+                            text = stringResource(R.string.you_should_grant_auto_start_permission_for_the_application_so_it_can_launch_after_rebooting_system),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp)
@@ -263,7 +265,7 @@ class FirstStartActivity : AppCompatActivity() {
 
                         if (autoStartPermissionGranted){
                             Text(
-                                text = "Permission Granted",
+                                text = stringResource(R.string.permission_granted),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(10.dp),
@@ -271,7 +273,9 @@ class FirstStartActivity : AppCompatActivity() {
                                 fontWeight = FontWeight.Bold
                             )
                         }else{
-                            SettingButton(name = "Auto Start permission", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                            val not_required_for_all_phones = stringResource(R.string.not_required_for_all_phones)
+
+                            SettingButton(name = stringResource(R.string.auto_start_permission), iconId = R.drawable.ic_masjed_icon, onClickCard = {
                                 val intent = Intent()
                                 if ("xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)) {
                                     intent.setComponent(
@@ -319,7 +323,8 @@ class FirstStartActivity : AppCompatActivity() {
                                     startActivity(intent)
 
                                 }else{
-                                    Toast.makeText(context, "Not Required for all Phones", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context,
+                                        not_required_for_all_phones, Toast.LENGTH_LONG).show()
                                 }
                             } )
                         }
@@ -353,7 +358,7 @@ class FirstStartActivity : AppCompatActivity() {
                 ) {
 
                     Text(
-                        text = "You should grant notification permission to get app notifications",
+                        text = stringResource(R.string.you_should_grant_notification_permission_to_get_app_notifications),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
@@ -361,7 +366,7 @@ class FirstStartActivity : AppCompatActivity() {
 
                     if (notificationPermissionGranted){
                         Text(
-                            text = "Permission Granted",
+                            text = stringResource(id = R.string.permission_granted),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp),
@@ -369,7 +374,7 @@ class FirstStartActivity : AppCompatActivity() {
                             fontWeight = FontWeight.Bold
                         )
                     }else{
-                        SettingButton(name = "Notification Permission", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                        SettingButton(name = stringResource(R.string.notification_permission), iconId = R.drawable.ic_masjed_icon, onClickCard = {
                             if (Build.VERSION.SDK_INT > 32) {
                                 if (!shouldShowRequestPermissionRationale("112")){
                                     getNotificationPermission();
@@ -405,7 +410,7 @@ class FirstStartActivity : AppCompatActivity() {
                     ) {
 
                         Text(
-                            text = "You should grant alarm permission ",
+                            text = stringResource(R.string.you_should_grant_alarm_permission),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp)
@@ -413,7 +418,7 @@ class FirstStartActivity : AppCompatActivity() {
 
                         if (scheduleAlarmPermissionGranted){
                             Text(
-                                text = "Permission Granted",
+                                text = stringResource(id = R.string.permission_granted),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(10.dp),
@@ -421,7 +426,7 @@ class FirstStartActivity : AppCompatActivity() {
                                 fontWeight = FontWeight.Bold
                             )
                         }else{
-                            SettingButton(name = "Schedule Alarm Permission", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                            SettingButton(name = stringResource(R.string.schedule_alarm_permission), iconId = R.drawable.ic_masjed_icon, onClickCard = {
                                 if (Build.VERSION.SDK_INT > 33) {
                                         getScheduleAlarmPermission();
                                 }

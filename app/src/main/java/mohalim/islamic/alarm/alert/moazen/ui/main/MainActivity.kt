@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -92,8 +93,6 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     versionCode->{
-                        Log.d("TAG", "onCreate: else versionCode :"+versionCode)
-                        Log.d("TAG", "onCreate: else pref versionCode"+PreferencesUtils.getLastVersion(dataStore))
                     }
 
                     else ->{
@@ -197,7 +196,7 @@ fun MainActivityUi(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.dp, 16.dp, 0.dp, 0.dp),
-                    text = "Till Next Prayer:",
+                    text = stringResource(R.string.till_next_prayer),
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 20.sp,
                     textAlign = TextAlign.Center
@@ -296,7 +295,7 @@ fun MainActivityUi(
                                     )
                                     Text(
                                         modifier = Modifier.padding(top = 13.dp),
-                                        text = "Prayer Times",
+                                        text = stringResource(R.string.prayer_times),
                                         fontSize = 16.sp,
                                         textAlign = TextAlign.Center,
                                         color = Color(parseColor("#932f3a"))
@@ -357,7 +356,7 @@ fun MainActivityUi(
                                     )
                                     Text(
                                         modifier = Modifier.padding(top = 13.dp, start = 6.dp),
-                                        text = "More",
+                                        text = stringResource(R.string.more),
                                         fontSize = 16.sp,
                                         textAlign = TextAlign.Center,
                                         color = Color(parseColor("#932f3a"))
@@ -457,7 +456,7 @@ fun MainActivityUi(
                                 Image(
                                     modifier = Modifier.width(32.dp),
                                     painter = painterResource(id = R.drawable.clock),
-                                    contentDescription = "Prayer Times"
+                                    contentDescription = stringResource(id = R.string.prayer_times)
                                 )
                                 Column {
                                     val city = Utils.getCurrentCity(context, ""+ currentCity)
@@ -480,7 +479,7 @@ fun MainActivityUi(
 
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = "Prayer Times",
+                                        text = stringResource(id = R.string.prayer_times),
                                         fontSize = 23.sp,
                                         fontWeight = FontWeight.ExtraBold,
                                         textAlign = TextAlign.Start,
@@ -511,14 +510,14 @@ fun MainActivityUi(
                                     Image(
                                         modifier = Modifier.width(20.dp),
                                         painter = painterResource(id = R.drawable.ic_fajr_icon),
-                                        contentDescription = "Prayer Times"
+                                        contentDescription = stringResource(id = R.string.prayer_times)
                                     )
                                 }
                                 Text(
                                     modifier = Modifier
                                         .weight(3f)
                                         .padding(8.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "Fajr",
+                                    text = stringResource(R.string.fajr),
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131"))
@@ -589,7 +588,7 @@ fun MainActivityUi(
                                     modifier = Modifier
                                         .weight(3f)
                                         .padding(8.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "Duhur",
+                                    text = stringResource(R.string.duhur),
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131"))
@@ -659,7 +658,7 @@ fun MainActivityUi(
                                     modifier = Modifier
                                         .weight(3f)
                                         .padding(8.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "Asr",
+                                    text = stringResource(R.string.asr),
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131"))
@@ -730,7 +729,7 @@ fun MainActivityUi(
                                     modifier = Modifier
                                         .weight(3f)
                                         .padding(8.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "Maghrib",
+                                    text = stringResource(R.string.maghrib),
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131"))
@@ -801,7 +800,7 @@ fun MainActivityUi(
                                     modifier = Modifier
                                         .weight(3f)
                                         .padding(8.dp, 8.dp, 0.dp, 0.dp),
-                                    text = "Isha'",
+                                    text = stringResource(R.string.isha),
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Start,
                                     color = Color(parseColor("#313131"))
@@ -863,7 +862,7 @@ fun MainActivityUi(
                                     Spacer(modifier = Modifier.height(5.dp))
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = "Sunrise",
+                                        text = stringResource(R.string.sunrise),
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Center,
                                         color = Color(parseColor("#969498"))
@@ -894,7 +893,7 @@ fun MainActivityUi(
 
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = "MidDay",
+                                        text = stringResource(R.string.midday),
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Center,
                                         color = Color(parseColor("#969498"))
@@ -926,7 +925,7 @@ fun MainActivityUi(
 
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = "Sunset",
+                                        text = stringResource(R.string.sunset),
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Center,
                                         color = Color(parseColor("#969498"))

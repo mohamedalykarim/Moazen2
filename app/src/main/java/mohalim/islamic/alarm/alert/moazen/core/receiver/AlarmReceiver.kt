@@ -186,8 +186,8 @@ class AlarmReceiver : BroadcastReceiver() {
                 if(notificationManager.areNotificationsEnabled()){
                     val notification = NotificationCompat.Builder(context, "moazenNotificationChannnel")
                         .setSmallIcon(R.drawable.ic_masjed_icon)
-                        .setContentTitle("Suruh AL_KAHF REMINDER")
-                        .setContentText("Its Friday Morining, Could you please read Suruh Al-Kahf")
+                        .setContentTitle(context.getString(R.string.suruh_al_kahf_reminder))
+                        .setContentText(context.getString(R.string.its_friday_morining_could_you_please_read_suruh_al_kahf))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setAutoCancel(true)
                         .build()

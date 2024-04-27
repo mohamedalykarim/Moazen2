@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -119,7 +120,9 @@ fun AzkarActivityUI(viewModel: AzkarViewModel) {
            if (currentZekr == null){
 
                viewModel.getAllAzkarFromRoom()
-               LazyColumn(modifier = Modifier.padding(bottom = 10.dp).weight(1f, false)) {
+               LazyColumn(modifier = Modifier
+                   .padding(bottom = 10.dp)
+                   .weight(1f, false)) {
                    items(azkar.size){index ->
 
                        Column(
@@ -141,7 +144,7 @@ fun AzkarActivityUI(viewModel: AzkarViewModel) {
                            Row{
                                Image(painterResource(id = R.drawable.azkar_icon2), contentDescription = "azkar icon",
                                    Modifier
-                                       .padding(top=5.dp, bottom = 5.dp)
+                                       .padding(top = 5.dp, bottom = 5.dp)
                                        .height(40.dp)
                                        .width(40.dp))
                                Text(text = azkar[index].zekrString,
@@ -163,7 +166,7 @@ fun AzkarActivityUI(viewModel: AzkarViewModel) {
                }
 
                Column(modifier = Modifier.height(40.dp)) {
-                   SettingButton(name = "Add New", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                   SettingButton(name = stringResource(R.string.add_new), iconId = R.drawable.ic_masjed_icon, onClickCard = {
                        viewModel.setShowAddZekrSheet(true)
                    })
                }
@@ -209,7 +212,7 @@ fun AzkarActivityUI(viewModel: AzkarViewModel) {
                        resetSebha = false
                    })
 
-                   SettingButton(name = "Reset", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                   SettingButton(name = stringResource(R.string.reset), iconId = R.drawable.ic_masjed_icon, onClickCard = {
                        viewModel.resetCounter(currentZekr!!)
                        resetSebha = true
                    })
@@ -246,7 +249,7 @@ fun AddNewZekrBottomSheet(viewModel: AzkarViewModel){
     ) {
 
         Text(
-            "Add New zekr", modifier = Modifier
+            stringResource(R.string.add_new_zekr), modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 16.dp)
                 .fillMaxWidth(), textAlign = TextAlign.Center
         )
@@ -261,7 +264,7 @@ fun AddNewZekrBottomSheet(viewModel: AzkarViewModel){
                 unfocusedBorderColor = Color(android.graphics.Color.parseColor("#f5ceda")),
             ),
             placeholder = {
-                Text("Type zekr here", fontSize = 12.sp, color = Color(android.graphics.Color.parseColor("#b5b5b5")))
+                Text(stringResource(R.string.type_zekr_here), fontSize = 12.sp, color = Color(android.graphics.Color.parseColor("#b5b5b5")))
             },
             textStyle = TextStyle.Default.copy(fontSize = 12.sp),
 
@@ -273,7 +276,7 @@ fun AddNewZekrBottomSheet(viewModel: AzkarViewModel){
         Spacer(modifier = Modifier.height(16.dp))
 
 
-        SettingButton(name = "Add new", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+        SettingButton(name = stringResource(id = R.string.add_new), iconId = R.drawable.ic_masjed_icon, onClickCard = {
             viewModel.addNewZekr(zekrString.value.text)
             viewModel.getAllAzkarFromRoom()
             viewModel.setShowAddZekrSheet(false)

@@ -3,7 +3,6 @@ package mohalim.islamic.alarm.alert.moazen.ui.quran.viewer
 import android.content.Context
 import android.graphics.Paint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -12,23 +11,31 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
@@ -37,13 +44,8 @@ import androidx.datastore.preferences.core.Preferences
 import com.google.android.play.core.splitinstall.SplitInstallManager
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
-import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
-import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -74,11 +76,7 @@ class QuranViewerActivity : AppCompatActivity() {
 
         val callback = object : OnBackPressedCallback(true ) {
             override fun handleOnBackPressed() {
-                runBlocking {
-                    withContext(Dispatchers.IO){
-                        PreferencesUtils.setPageReference(dataStore, viewmodel.lastPage.value)
-                    }
-                }
+                viewmodel.setPreferencesPageReference()
                 finish()
             }
         }
@@ -111,32 +109,53 @@ fun QuranViewerActivityUI(
 
     viewmodel.setLastPage(604 - pagerState.currentPage)
 
+    var scale by remember { mutableFloatStateOf(1f) }
+    var isZoomable by remember { mutableStateOf(false) }
 
-    HorizontalPager(state = pagerState) { page ->
+    HorizontalPager(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTransformGestures{ centroid, pan, zoom, rotation ->
+                scale *= zoom
+            }
+
+        },
+        state = pagerState) { page ->
         var currentPage = 604 - page
 
 
 
-        Box(modifier = Modifier.fillMaxSize()){
-            var highlightedAyaNumber by remember{ mutableIntStateOf(0) }
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+            ){
 
-            
-            val resourceId = context.resources.getIdentifier("page$currentPage", "drawable", "mohalim.islamic.alarm.alert.moazen.Quran")
+                val resourceId = context.resources.getIdentifier("page$currentPage", "drawable", "mohalim.islamic.alarm.alert.moazen.Quran")
 
-            val scale by viewmodel.zoomScale.collectAsState()
-            val offset by viewmodel.zoomOffset.collectAsState()
+                Image(
+                    painterResource(id = resourceId),
+                    contentDescription = "Quran page",
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            // adding some zoom limits (min 50%, max 200%)
+                            scaleX = maxOf(1f, minOf(2f, scale)),
+                            scaleY = maxOf(1f, minOf(2f, scale))
+                        )
+                )
+
+//            val scale by viewmodel.zoomScale.collectAsState()
+//            val offset by viewmodel.zoomOffset.collectAsState()
 
 
-            Image(
-                painterResource(id = resourceId),
-                contentDescription = "Quran page",
-                modifier = Modifier
-                    .fillMaxSize()
-            )
-            val highlightArea = IntOffset(Utils.dipTopx(context, 150f),Utils.dipTopx(context, 347f))
-            val highlightSize=  IntOffset(Utils.dipTopx(context, 115f),Utils.dipTopx(context, 30f))
-
-            val ayaNumber = 1
+//            var highlightedAyaNumber by remember{ mutableIntStateOf(0) }
+//            val highlightArea = IntOffset(Utils.dipTopx(context, 150f),Utils.dipTopx(context, 347f))
+//            val highlightSize=  IntOffset(Utils.dipTopx(context, 115f),Utils.dipTopx(context, 30f))
+//            val ayaNumber = 1
 
 
 //            HighlightArea(viewmodel, highlightArea, highlightSize, highlightedAyaNumber, ayaNumber, scale, offset, onClickCanvas = {
@@ -146,7 +165,12 @@ fun QuranViewerActivityUI(
 //                    highlightedAyaNumber = ayaNumber
 //                }
 //            })
+            }
+
+
         }
+
+
 
     }
 
@@ -155,6 +179,8 @@ fun QuranViewerActivityUI(
 
 
 }
+
+
 
 
 @Composable

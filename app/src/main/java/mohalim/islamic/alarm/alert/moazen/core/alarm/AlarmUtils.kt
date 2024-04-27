@@ -118,7 +118,9 @@ class AlarmUtils {
 
                         if (item.has(todayString)) {
                             val times = item.getJSONArray(todayString)
-                            val currentMillisecond = calender.timeInMillis
+                            var currentMillisecond = calender.timeInMillis
+
+                            if (isSummerTimeOn) currentMillisecond -= 60*60*1000
 
                             /**
                              * Examle of date 2007-12-03T10:15:30:55.000000.
@@ -325,21 +327,26 @@ class AlarmUtils {
                 }
 
                 val calendar = Calendar.getInstance()
+                val currentMillisecond = calendar.timeInMillis
+
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
                 calendar.set(Calendar.HOUR_OF_DAY, 10)
                 calendar.set(Calendar.MINUTE, 0)
                 calendar.set(Calendar.SECOND, 0)
 
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis,
-                    PendingIntent.getBroadcast(
-                        context,
-                        Constants.ALARM_ID_ALKAHF_REMINDER,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                if (currentMillisecond <= calendar.timeInMillis) {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        PendingIntent.getBroadcast(
+                            context,
+                            Constants.ALARM_ID_ALKAHF_REMINDER,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
                     )
-                )
+                }
+
 
             }catch (exception : Exception){
                 Log.d("TAG", "setAlarmForFirstTime: " + exception.message)

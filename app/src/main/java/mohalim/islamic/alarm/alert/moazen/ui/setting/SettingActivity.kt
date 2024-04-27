@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -165,7 +166,7 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp)
                     .fillMaxWidth(),
-                text = "Settings",
+                text = stringResource(id = R.string.setting),
                 fontSize = 40.sp,
                 fontWeight = FontWeight.ExtraBold,
                 textAlign = TextAlign.Start,
@@ -195,7 +196,7 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Current City",
+                        text = stringResource(R.string.current_city),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
@@ -257,14 +258,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Fagr azan performer",
+                        text = stringResource(R.string.fagr_azan_performer),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerFagr), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerFagr), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_FAGR
@@ -282,14 +283,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Duhur azan performer",
+                        text = stringResource(R.string.duhur_azan_performer),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerDuhur), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerDuhur), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_ZOHR
@@ -306,14 +307,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Asr azan performer",
+                        text = stringResource(R.string.asr_azan_performer),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerAsr), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerAsr), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_ASR
@@ -330,14 +331,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Maghrib azan performer",
+                        text = stringResource(R.string.maghrib_azan_performer),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerMaghrib), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerMaghrib), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_MAGHREB
@@ -355,14 +356,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Ishaa azan performer",
+                        text = stringResource(R.string.ishaa_azan_performer),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId( azanPerformerIshaa), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerIshaa), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_ESHA
@@ -398,14 +399,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Fagr before azan notification sound",
+                        text = stringResource(R.string.fagr_before_azan_notification_sound),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerFagr), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerFagr), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_PRE_FAGR
@@ -423,14 +424,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Duhur before azan notification sound",
+                        text = stringResource(R.string.duhur_before_azan_notification_sound),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerDuhur), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerDuhur), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_PRE_ZOHR
@@ -447,14 +448,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Asr Before azan notification sound",
+                        text = stringResource(R.string.asr_before_azan_notification_sound),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerAsr), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerAsr), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_PRE_ASR
@@ -471,14 +472,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Maghrib Before azan notification sound",
+                        text = stringResource(R.string.maghrib_before_azan_notification_sound),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerMaghrib), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerMaghrib), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_PRE_MAGHREB
@@ -496,14 +497,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Ishaa Before azan notification sound",
+                        text = stringResource(R.string.ishaa_before_azan_notification_sound),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(preAzanPerformerIshaa), iconId = R.drawable.ic_masjed_icon) {
+                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerIshaa), iconId = R.drawable.ic_masjed_icon) {
                         Handler(Looper.getMainLooper())
                             .postDelayed({
                                 azanType = Constants.AZAN_TYPE_PRE_ESHA
@@ -538,14 +539,14 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                             .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                             .fillMaxWidth()
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = "Required permissions for the application",
+                        text = stringResource(R.string.required_permissions_for_the_application),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         color = Color(parseColor("#000000"))
                     )
 
-                    SettingButton(name = "Permissions", iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                    SettingButton(name = stringResource(R.string.permissions), iconId = R.drawable.ic_masjed_icon, onClickCard = {
                         context.startActivity(Intent(context, FirstStartActivity::class.java))
                     })
 

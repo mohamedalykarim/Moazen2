@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -86,7 +87,7 @@ fun ChoosePreAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "Before Pray Notification 1",
+                    performerName = stringResource(R.string.before_pray_notification_1),
                     rawFile = R.raw.pre_salah_1
                 )
             }
@@ -97,7 +98,7 @@ fun ChoosePreAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "Before Pray Notification 2",
+                    performerName = stringResource(R.string.before_pray_notification_2),
                     rawFile = R.raw.pre_salah_2
                 )
             }
@@ -108,7 +109,7 @@ fun ChoosePreAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "Before Pray Notification 3",
+                    performerName = stringResource(R.string.before_pray_notification_3),
                     rawFile = R.raw.pre_salah_3
                 )
             }
@@ -149,7 +150,7 @@ fun ChooseAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "Hamdoon_hamady",
+                    performerName = stringResource(R.string.hamdoon_hamady),
                     rawFile = R.raw.hamdoon_hamady
                 )
             }
@@ -160,7 +161,7 @@ fun ChooseAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "Abdulrahman Mossad",
+                    performerName = stringResource(R.string.abdulrahman_mossad),
                     rawFile = R.raw.abdulrahman_mossad
                 )
             }
@@ -171,7 +172,7 @@ fun ChooseAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "Elharam Elmekky",
+                    performerName = stringResource(R.string.elharam_elmekky),
                     rawFile = R.raw.elharam_elmekky
                 )
             }
@@ -182,7 +183,7 @@ fun ChooseAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "Hafiz Ahmed",
+                    performerName = stringResource(R.string.hafiz_ahmed),
                     rawFile = R.raw.hafiz_ahmed
                 )
             }
@@ -193,7 +194,7 @@ fun ChooseAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "Idris Aslami",
+                    performerName = stringResource(R.string.idris_aslami),
                     rawFile = R.raw.idris_aslami
                 )
             }
@@ -204,7 +205,7 @@ fun ChooseAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "islam_sobhy",
+                    performerName = stringResource(R.string.islam_sobhy),
                     rawFile = R.raw.islam_sobhy
                 )
             }
@@ -215,7 +216,7 @@ fun ChooseAzanPerformerUI(
                     viewModel,
                     dataStore = dataStore,
                     azanType = azanType,
-                    performerName = "Naser Elkatamy",
+                    performerName = stringResource(R.string.naser_elkatamy),
                     rawFile = R.raw.naser_elkatamy
                 )
             }
@@ -414,7 +415,7 @@ fun SummerTime(context: Context, dataStore: DataStore<Preferences>, summerTimeSt
                 .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
                 .fillMaxWidth()
                 .wrapContentHeight(align = Alignment.CenterVertically),
-            text = "When summer time is on, Prayer times will add 60 minutes for every pray notification",
+            text = stringResource(R.string.when_summer_time_is_on_prayer_times_will_add_60_minutes_for_every_pray_notification),
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
             textAlign = TextAlign.Start,
@@ -453,7 +454,7 @@ fun SummerTime(context: Context, dataStore: DataStore<Preferences>, summerTimeSt
                 .height(40.dp)
                 .clickable {
                     runBlocking {
-                        withContext(Dispatchers.IO){
+                        withContext(Dispatchers.IO) {
                             PreferencesUtils.setSummerTime(dataStore, !summerTimeState)
                             val currentCity = PreferencesUtils.getCurrentCityName(dataStore)
                             AlarmUtils.setAlarms(context, currentCity, dataStore)
@@ -477,7 +478,7 @@ fun SummerTime(context: Context, dataStore: DataStore<Preferences>, summerTimeSt
                 )
 
                 Text(
-                    text = "Summer Time",
+                    text = stringResource(R.string.summer_time),
                     modifier = Modifier
                         .padding(end = 40.dp)
                         .fillMaxWidth()
