@@ -94,8 +94,13 @@ class OverlayService : Service() {
                 else -> ""
             }
 
+
+
+
         val overlayText: TextView  = overlayView.findViewById(R.id.overlay_text)
+        val overlayText2: TextView  = overlayView.findViewById(R.id.overlay_text2)
         overlayText.text = message
+        overlayText2.text = getString(R.string.please_swipe_the_screen_to_dismiss_the_notification)
 
         return super.onStartCommand(intent, flags, startId)
     }

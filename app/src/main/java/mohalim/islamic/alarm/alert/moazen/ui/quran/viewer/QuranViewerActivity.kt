@@ -134,10 +134,6 @@ fun QuranViewerActivityUI(
         }else{
             604 - page
         }
-        Log.d("TAG", "QuranViewerActivityUI: language $language")
-
-
-        Log.d("TAG", "QuranViewerActivityUI: currentPage $currentPage")
 
         Column(modifier = Modifier
             .fillMaxSize()
