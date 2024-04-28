@@ -3,6 +3,7 @@ package mohalim.islamic.alarm.alert.moazen.ui.quran.viewer
 import android.content.Context
 import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -46,6 +47,7 @@ import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import mohalim.islamic.alarm.alert.moazen.R
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -96,6 +98,8 @@ fun QuranViewerActivityUI(
     dataStore: DataStore<Preferences>
 ) {
     val scope = rememberCoroutineScope()
+    val language = Locale.getDefault().language;
+
 
     val pagerState = rememberPagerState(pageCount = {
         604
@@ -103,11 +107,13 @@ fun QuranViewerActivityUI(
 
     LaunchedEffect(key1 = 1){
         scope.launch {
-            pagerState.scrollToPage(604- surahPage)
+            if (language == "en") pagerState.scrollToPage(604- surahPage)
+            if (language == "ar") pagerState.scrollToPage(surahPage - 1)
         }
     }
 
-    viewmodel.setLastPage(604 - pagerState.currentPage)
+    if (language == "en") viewmodel.setLastPage(604 - pagerState.currentPage)
+    if (language == "ar") viewmodel.setLastPage(pagerState.currentPage + 1)
 
     var scale by remember { mutableFloatStateOf(1f) }
     var isZoomable by remember { mutableStateOf(false) }
@@ -120,9 +126,18 @@ fun QuranViewerActivityUI(
 
         },
         state = pagerState) { page ->
-        var currentPage = 604 - page
+        Log.d("TAG", "QuranViewerActivityUI: page $page ")
+        var currentPage = if(language == "en"){
+            604 - page
+        }else if(language == "ar"){
+            page + 1
+        }else{
+            604 - page
+        }
+        Log.d("TAG", "QuranViewerActivityUI: language $language")
 
 
+        Log.d("TAG", "QuranViewerActivityUI: currentPage $currentPage")
 
         Column(modifier = Modifier
             .fillMaxSize()
@@ -134,7 +149,7 @@ fun QuranViewerActivityUI(
             ){
 
                 val resourceId = context.resources.getIdentifier("page$currentPage", "drawable", "mohalim.islamic.alarm.alert.moazen.Quran")
-
+                Log.d("TAG", "QuranViewerActivityUI: page$currentPage")
                 Image(
                     painterResource(id = resourceId),
                     contentDescription = "Quran page",
