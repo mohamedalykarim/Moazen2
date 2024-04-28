@@ -65,6 +65,9 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
                 stopSelf()
             }
+            Constants.AZAN_TYPE_STOP -> {
+                stopSelf()
+            }
             else -> {
                 val notification = initNotificationForAzan(azanType)
                 startForeground(1, notification)
@@ -248,9 +251,13 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
             val action = intent?.action
             if (action == "android.media.VOLUME_CHANGED_ACTION") {
 
-                if (intent.extras!!.getInt("EXTRA_VOLUME_STREAM_TYPE") == 3) {
+                val stream = intent.extras!!.getInt("android.media.EXTRA_VOLUME_STREAM_TYPE")
+
+                Log.d("TAG", "onReceive: $stream")
+
+                if (stream == AudioManager.STREAM_MUSIC) {
                     if (isFirstVolumeDown){
-                        setMediaPlayerVolume(.5f)
+                        setMediaPlayerVolume(.30f)
                         isFirstVolumeDown = false
                     }else{
                         stopMedia()

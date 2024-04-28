@@ -94,6 +94,8 @@ fun MoreScreenUI(
             contentDescription = ""
         )
 
+        val quran_module_is_downloading = stringResource(R.string.quran_module_is_downloading)
+
         Column {
             LazyVerticalGrid(columns = GridCells.Fixed(count = 3)) {
                 /**
@@ -110,13 +112,14 @@ fun MoreScreenUI(
                                        .addModule(quranModuleName)
                                        .build()
 
+                                   Toast.makeText(context, quran_module_is_downloading , Toast.LENGTH_LONG).show()
+
+
                                    splitInstallManager.startInstall(request)
                                        .addOnCompleteListener {
-
+                                           context.startActivity(Intent(context, QuranMainActivity::class.java))
                                        }
                                        .addOnSuccessListener {
-                                           context.startActivity(Intent(context, QuranMainActivity::class.java))
-                                           Toast.makeText(context, "Quran Module Downloaded Successfully", Toast.LENGTH_LONG).show()
                                        }
                                        .addOnFailureListener {
                                            Log.d("TAG", "MoreScreenUI: "+ it.message)

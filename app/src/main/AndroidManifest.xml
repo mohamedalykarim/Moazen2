@@ -10,6 +10,11 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+
+
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -29,6 +34,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moazen"
         tools:targetApi="33">
+        <activity android:name=".ui.azan_popup.AzanPopupActivity"
+            android:launchMode="singleInstance" android:excludeFromRecents="true"
+            android:taskAffinity="" android:theme="@android:style/Theme.Dialog" />
+
         <activity
             android:name=".ui.quran.main.QuranMainActivity"
             android:exported="false" />
@@ -60,6 +69,7 @@
         </activity>
 
         <service android:name=".core.service.AzanMediaPlayerService" />
+        <service android:name=".core.service.OverlayService" />
 
         <receiver android:name=".core.receiver.AlarmReceiver" />
         <receiver

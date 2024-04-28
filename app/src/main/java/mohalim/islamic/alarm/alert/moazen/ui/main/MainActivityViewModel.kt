@@ -2,12 +2,12 @@ package mohalim.islamic.alarm.alert.moazen.ui.main
 
 import android.content.Context
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -159,14 +159,19 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     var praysForToday = TimesUtils.getPraysForToday(context, it, 0)
                     var nextPray: NextPray? = TimesUtils.getNextPray(praysForToday, 0, dataStore)
 
+
                     if (nextPray == null){
                         praysForToday = TimesUtils.getPraysForToday(context, it, 1)
                         nextPray = TimesUtils.getNextPray(praysForToday, 1, dataStore)
                         _isNextDay.value = true
+                    }else{
+                        _isNextDay.value = false
                     }
 
+                    /**
+                     * get Prayer Times in String Time Format
+                     */
                     _prayersForToday.value = TimesUtils.getPrayersInTimeFormat(praysForToday, dataStore)
-
                     _nextPrayerType.value = nextPray!!.azanType
 
                     if (this@MainActivityViewModel::countDownTimer.isInitialized){
@@ -197,14 +202,14 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
 
                     /** Calculating Midday **/
 
-                    val calendar = Calendar.getInstance()
+                    val calendarNow = Calendar.getInstance()
 
-                    if (_isNextDay.value) calendar.timeInMillis = calendar.timeInMillis + 24*60*60*1000
-                    val year = calendar.get(Calendar.YEAR)
-                    val monthLong = calendar.get(Calendar.MONTH) + 1
-                    val dayLong = calendar.get(Calendar.DAY_OF_MONTH)
-                    val hoursLong = calendar.get(Calendar.HOUR_OF_DAY)
-                    val minutesLong = calendar.get(Calendar.MINUTE)
+                    if (_isNextDay.value) calendarNow.timeInMillis = calendarNow.timeInMillis + 24*60*60*1000
+                    val year = calendarNow.get(Calendar.YEAR)
+                    val monthLong = calendarNow.get(Calendar.MONTH) + 1
+                    val dayLong = calendarNow.get(Calendar.DAY_OF_MONTH)
+                    val hoursLong = calendarNow.get(Calendar.HOUR_OF_DAY)
+                    val minutesLong = calendarNow.get(Calendar.MINUTE)
 
                     val month: String = if(monthLong < 10) "0$monthLong" else monthLong.toString()
                     val day : String = if(dayLong < 10) "0$dayLong" else dayLong.toString()
@@ -234,8 +239,8 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                     repeat(24) {
                         if (count == 24) count = 0
                         var localDateString = if (count < 10)
-                            TimesUtils.getLocalDateStringFromCalendar(calendar, "0$count:00")
-                        else TimesUtils.getLocalDateStringFromCalendar(calendar, "$count:00")
+                            TimesUtils.getLocalDateStringFromCalendar(calendarNow, "0$count:00")
+                        else TimesUtils.getLocalDateStringFromCalendar(calendarNow, "$count:00")
 
                         AlarmUtils.setRepeatedAlarm(
                             context,
@@ -244,16 +249,16 @@ class MainActivityViewModel @Inject constructor(val dataStore: DataStore<Prefere
                             localDateString
                         )
 
-                        Log.d("TAG", "getCurrentCityName: Alarm reservation at : "+ localDateString)
 
                         count += 1
                     }
 
-
-
-                    var localDateString = TimesUtils.getLocalDateStringFromCalendar(calendar, "${hour}:${minutes}")
+                    val localDateString = TimesUtils.getLocalDateStringFromCalendar(calendarNow, "${hour}:${minutes}")
                     AlarmUtils.setRepeatedAlarm(context, Constants.RESERVE_ALL_TIMES, 1001, localDateString)
 
+                    CoroutineScope(Dispatchers.IO).launch {
+                        AlarmUtils.setAlarms(context, currentCity.value, dataStore)
+                    }
                 }
             }
         }

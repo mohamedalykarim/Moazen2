@@ -1,6 +1,5 @@
 package mohalim.islamic.alarm.alert.moazen.core.receiver
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -21,6 +20,7 @@ import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.alarm.AlarmUtils
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.core.service.AzanMediaPlayerService
+import mohalim.islamic.alarm.alert.moazen.core.service.OverlayService
 import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
 import javax.inject.Inject
 
@@ -42,6 +42,7 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultPreAzanTypeFagr)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_FAGR)
                         context!!.startForegroundService(playerIntent)
+                        startAzanPopup(context, Constants.AZAN_TYPE_PRE_FAGR)
                     }
 
 
@@ -57,6 +58,8 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultAzanTypeFagr)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_FAGR)
                         context!!.startForegroundService(playerIntent)
+                        startAzanPopup(context, Constants.AZAN_TYPE_FAGR)
+
                     }
                 }
             }
@@ -69,7 +72,7 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultPreAzanTypeDuhur)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_ZOHR)
                         context!!.startForegroundService(playerIntent)
-
+                        startAzanPopup(context, Constants.AZAN_TYPE_PRE_ZOHR)
                     }
                 }
 
@@ -83,6 +86,7 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultAzanTypeDuhur)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_ZOHR)
                         context!!.startForegroundService(playerIntent)
+                        startAzanPopup(context, Constants.AZAN_TYPE_ZOHR)
                     }
                 }
 
@@ -96,6 +100,8 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultPreAzanTypeAsr)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_ASR)
                         context!!.startForegroundService(playerIntent)
+                        startAzanPopup(context, Constants.AZAN_TYPE_PRE_ASR)
+
                     }
                 }
 
@@ -109,6 +115,8 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultAzanTypeAsr)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_ASR)
                         context!!.startForegroundService(playerIntent)
+                        startAzanPopup(context, Constants.AZAN_TYPE_ASR)
+
                     }
                 }
 
@@ -123,6 +131,8 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultPreAzanTypeMaghrib)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_MAGHREB)
                         context!!.startForegroundService(playerIntent)
+                        startAzanPopup(context, Constants.AZAN_TYPE_PRE_MAGHREB)
+
 
                     }
                 }
@@ -137,7 +147,7 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultAzanTypeMaghrib)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_MAGHREB)
                         context!!.startForegroundService(playerIntent)
-
+                        startAzanPopup(context, Constants.AZAN_TYPE_MAGHREB)
                     }
                 }
 
@@ -152,6 +162,8 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultPreAzanTypeIshaa)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_PRE_ESHA)
                         context!!.startForegroundService(playerIntent)
+                        startAzanPopup(context, Constants.AZAN_TYPE_PRE_ESHA)
+
                     }
                 }
 
@@ -165,6 +177,7 @@ class AlarmReceiver : BroadcastReceiver() {
                         playerIntent.putExtra("Media", defaultAzanTypeIshaa)
                         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_ESHA)
                         context!!.startForegroundService(playerIntent)
+                        startAzanPopup(context, Constants.AZAN_TYPE_ESHA)
                     }
                 }
 
@@ -214,5 +227,12 @@ class AlarmReceiver : BroadcastReceiver() {
 
         }
 
+    }
+
+    private fun startAzanPopup(context: Context, azanType: String) {
+        val intent = Intent(context, OverlayService::class.java)
+        intent.putExtra("AZAN_TYPE", azanType)
+
+        context.startService(intent)
     }
 }

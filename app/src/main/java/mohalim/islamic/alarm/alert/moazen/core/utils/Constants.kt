@@ -24,6 +24,7 @@ class Constants {
 
         const val AZAN_TYPE_PLAY_SOUND = "AZAN_TYPE_PLAY_SOUND"
         const val AZAN_TYPE_STOP_SOUND = "AZAN_TYPE_STOP_SOUND"
+        const val AZAN_TYPE_STOP = "AZAN_TYPE_STOP"
 
 
 

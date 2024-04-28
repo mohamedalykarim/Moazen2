@@ -59,4 +59,17 @@
     <string name="suruh_al_kahf_reminder">Suruh AL_KAHF REMINDER</string>
     <string name="its_friday_morining_could_you_please_read_suruh_al_kahf">Its Friday Morining, Could you please read Suruh Al-Kahf</string>
     <string name="masjed_app_is_playing_sound">Masjed App is playing sound</string>
+    <string name="quran_module_is_downloading">Quran Module is downloading</string>
+    <string name="_15_minutes_till_fajr">15 minutes till Fajr</string>
+    <string name="now_fajr_azan">Now, Fajr Azan</string>
+    <string name="_15_minutes_till_duhur">15 minutes till Duhur</string>
+    <string name="now_duhur_azan">Now, Duhur Azan</string>
+    <string name="_15_minutes_till_asr">15 minutes till ASR</string>
+    <string name="now_asr_azan">Now, ASR Azan</string>
+    <string name="_15_minutes_till_maghreb">15 minutes till Maghreb</string>
+    <string name="now_maghreb_azan">Now, Maghreb Azan</string>
+    <string name="_15_minutes_till_ishaa">15 minutes till Ishaa</string>
+    <string name="now_maghreb_ishaa">Now, Maghreb Ishaa</string>
+    <string name="grant_overlay_screen_permission_to_popup_a_screen_in_every_prayer_reminder">Grant overlay screen permission to popup a screen in every prayer reminder</string>
+    <string name="overlay_permission">Draw Overlay Permission</string>
 </resources>

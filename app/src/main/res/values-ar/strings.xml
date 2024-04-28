@@ -2,9 +2,9 @@
 <resources>
     <string name="add_new">اضافة جديد</string>
     <string name="reset">اعادة تعيين</string>
-    <string name="you_refused_to_grant_the_permission_please_grant_it_from_the_setting_so_you_can_get_the_application_notification">لقد رفضت منح الترخيص لاستخدام الاشعارات، برجاء قم بمنح الترخيص</string>
+    <string name="you_refused_to_grant_the_permission_please_grant_it_from_the_setting_so_you_can_get_the_application_notification">لقد رفضت منح التصريح لاستخدام الاشعارات، برجاء قم بمنح التصريح من خلال الاعدادات</string>
     <string name="you_should_grant_auto_start_permission_for_the_application_so_it_can_launch_after_rebooting_system">يجب منح ترخيص تشغيل التطبيق بشكل تلقائي بعد اعادة التشغيل حتى يمكن للتطبيق اعادة ضبط الاذان بعد اعادة التغشيل</string>
-    <string name="permission_granted">تم منح الترخيص</string>
+    <string name="permission_granted">تم منح التصريح</string>
     <string name="auto_start_permission">تصريح التشغيل التلقائي بعد اعادة التشغيل</string>
     <string name="not_required_for_all_phones">غير مطلوب لجميع انواع التليفونات المحمولة</string>
     <string name="notification_permission">تصريح الاشعارات</string>
@@ -58,4 +58,17 @@
     <string name="suruh_al_kahf_reminder">تنبيه قراءة سورة الكهف</string>
     <string name="its_friday_morining_could_you_please_read_suruh_al_kahf">اليوم هو الجمعة صباحا، رجاء قراءة سورة الكهف</string>
     <string name="masjed_app_is_playing_sound">تطبيق المسجد يقوم بتشغيل مقطع صوتي</string>
+    <string name="quran_module_is_downloading">جاري تحميل الجزء الخاص بالقران الكريم للتطبيق</string>
+    <string name="_15_minutes_till_fajr">متبقي 15 دقيقة على الفجر</string>
+    <string name="now_fajr_azan">آذان الفجر الآن</string>
+    <string name="_15_minutes_till_duhur">متبقي 15 دقيقة على آذان الظهر</string>
+    <string name="now_duhur_azan">آذان الظهر الآن</string>
+    <string name="_15_minutes_till_asr">متبقي 15 دقيقة على آذان العصر</string>
+    <string name="now_asr_azan">آذان العصر الآن</string>
+    <string name="_15_minutes_till_maghreb">متبقي 15 دقيقة على آذان المغرب</string>
+    <string name="now_maghreb_azan">آذان المغرب الآن</string>
+    <string name="_15_minutes_till_ishaa">متبقي 15 دقيقة على آذان العشاء</string>
+    <string name="now_maghreb_ishaa">آذان العشاء الآن</string>
+    <string name="grant_overlay_screen_permission_to_popup_a_screen_in_every_prayer_reminder">قم بمنح تصريح الرسم على التطبيقات الاخرى حتي يمكن لتطبيق المسجد عرض شاشة التنبيه فى كل صلاة</string>
+    <string name="overlay_permission">تصريح الرسم على التطبيقات</string>
 </resources>

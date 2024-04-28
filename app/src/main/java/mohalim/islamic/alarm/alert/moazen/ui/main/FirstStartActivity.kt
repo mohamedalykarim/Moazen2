@@ -1,7 +1,6 @@
 package mohalim.islamic.alarm.alert.moazen.ui.main
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.content.ComponentName
@@ -16,13 +15,13 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -48,7 +47,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
-import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
 import mohalim.islamic.alarm.alert.moazen.ui.compose.SummerTime
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingButton
 import java.util.Locale
@@ -58,8 +56,16 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class FirstStartActivity : AppCompatActivity() {
     private val viewModel: FirstStartViewModel by viewModels()
-    val PERMISSION_REQUEST_CODE = 112
     val manufacturer = Build.MANUFACTURER.lowercase(Locale.ROOT)
+
+    val REQUEST_CODE = -1010101
+
+
+    val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+        }
+    }
 
 
     @Inject
@@ -89,6 +95,8 @@ class FirstStartActivity : AppCompatActivity() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
             viewModel.setNotificationPermissionGranted(true)
         }
+
+        if (!Settings.canDrawOverlays(this)) viewModel.setOverlayPermissionGranted(false) else viewModel.setOverlayPermissionGranted(true)
     }
 
     private val requestPermissionLauncherForNotificiationPermission =
@@ -212,6 +220,7 @@ class FirstStartActivity : AppCompatActivity() {
 
         val autoStartPermissionGranted by viewModel.autoStartPermissionGranted.collectAsState()
         val notificationPermissionGranted by viewModel.notificationPermissionGranted.collectAsState()
+        val overlayPermissionGranted by viewModel.overlayPermissionGranted.collectAsState()
         val scheduleAlarmPermissionGranted by viewModel.scheduleAlarmPermissionGranted.collectAsState()
 
         Box(
@@ -384,12 +393,55 @@ class FirstStartActivity : AppCompatActivity() {
                             }
                         } )
                     }
+                }
+
+                /**
+                 * Can overlay
+                 */
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .background(Color(android.graphics.Color.parseColor("#fff2f6")))
+                        .border(
+                            1.dp,
+                            Color(android.graphics.Color.parseColor("#ffd4e2")),
+                            shape = RoundedCornerShape(5)
+                        )
+
+                ) {
+
+                    Text(
+                        text = stringResource(R.string.grant_overlay_screen_permission_to_popup_a_screen_in_every_prayer_reminder),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                    )
+
+                    if (overlayPermissionGranted){
+                        Text(
+                            text = stringResource(id = R.string.permission_granted),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            color = Color(parseColor("#007400")),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }else{
+                        SettingButton(name = stringResource(R.string.overlay_permission), iconId = R.drawable.ic_masjed_icon, onClickCard = {
+                            val intent = Intent(
+                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + applicationContext.packageName)
+                            )
+                            startForResult.launch(intent)
+                        } )
+                    }
 
 
 
 
 
                 }
+
 
 
                 if (Build.VERSION.SDK_INT > 33) {
