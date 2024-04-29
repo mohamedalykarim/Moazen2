@@ -72,4 +72,5 @@
     <string name="grant_overlay_screen_permission_to_popup_a_screen_in_every_prayer_reminder">قم بمنح تصريح الرسم على التطبيقات الاخرى حتي يمكن لتطبيق المسجد عرض شاشة التنبيه فى كل صلاة</string>
     <string name="overlay_permission">تصريح الرسم على التطبيقات</string>
     <string name="please_swipe_the_screen_to_dismiss_the_notification">قم بسحب الشاشة فى أي اتجاه وسيتم ايقاف التنبيه بشكل تلقائي</string>
+    <string name="hadith">الحديث الشريف</string>
 </resources>

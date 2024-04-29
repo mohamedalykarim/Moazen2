@@ -73,4 +73,15 @@
     <string name="grant_overlay_screen_permission_to_popup_a_screen_in_every_prayer_reminder">Grant overlay screen permission to popup a screen in every prayer reminder</string>
     <string name="overlay_permission">Draw Overlay Permission</string>
     <string name="please_swipe_the_screen_to_dismiss_the_notification">Please swipe the screen to dismiss the notification</string>
+    <string name="hadith">Hadith</string>
+    <string name="darimi">Al-Darimi</string>
+    <string name="abi_daud">Abi Dawud</string>
+    <string name="ahmed">Ahmad</string>
+    <string name="bukhari">al-Bukhari</string>
+    <string name="ibn_maja">Ibn Majah</string>
+    <string name="malik">Malik</string>
+    <string name="muslim">Muslim</string>
+    <string name="nasai">Al-Nasa\'i</string>
+    <string name="trmizi">Al-Tirmidhi</string>
+    <string name="the_noble_prophet_s_hadith">The Noble Prophet’s Hadith</string>
 </resources>

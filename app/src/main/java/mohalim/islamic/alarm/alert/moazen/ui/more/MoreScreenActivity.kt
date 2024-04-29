@@ -55,8 +55,8 @@ import com.google.android.play.core.splitinstall.SplitInstallRequest
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.ui.azkar.AzkarActivity
+import mohalim.islamic.alarm.alert.moazen.ui.hadith.main.HadithMainActivity
 import mohalim.islamic.alarm.alert.moazen.ui.quran.main.QuranMainActivity
-import mohalim.islamic.alarm.alert.moazen.ui.quran.viewer.QuranViewerActivity
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingActivity
 
 @AndroidEntryPoint
@@ -126,6 +126,16 @@ fun MoreScreenUI(
                                        }
                                }
 
+                        },200)
+
+                    })
+                }
+
+                /** Hadith **/
+                item {
+                    ItemContainer(stringResource(R.string.hadith), R.drawable.ic_hadith_icon, onClickCard = {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            context.startActivity(Intent(context, HadithMainActivity::class.java))
                         },200)
 
                     })

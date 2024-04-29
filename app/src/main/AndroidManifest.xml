@@ -9,11 +9,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-
-
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <queries>
         <intent>
@@ -34,10 +31,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moazen"
         tools:targetApi="33">
-        <activity android:name=".ui.azan_popup.AzanPopupActivity"
-            android:launchMode="singleInstance" android:excludeFromRecents="true"
-            android:taskAffinity="" android:theme="@android:style/Theme.Dialog" />
-
+        <activity
+            android:name=".ui.hadith.view.HadithViewerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hadith.main.HadithMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.azan_popup.AzanPopupActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name=".ui.quran.main.QuranMainActivity"
             android:exported="false" />
@@ -80,7 +85,6 @@
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <action android:name="android.intent.action.BOOT" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />

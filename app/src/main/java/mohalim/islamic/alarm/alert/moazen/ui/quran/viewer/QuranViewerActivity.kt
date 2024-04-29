@@ -123,7 +123,6 @@ fun QuranViewerActivityUI(
             detectTransformGestures{ centroid, pan, zoom, rotation ->
                 scale *= zoom
             }
-
         },
         state = pagerState) { page ->
         Log.d("TAG", "QuranViewerActivityUI: page $page ")
