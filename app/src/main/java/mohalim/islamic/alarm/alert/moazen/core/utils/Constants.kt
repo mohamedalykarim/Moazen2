@@ -4,6 +4,7 @@ class Constants {
 
     companion object{
         val ALARM_ID_ALKAHF_REMINDER: Int = 26141001
+        val DOWNLOAD_FILE_NOTIFICATION: Int = 26141002
 
         const val RESERVE_ALL_TIMES = "RESERVE_ALL_TIMES"
 

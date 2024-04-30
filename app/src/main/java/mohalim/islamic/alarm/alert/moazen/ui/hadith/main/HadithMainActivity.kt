@@ -39,6 +39,7 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
@@ -210,7 +211,7 @@ fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Context, rawy
 
         val data = Data.Builder()
             .putString("URL", url)
-            .putString("FILE_NAME", fileName+".json")
+            .putString("FILE_NAME", fileName)
             .build()
 
         val constraints = Constraints.Builder()
@@ -219,11 +220,10 @@ fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Context, rawy
 
         val worker = OneTimeWorkRequestBuilder<FileDownloadWorker>()
             .setInputData(data)
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .addTag(viewModel.WORKER_MANAGER_TAG)
             .setConstraints(constraints)
             .build()
-
-        Log.d("TAG", "handleRawyClickButton:  "+ context.getString(R.string.download_resources_is_started))
 
         Toast.makeText(context,
             context.getString(R.string.download_resources_is_started), Toast.LENGTH_LONG).show()

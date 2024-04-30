@@ -8,7 +8,7 @@ class HadithUtils {
     companion object{
         fun checkIfFileExists(context : Context, rowaa: String): Boolean {
             val fileName = getFileName(context, rowaa)
-            return File(context.filesDir, "$fileName.json").exists()
+            return context.getFileStreamPath(fileName+".json").exists();
         }
 
         fun getFileURL(context: Context, rawy: String): String {

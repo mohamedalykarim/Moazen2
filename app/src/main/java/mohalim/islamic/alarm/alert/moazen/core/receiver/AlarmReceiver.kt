@@ -186,14 +186,14 @@ class AlarmReceiver : BroadcastReceiver() {
             Constants.ALKAHF_READ_REMINDER->{
 
 
-                val name = "NotificationChannelName"
-                val descriptionText = "NotificationChannelDescription"
+                val name = context!!.getString(R.string.suruh_al_kahf_reminder)
+                val descriptionText = context.getString(R.string.its_friday_morining_could_you_please_read_suruh_al_kahf)
                 val importance = NotificationManager.IMPORTANCE_HIGH
                 val mChannel = NotificationChannel("moazenNotificationChannnel", name, importance)
                 mChannel.description = descriptionText
                 // Register the channel with the system. You can't change the importance
                 // or other notification behaviors after this.
-                val notificationManager = context!!.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+                val notificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.createNotificationChannel(mChannel)
 
                 if(notificationManager.areNotificationsEnabled()){
