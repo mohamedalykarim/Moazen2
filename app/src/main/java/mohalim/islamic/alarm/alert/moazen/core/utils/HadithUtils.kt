@@ -8,10 +8,38 @@ class HadithUtils {
     companion object{
         fun checkIfFileExists(context : Context, rowaa: String): Boolean {
             val fileName = getFileName(context, rowaa)
-            return File(context.filesDir, fileName).exists()
+            return File(context.filesDir, "$fileName.json").exists()
         }
 
-        private fun getFileName(context: Context, rowaa: String): String{
+        fun getFileURL(context: Context, rawy: String): String {
+            var url = ""
+
+            val trmiziUrl = "/uc?export=download&id=1bzQIM6TC196NMX7Fnnbf7ZWej_OgbtiI"
+            val nasaiUrl = "/uc?export=download&id=1nW4smqPNuJnQvOzIlazpRvgE6sD_Sr56"
+            val muslimUrl = "/uc?export=download&id=1l3KqVI1w6eJufla-Fl66HxwtuVXslWLd"
+            val malikUrl = "/uc?export=download&id=10MHcOFlSjMHQgoKHPB0wIcorus7n22kj"
+            val ibn_majaUrl = "/uc?export=download&id=1RkwxIDTioFNr7bh9sk3Wzc43fxPPNBUr"
+            val darimiUrl = "/uc?export=download&id=1_pGFzwc9tqSrbsry6VTtmTPvvZjo8oW_"
+            val bukhariUrl = "/uc?export=download&id=1T6uRtboAm1mu8OJI4qfnw4KQP22yVcKq"
+            val ahmedUrl = "/uc?export=download&id=1xMO9Ujgd9A_BmfljJj0a3ZUB4zR6twWU"
+            val abiDaudUrl = "/uc?export=download&id=1YKb149jQU9A9MqneJWeAYTs6sYi8Ls8m"
+
+            when(rawy){
+                context.getString(R.string.abi_daud) ->  url = abiDaudUrl
+                context.getString(R.string.ahmed) -> url = ahmedUrl
+                context.getString(R.string.bukhari) -> url = bukhariUrl
+                context.getString(R.string.darimi) -> url = darimiUrl
+                context.getString(R.string.ibn_maja) -> url = ibn_majaUrl
+                context.getString(R.string.malik) -> url = malikUrl
+                context.getString(R.string.muslim) -> url = muslimUrl
+                context.getString(R.string.nasai) -> url = nasaiUrl
+                context.getString(R.string.trmizi) -> url = trmiziUrl
+            }
+
+            return url
+        }
+
+        fun getFileName(context: Context, rowaa: String): String{
             var fileName = ""
             when(rowaa){
                 context.getString(R.string.abi_daud) -> fileName = "abi_daud"
@@ -25,7 +53,7 @@ class HadithUtils {
                 context.getString(R.string.trmizi) -> fileName = "trmizi"
             }
 
-            return fileName + ".json"
+            return fileName
         }
 
     }

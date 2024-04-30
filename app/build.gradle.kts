@@ -92,6 +92,8 @@ dependencies {
     implementation ("com.google.android.play:core:1.10.3")
 
 
+    implementation ("com.squareup.retrofit2:retrofit:2.11.0")
+
 
 }
 

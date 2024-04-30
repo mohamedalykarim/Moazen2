@@ -4,7 +4,10 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,25 +35,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.service.FileDownloadWorker
 import mohalim.islamic.alarm.alert.moazen.core.utils.HadithUtils
 import mohalim.islamic.alarm.alert.moazen.ui.hadith.view.HadithViewerActivity
 
 @AndroidEntryPoint
 class HadithMainActivity : AppCompatActivity() {
+    val viewModel : HadithMainViewModel by viewModels()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            HadithMainActivityUI(this@HadithMainActivity)
+            HadithMainActivityUI(this@HadithMainActivity, viewModel)
         }
 
     }
 }
 
 @Composable
-fun HadithMainActivityUI(context: Context){
+fun HadithMainActivityUI(context: Context, viewModel: HadithMainViewModel){
     val rowaa = arrayOf(stringResource(id = R.string.abi_daud),
         stringResource(id = R.string.ahmed),
         stringResource(id = R.string.bukhari),
@@ -87,18 +99,19 @@ fun HadithMainActivityUI(context: Context){
                             shape = RoundedCornerShape(5)
                         )
                         .clickable {
-                            if (HadithUtils.checkIfFileExists(context, rowaa[index])){
-                                val intent = Intent(context, HadithViewerActivity::class.java)
-                                intent.putExtra("Hadith", rowaa[index])
-                                context.startActivity(intent)
+                            if (!viewModel.isFileDownloadInProgress(context)) {
+                                handleRawyClickButton(viewModel, context, rowaa[index])
+                            } else {
+                                Log.d("TAG", "handleRawyClickButton:  "+ context.resources.getString(R.string.download_in_progress))
 
-                            }else{
-
+                                Toast
+                                    .makeText(
+                                        context,
+                                        context.resources.getString(R.string.download_in_progress),
+                                        Toast.LENGTH_LONG
+                                    )
+                                    .show()
                             }
-
-
-
-
                         }
 
                 ) {
@@ -186,5 +199,43 @@ fun HadithMainActivityUI(context: Context){
         }
 
     }
+
+}
+
+fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Context, rawy: String) {
+
+    if (!HadithUtils.checkIfFileExists(context, rawy)){
+        val url = HadithUtils.getFileURL(context, rawy)
+        val fileName = HadithUtils.getFileName(context, rawy)+".json"
+
+        val data = Data.Builder()
+            .putString("URL", url)
+            .putString("FILE_NAME", fileName+".json")
+            .build()
+
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val worker = OneTimeWorkRequestBuilder<FileDownloadWorker>()
+            .setInputData(data)
+            .addTag(viewModel.WORKER_MANAGER_TAG)
+            .setConstraints(constraints)
+            .build()
+
+        Log.d("TAG", "handleRawyClickButton:  "+ context.getString(R.string.download_resources_is_started))
+
+        Toast.makeText(context,
+            context.getString(R.string.download_resources_is_started), Toast.LENGTH_LONG).show()
+
+        WorkManager.getInstance(context)
+            .enqueue(worker)
+
+    }else{
+        val intent = Intent(context, HadithViewerActivity::class.java)
+        intent.putExtra("RAWY_HADITH", rawy)
+        context.startActivity(intent)
+    }
+
 
 }

@@ -84,4 +84,6 @@
     <string name="nasai">Al-Nasa\'i</string>
     <string name="trmizi">Al-Tirmidhi</string>
     <string name="the_noble_prophet_s_hadith">The Noble Prophet’s Hadith</string>
+    <string name="download_in_progress">Download in progress</string>
+    <string name="download_resources_is_started">Download Resources is started</string>
 </resources>
