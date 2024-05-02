@@ -1,6 +1,7 @@
 package mohalim.islamic.alarm.alert.moazen.core.utils
 
 import android.content.Context
+import android.util.Log
 import mohalim.islamic.alarm.alert.moazen.R
 import java.io.File
 
@@ -54,6 +55,19 @@ class HadithUtils {
             }
 
             return fileName
+        }
+
+        fun hasEnoughSpaceForFile(context: Context, requiredSize: Long): Boolean {
+            val appFilesDir = context.filesDir
+            val availableSpace = appFilesDir.usableSpace
+
+            return availableSpace >= requiredSize
+        }
+
+        fun getFileStorageSize(context: Context, fileName: String): Long {
+            val appFilesDir = context.filesDir
+            val file = File(appFilesDir, fileName)
+            return file.length()
         }
 
     }

@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -28,28 +29,47 @@ class FileDownloadWorker @AssistedInject constructor(
         val fileName = inputData.getString("FILE_NAME")
 
         return try {
+            val name = "Downloading a resource "+ fileName
+            val descriptionText = "We currently downloading $fileName"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val mChannel = NotificationChannel("moazenNotificationChannnel"+fileName, name, importance)
+            mChannel.description = descriptionText
+            // Register the channel with the system. You can't change the importance
+            // or other notification behaviors after this.
+            val notificationManager = applicationContext.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(mChannel)
+
+            val notification = NotificationCompat.Builder(applicationContext, "moazenNotificationChannnel"+fileName)
+                .setSmallIcon(R.drawable.ic_masjed_icon)
+                .setContentTitle(name)
+                .setContentText(descriptionText)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .setOngoing(true)
+                .setProgress(100,0,false)
+
+            var lastNotificationProgress = 0
             networkRepository.downloadFile(url!!, fileName!!).collect{downloadProgress->
-                val name = "Downloading a resource "+ fileName
-                val descriptionText = "We currently downloading $fileName"
-                val importance = NotificationManager.IMPORTANCE_HIGH
-                val mChannel = NotificationChannel("moazenNotificationChannnel"+fileName, name, importance)
-                mChannel.description = descriptionText
-                // Register the channel with the system. You can't change the importance
-                // or other notification behaviors after this.
-                val notificationManager = applicationContext.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(mChannel)
+                if(notificationManager.areNotificationsEnabled()){
+                    if(ContextCompat.checkSelfPermission( applicationContext,android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+                        notification.setProgress(100,downloadProgress.percentage, false)
+                        notification.setSilent(true)
 
-                val notification = NotificationCompat.Builder(applicationContext, "moazenNotificationChannnel"+fileName)
-                    .setSmallIcon(R.drawable.ic_masjed_icon)
-                    .setContentTitle(name)
-                    .setContentText(descriptionText)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(true)
-                    .setOngoing(true)
-                    .setProgress(100,0,false)
 
-                updateNotification(notificationManager, notification, downloadProgress.percentage )
+                        if (downloadProgress.percentage % 2 == 0 && downloadProgress.percentage != lastNotificationProgress){
+                            notificationManager.notify(Constants.DOWNLOAD_FILE_NOTIFICATION, notification.build())
+                            lastNotificationProgress = downloadProgress.percentage
+                        }
+                    }
+                }
+
+
             }
+
+            notification.setContentText("Download complete")
+            notification.setProgress(0, 0, false)
+            notification.setOngoing(false)
+            notificationManager.notify(Constants.DOWNLOAD_FILE_NOTIFICATION, notification.build())
 
 
             Result.success()
@@ -57,21 +77,6 @@ class FileDownloadWorker @AssistedInject constructor(
             Result.failure()
         }
     }
-
-    private fun updateNotification(
-        notificationManager: NotificationManager,
-        notification: NotificationCompat.Builder,
-        progress: Int
-    ) {
-        if(notificationManager.areNotificationsEnabled()){
-            if(ContextCompat.checkSelfPermission( applicationContext,android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
-                notification.setProgress(100,progress, false)
-                notification.setSilent(true)
-                NotificationManagerCompat.from(applicationContext).notify(Constants.ALARM_ID_ALKAHF_REMINDER, notification.build())
-            }
-        }
-    }
-
 
 
 

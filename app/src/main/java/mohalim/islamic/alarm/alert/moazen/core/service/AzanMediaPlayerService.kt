@@ -31,6 +31,31 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private var isFirstVolumeDown = true
 
+    // Create a BroadcastReceiver to handle volume button events
+    private val volumeButtonReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val action = intent?.action
+            if (action == "android.media.VOLUME_CHANGED_ACTION") {
+
+                val stream = intent.extras!!.getInt("android.media.EXTRA_VOLUME_STREAM_TYPE")
+
+                Log.d("TAG", "onReceive: $stream")
+
+                if (stream == AudioManager.STREAM_MUSIC) {
+                    if (isFirstVolumeDown){
+                        setMediaPlayerVolume(.30f)
+                        isFirstVolumeDown = false
+                    }else{
+                        stopMedia()
+                        stopSelf()
+                    }
+                }
+
+
+            }
+        }
+    }
+
 
 
     inner class LocalBinder : Binder(){
@@ -42,41 +67,41 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val filter = IntentFilter().apply {
-            addAction("android.media.VOLUME_CHANGED_ACTION")
+        try {
+            val filter = IntentFilter().apply {
+                addAction("android.media.VOLUME_CHANGED_ACTION")
+            }
+
+            // Register receiver for volume press button
+            registerReceiver(volumeButtonReceiver, filter)
+
+            val rawId = intent?.getIntExtra("Media", 0)
+            val azanType = intent?.getStringExtra("AZAN_TYPE")
+            if (rawId == 0) stopSelf()
+            initMediaPlayer(rawId!!)
+
+            when (azanType) {
+                Constants.AZAN_TYPE_PLAY_SOUND -> {
+                    val notification = initNotificationForOthers(getString(R.string.masjed_app_is_playing_sound))
+                    startForeground(1, notification)
+                }
+                Constants.AZAN_TYPE_STOP_SOUND -> {
+                    val notification = initNotificationForOthers(getString(R.string.masjed_app_is_playing_sound))
+                    startForeground(1, notification)
+                    stopSelf()
+                }
+                Constants.AZAN_TYPE_STOP -> {
+                    stopSelf()
+                }
+                else -> {
+                    val notification = initNotificationForAzan(azanType)
+                    startForeground(1, notification)
+                }
+            }
+
+        }catch (_ : Exception){
+            stopSelf()
         }
-
-        // Register receiver for volume press button
-        registerReceiver(volumeButtonReceiver, filter)
-
-        val rawId = intent?.getIntExtra("Media", 0)
-        val azanType = intent?.getStringExtra("AZAN_TYPE")
-        if (rawId == 0) stopSelf()
-        initMediaPlayer(rawId!!)
-
-        when (azanType) {
-            Constants.AZAN_TYPE_PLAY_SOUND -> {
-                val notification = initNotificationForOthers(getString(R.string.masjed_app_is_playing_sound))
-                startForeground(1, notification)
-            }
-            Constants.AZAN_TYPE_STOP_SOUND -> {
-                val notification = initNotificationForOthers(getString(R.string.masjed_app_is_playing_sound))
-                startForeground(1, notification)
-
-                stopSelf()
-            }
-            Constants.AZAN_TYPE_STOP -> {
-                stopSelf()
-            }
-            else -> {
-                val notification = initNotificationForAzan(azanType)
-                startForeground(1, notification)
-            }
-        }
-
-
-
-
         return START_STICKY
     }
 
@@ -242,32 +267,6 @@ class AzanMediaPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
         Log.d("TAG", "onBufferingUpdate: ")
-    }
-
-
-    // Create a BroadcastReceiver to handle volume button events
-    private val volumeButtonReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val action = intent?.action
-            if (action == "android.media.VOLUME_CHANGED_ACTION") {
-
-                val stream = intent.extras!!.getInt("android.media.EXTRA_VOLUME_STREAM_TYPE")
-
-                Log.d("TAG", "onReceive: $stream")
-
-                if (stream == AudioManager.STREAM_MUSIC) {
-                    if (isFirstVolumeDown){
-                        setMediaPlayerVolume(.30f)
-                        isFirstVolumeDown = false
-                    }else{
-                        stopMedia()
-                        stopSelf()
-                    }
-                }
-
-
-            }
-        }
     }
 
 

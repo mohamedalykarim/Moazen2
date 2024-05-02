@@ -100,16 +100,28 @@ fun HadithMainActivityUI(context: Context, viewModel: HadithMainViewModel){
                             shape = RoundedCornerShape(5)
                         )
                         .clickable {
+                            //check if phone storage is full
+                            if (!HadithUtils.hasEnoughSpaceForFile(context, 100*1024*1024)) {
+                                Toast
+                                    .makeText(
+                                        context,
+                                        context.getString(R.string.phone_storage_is_almost_full_please_free_some_space_to_download_the_resources),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                                return@clickable
+                            }
+
+
                             if (!viewModel.isFileDownloadInProgress(context)) {
                                 handleRawyClickButton(viewModel, context, rowaa[index])
                             } else {
-                                Log.d("TAG", "handleRawyClickButton:  "+ context.resources.getString(R.string.download_in_progress))
 
                                 Toast
                                     .makeText(
                                         context,
                                         context.resources.getString(R.string.download_in_progress),
-                                        Toast.LENGTH_LONG
+                                        Toast.LENGTH_SHORT
                                     )
                                     .show()
                             }
@@ -226,7 +238,7 @@ fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Context, rawy
             .build()
 
         Toast.makeText(context,
-            context.getString(R.string.download_resources_is_started), Toast.LENGTH_LONG).show()
+            context.getString(R.string.download_resources_is_started), Toast.LENGTH_SHORT).show()
 
         WorkManager.getInstance(context)
             .enqueue(worker)

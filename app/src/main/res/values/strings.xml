@@ -86,4 +86,5 @@
     <string name="the_noble_prophet_s_hadith">The Noble Prophet’s Hadith</string>
     <string name="download_in_progress">Download in progress</string>
     <string name="download_resources_is_started">Download Resources is started</string>
+    <string name="phone_storage_is_almost_full_please_free_some_space_to_download_the_resources">Phone storage is almost full. Please, Free some space to download the resources</string>
 </resources>

@@ -1,6 +1,9 @@
 package mohalim.islamic.alarm.alert.moazen.core.repository
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import androidx.compose.ui.input.key.Key.Companion.Sleep
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -28,6 +31,7 @@ class NetworkRepository @Inject constructor(val context: Context, val fileDownlo
                     downloadedBytes += bytesRead.toLong()
                     val progress = (downloadedBytes * 100) / totalBytes
                     emit(DownloadProgress(progress.toInt()))
+
                 }
             }
 

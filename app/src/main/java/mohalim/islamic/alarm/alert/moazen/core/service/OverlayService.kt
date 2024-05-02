@@ -26,81 +26,85 @@ class OverlayService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        try {
+            windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        // Inflate the overlay view
-        overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null)
-        overlayView.setOnTouchListener(object : OnSwipeTouchListener(this@OverlayService){
-            override fun onSwipeUp(): Boolean {
-                stopService(this@OverlayService)
-                return super.onSwipeUp()
-            }
+            // Inflate the overlay view
+            overlayView = LayoutInflater.from(applicationContext).inflate(R.layout.overlay_layout, null)
+            overlayView.setOnTouchListener(object : OnSwipeTouchListener(applicationContext){
+                override fun onSwipeUp(): Boolean {
+                    stopService(applicationContext)
+                    return super.onSwipeUp()
+                }
 
-            override fun onSwipeDown(): Boolean {
-                stopService(this@OverlayService)
-                return super.onSwipeDown()
-            }
+                override fun onSwipeDown(): Boolean {
+                    stopService(applicationContext)
+                    return super.onSwipeDown()
+                }
 
-            override fun onSwipeLeft(): Boolean {
-                stopService(this@OverlayService)
-                return super.onSwipeLeft()
-            }
+                override fun onSwipeLeft(): Boolean {
+                    stopService(applicationContext)
+                    return super.onSwipeLeft()
+                }
 
-            override fun onSwipeRight(): Boolean {
-                stopService(this@OverlayService)
-                return super.onSwipeRight()
-            }
-        })
+                override fun onSwipeRight(): Boolean {
+                    stopService(applicationContext)
+                    return super.onSwipeRight()
+                }
+            })
 
 
-        // Set the layout parameters for the overlay view
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT
-        )
+            // Set the layout parameters for the overlay view
+            val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT
+            )
 
-        Log.d("TAG", "onCreate: from overlay service")
+            Log.d("TAG", "onCreate: from overlay service")
 
-        // Add the overlay view to the window manager
-        windowManager.addView(overlayView, params)
+            // Add the overlay view to the window manager
+            windowManager.addView(overlayView, params)
 
-        object : CountDownTimer(270000,1000){
-            override fun onTick(millisUntilFinished: Long) {}
+            object : CountDownTimer(270000,1000){
+                override fun onTick(millisUntilFinished: Long) {}
 
-            override fun onFinish() {
-                stopService(this@OverlayService)
-            }
-        }.start()
+                override fun onFinish() {
+                    stopService(applicationContext)
+                }
+            }.start()
+        }catch (_ : Exception){}
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val azanType =intent!!.getStringExtra("AZAN_TYPE")
+        try {
+            val azanType =intent!!.getStringExtra("AZAN_TYPE")
 
-        val message =
-            when(azanType){
-                Constants.AZAN_TYPE_PRE_FAGR -> applicationContext.getString(R.string._15_minutes_till_fajr)
-                Constants.AZAN_TYPE_FAGR -> applicationContext.getString(R.string.now_fajr_azan)
-                Constants.AZAN_TYPE_PRE_ZOHR -> applicationContext.getString(R.string._15_minutes_till_duhur)
-                Constants.AZAN_TYPE_ZOHR -> applicationContext.getString(R.string.now_duhur_azan)
-                Constants.AZAN_TYPE_PRE_ASR -> applicationContext.getString(R.string._15_minutes_till_asr)
-                Constants.AZAN_TYPE_ASR -> applicationContext.getString(R.string.now_asr_azan)
-                Constants.AZAN_TYPE_PRE_MAGHREB -> applicationContext.getString(R.string._15_minutes_till_maghreb)
-                Constants.AZAN_TYPE_MAGHREB -> applicationContext.getString(R.string.now_maghreb_azan)
-                Constants.AZAN_TYPE_PRE_ESHA -> applicationContext.getString(R.string._15_minutes_till_ishaa)
-                Constants.AZAN_TYPE_ESHA -> applicationContext.getString(R.string.now_maghreb_ishaa)
-                else -> ""
-            }
+            val message =
+                when(azanType){
+                    Constants.AZAN_TYPE_PRE_FAGR -> applicationContext.getString(R.string._15_minutes_till_fajr)
+                    Constants.AZAN_TYPE_FAGR -> applicationContext.getString(R.string.now_fajr_azan)
+                    Constants.AZAN_TYPE_PRE_ZOHR -> applicationContext.getString(R.string._15_minutes_till_duhur)
+                    Constants.AZAN_TYPE_ZOHR -> applicationContext.getString(R.string.now_duhur_azan)
+                    Constants.AZAN_TYPE_PRE_ASR -> applicationContext.getString(R.string._15_minutes_till_asr)
+                    Constants.AZAN_TYPE_ASR -> applicationContext.getString(R.string.now_asr_azan)
+                    Constants.AZAN_TYPE_PRE_MAGHREB -> applicationContext.getString(R.string._15_minutes_till_maghreb)
+                    Constants.AZAN_TYPE_MAGHREB -> applicationContext.getString(R.string.now_maghreb_azan)
+                    Constants.AZAN_TYPE_PRE_ESHA -> applicationContext.getString(R.string._15_minutes_till_ishaa)
+                    Constants.AZAN_TYPE_ESHA -> applicationContext.getString(R.string.now_maghreb_ishaa)
+                    else -> ""
+                }
 
 
 
 
-        val overlayText: TextView  = overlayView.findViewById(R.id.overlay_text)
-        val overlayText2: TextView  = overlayView.findViewById(R.id.overlay_text2)
-        overlayText.text = message
-        overlayText2.text = getString(R.string.please_swipe_the_screen_to_dismiss_the_notification)
+            val overlayText: TextView  = overlayView.findViewById(R.id.overlay_text)
+            val overlayText2: TextView  = overlayView.findViewById(R.id.overlay_text2)
+            overlayText.text = message
+            overlayText2.text = getString(R.string.please_swipe_the_screen_to_dismiss_the_notification)
+        }catch (_: Exception){}
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -117,7 +121,7 @@ class OverlayService : Service() {
     fun stopService(context : Context){
         val playerIntent = Intent(context, AzanMediaPlayerService::class.java)
         playerIntent.putExtra("AZAN_TYPE", Constants.AZAN_TYPE_STOP_SOUND)
-        context.startService(playerIntent)
+        context.startForegroundService(playerIntent)
         stopSelf()
     }
 }
