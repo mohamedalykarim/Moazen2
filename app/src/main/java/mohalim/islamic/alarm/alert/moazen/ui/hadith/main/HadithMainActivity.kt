@@ -42,6 +42,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.service.FileDownloadWorker
 import mohalim.islamic.alarm.alert.moazen.core.utils.HadithUtils
@@ -114,7 +117,11 @@ fun HadithMainActivityUI(context: Context, viewModel: HadithMainViewModel){
 
 
                             if (!viewModel.isFileDownloadInProgress(context)) {
-                                handleRawyClickButton(viewModel, context, rowaa[index])
+                                runBlocking {
+                                    withContext(Dispatchers.IO){
+                                        handleRawyClickButton(viewModel, context, rowaa[index])
+                                    }
+                                }
                             } else {
 
                                 Toast
@@ -215,9 +222,9 @@ fun HadithMainActivityUI(context: Context, viewModel: HadithMainViewModel){
 
 }
 
-fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Context, rawy: String) {
+suspend fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Context, rawy: String) {
 
-    if (!HadithUtils.checkIfFileExists(context, rawy)){
+    if (!viewModel.isRawyDownloaded(HadithUtils.getFileName(context, rawy))){
         val url = HadithUtils.getFileURL(context, rawy)
         val fileName = HadithUtils.getFileName(context, rawy)+".json"
 
@@ -237,16 +244,11 @@ fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Context, rawy
             .setConstraints(constraints)
             .build()
 
-        Toast.makeText(context,
-            context.getString(R.string.download_resources_is_started), Toast.LENGTH_SHORT).show()
-
         WorkManager.getInstance(context)
             .enqueue(worker)
 
     }else{
-        val intent = Intent(context, HadithViewerActivity::class.java)
-        intent.putExtra("RAWY_HADITH", rawy)
-        context.startActivity(intent)
+        viewModel.startHadithViewerActivity(context, rawy)
     }
 
 

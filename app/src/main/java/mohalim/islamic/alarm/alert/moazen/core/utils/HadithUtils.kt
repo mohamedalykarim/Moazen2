@@ -57,6 +57,22 @@ class HadithUtils {
             return fileName
         }
 
+        fun getRawyName(context: Context, file: String): String{
+            return when(file){
+                "abi_daud.json" -> context.getString(R.string.abi_daud)
+                "ahmed.json" -> context.getString(R.string.ahmed)
+                "bukhari.json" -> context.getString(R.string.bukhari)
+                "darimi.json" -> context.getString(R.string.darimi)
+                "ibn_maja.json" -> context.getString(R.string.ibn_maja)
+                "malik.json" -> context.getString(R.string.malik)
+                "muslim.json" -> context.getString(R.string.muslim)
+                "nasai.json" -> context.getString(R.string.nasai)
+                "trmizi.json" -> context.getString(R.string.trmizi)
+                else -> {""}
+            }
+
+        }
+
         fun hasEnoughSpaceForFile(context: Context, requiredSize: Long): Boolean {
             val appFilesDir = context.filesDir
             val availableSpace = appFilesDir.usableSpace
@@ -68,6 +84,28 @@ class HadithUtils {
             val appFilesDir = context.filesDir
             val file = File(appFilesDir, fileName)
             return file.length()
+        }
+
+        fun removeFile(context: Context, fileName: String) {
+            val appFilesDir = context.filesDir
+            val file = File(appFilesDir, fileName)
+            file.delete()
+        }
+
+        fun getHadithCountForRawy(rawy: String): Int {
+            return when(rawy){
+                "abi_daud" -> Constants.HADITH_ABI_DUAD_LENGTH
+                "ahmed" -> Constants.HADITH_AHMED_LENGTH
+                "bukhari" -> Constants.HADITH_BUKHARI_LENGTH
+                "darimi" -> Constants.HADITH_DARIMI_LENGTH
+                "ibn_maja" -> Constants.HADITH_IBN_MAJA_LENGTH
+                "malik" -> Constants.HADITH_MALIK_LENGTH
+                "muslim" -> Constants.HADITH_MUSLIM_LENGTH
+                "nasai" -> Constants.HADITH_NASAI_LENGTH
+                "trmizi" -> Constants.HADITH_TERMIZI_LENGTH
+                else -> {100000}
+            }
+
         }
 
     }

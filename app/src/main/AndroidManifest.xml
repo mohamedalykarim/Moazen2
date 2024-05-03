@@ -37,12 +37,7 @@
         <activity
             android:name=".ui.hadith.main.HadithMainActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.azan_popup.AzanPopupActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleInstance"
-            android:taskAffinity=""
-            android:theme="@android:style/Theme.Dialog" />
+
         <activity
             android:name=".ui.quran.main.QuranMainActivity"
             android:exported="false" />

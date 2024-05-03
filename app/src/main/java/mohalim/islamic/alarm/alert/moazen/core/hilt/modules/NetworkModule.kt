@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import mohalim.islamic.alarm.alert.moazen.core.network.interfaces.FileDownloadApi_Interface
 import mohalim.islamic.alarm.alert.moazen.core.repository.NetworkRepository
+import mohalim.islamic.alarm.alert.moazen.core.room.dao.HadithDao
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
@@ -29,9 +30,10 @@ class NetworkModule {
     @Provides
     fun provideNetworkRepository(
         @ApplicationContext context: Context,
-        fileDownloadInterface : FileDownloadApi_Interface
+        fileDownloadInterface : FileDownloadApi_Interface,
+        hadithDao: HadithDao
     ) : NetworkRepository{
-        return NetworkRepository(context, fileDownloadInterface)
+        return NetworkRepository(context, fileDownloadInterface, hadithDao)
     }
 
 
