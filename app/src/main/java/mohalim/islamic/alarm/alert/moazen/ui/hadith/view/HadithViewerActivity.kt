@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
@@ -31,6 +32,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -48,6 +51,7 @@ import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.model.Hadith
 import mohalim.islamic.alarm.alert.moazen.core.utils.HadithUtils
 import mohalim.islamic.alarm.alert.moazen.ui.quran.viewer.QuranViewerActivity
+import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingButton
 
 @AndroidEntryPoint
 class HadithViewerActivity : AppCompatActivity() {
@@ -112,11 +116,7 @@ fun HadithViewerActivityUI(viewModel: HadithViewerViewModel){
                         .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                         .fillMaxWidth()
                         .background(Color(android.graphics.Color.parseColor("#fff2f6")))
-                        .border(
-                            1.dp,
-                            Color(android.graphics.Color.parseColor("#ffd4e2")),
-                            shape = RoundedCornerShape(5)
-                        )
+                        .border(1.dp, Color(android.graphics.Color.parseColor("#ffd4e2")), shape = RoundedCornerShape(5))
 
 
                 ) {
@@ -131,6 +131,53 @@ fun HadithViewerActivityUI(viewModel: HadithViewerViewModel){
                         )
 
                         Column {
+                            Box (
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 10.dp, end = 10.dp)
+                                    .height(40.dp)
+                                    .clip(RoundedCornerShape(7.dp))
+                                    .background(Color(android.graphics.Color.parseColor("#66236e")))
+                                    .border(
+                                        1.dp, Color(android.graphics.Color.parseColor("#4e1e54")),
+                                        shape = RoundedCornerShape(7.dp)
+                                    )
+
+                            ) {
+                                Image(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    painter = painterResource(id = R.drawable.transparent_bg),
+                                    contentScale = ContentScale.Crop,
+                                    contentDescription = ""
+                                )
+
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_hadith_icon),
+                                        contentDescription = "ic_hadith_icon",
+                                        contentScale = ContentScale.FillWidth,
+                                        modifier = Modifier
+                                            .padding(top = 16.dp, start = 8.dp, end = 16.dp)
+                                            .size(32.dp)
+                                    )
+                                    Text(
+                                        text = hadiths[page].number.toString(),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(40.dp)
+                                            .padding(4.dp)
+                                            .wrapContentHeight(Alignment.CenterVertically),
+                                        color = Color(android.graphics.Color.parseColor("#ffffff")),
+                                        fontSize = 14.sp,
+                                        textAlign = TextAlign.Center,
+                                    )
+
+
+                                }
+                            }
+
                             Text(text = hadiths[page].hadith,
                                 Modifier
                                     .padding(top = 10.dp)
@@ -141,6 +188,8 @@ fun HadithViewerActivityUI(viewModel: HadithViewerViewModel){
                                 fontWeight = FontWeight.ExtraBold,
                                 fontSize = 26.sp
                             )
+
+
 
                             Text(text = hadiths[page].description,
                                 Modifier
