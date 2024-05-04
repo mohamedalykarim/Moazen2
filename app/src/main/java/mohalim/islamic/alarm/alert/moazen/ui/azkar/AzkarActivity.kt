@@ -1,11 +1,15 @@
 package mohalim.islamic.alarm.alert.moazen.ui.azkar
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
@@ -15,6 +19,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +41,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -45,6 +51,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -60,7 +67,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.room.entity.AzkarEntity
-import mohalim.islamic.alarm.alert.moazen.ui.quran.viewer.QuranViewerActivity
 import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingButton
 
 @AndroidEntryPoint
@@ -129,18 +135,46 @@ fun AzkarActivityUI(viewModel: AzkarViewModel) {
                    .weight(1f, false)) {
                    items(azkar.size){index ->
 
+                       var isPressed by remember { mutableStateOf(false) }
+                       /** Setting Button **/
+                       val interactionSetting = remember { MutableInteractionSource() }
+                       LaunchedEffect(interactionSetting){
+                           interactionSetting.interactions.collect{interaction->
+                               when(interaction){
+                                   is PressInteraction.Press ->{
+                                       isPressed = true
+                                       Handler(Looper.getMainLooper()).postDelayed({
+                                           isPressed = false
+
+                                       },90)
+                                   }
+                               }
+
+                           }
+                       }
+
+                       val settingScale by animateFloatAsState(
+                           targetValue =  if (isPressed) 0.5f else 1f,
+                           animationSpec = tween(durationMillis = 80, easing = CubicBezierEasing(0.4f, 0.0f, 0.8f, 0.8f)),
+                           label = "settingScale")
+
                        Column(
                            modifier = Modifier
                                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                                .fillMaxWidth()
+                               .scale(settingScale)
                                .background(Color(android.graphics.Color.parseColor("#fff2f6")))
                                .border(
                                    1.dp,
                                    Color(android.graphics.Color.parseColor("#ffd4e2")),
                                    shape = RoundedCornerShape(10)
-                               ).clickable {
-                                   viewModel.setCurrentZekr(azkar[index])
-                               }
+                               ).clickable(
+                                   interactionSource = interactionSetting,
+                                   indication = null,
+                                   onClick = {
+                                       viewModel.setCurrentZekr(azkar[index])
+                                   }
+                               )
 
                        ) {
                            Box(modifier = Modifier

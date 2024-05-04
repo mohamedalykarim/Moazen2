@@ -1,17 +1,22 @@
 package mohalim.islamic.alarm.alert.moazen.ui.hadith.main
 
 import android.content.Context
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,8 +30,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -47,8 +58,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.service.FileDownloadWorker
+import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
 import mohalim.islamic.alarm.alert.moazen.core.utils.HadithUtils
-import mohalim.islamic.alarm.alert.moazen.ui.hadith.view.HadithViewerActivity
+import java.util.UUID
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HadithMainActivity : AppCompatActivity() {
@@ -92,48 +105,93 @@ fun HadithMainActivityUI(context: Context, viewModel: HadithMainViewModel){
 
         LazyColumn{
             items(rowaa.size){index->
+                var isPressed by remember { mutableStateOf(false) }
+                /** Setting Button **/
+                val interactionSetting = remember { MutableInteractionSource() }
+                LaunchedEffect(interactionSetting){
+                    interactionSetting.interactions.collect{interaction->
+                        when(interaction){
+                            is PressInteraction.Press ->{
+                                isPressed = true
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    isPressed = false
+
+                                },90)
+                            }
+                        }
+
+                    }
+                }
+
+                val settingScale by animateFloatAsState(
+                    targetValue =  if (isPressed) 0.5f else 1f,
+                    animationSpec = tween(durationMillis = 80, easing = CubicBezierEasing(0.4f, 0.0f, 0.8f, 0.8f)),
+                    label = "settingScale")
+
                 Column(
                     modifier = Modifier
                         .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                         .fillMaxWidth()
+                        .scale(settingScale)
                         .background(Color(android.graphics.Color.parseColor("#fff2f6")))
                         .border(
                             1.dp,
                             Color(android.graphics.Color.parseColor("#ffd4e2")),
                             shape = RoundedCornerShape(5)
                         )
-                        .clickable {
-                            //check if phone storage is full
-                            if (!HadithUtils.hasEnoughSpaceForFile(context, 100*1024*1024)) {
-                                Toast
-                                    .makeText(
+                        .clickable(
+                            interactionSource = interactionSetting,
+                            indication = null,
+                            onClick = {
+                                //check if phone storage is full
+                                if (!HadithUtils.hasEnoughSpaceForFile(
                                         context,
-                                        context.getString(R.string.phone_storage_is_almost_full_please_free_some_space_to_download_the_resources),
-                                        Toast.LENGTH_SHORT
+                                        100 * 1024 * 1024
                                     )
-                                    .show()
-                                return@clickable
-                            }
-
-
-                            if (!viewModel.isFileDownloadInProgress(context)) {
-                                runBlocking {
-                                    withContext(Dispatchers.IO){
-                                        handleRawyClickButton(viewModel, context, rowaa[index])
-                                    }
+                                ) {
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            context.getString(R.string.phone_storage_is_almost_full_please_free_some_space_to_download_the_resources),
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                                    return@clickable
                                 }
-                            } else {
 
-                                Toast
-                                    .makeText(
-                                        context,
-                                        context.resources.getString(R.string.download_in_progress),
-                                        Toast.LENGTH_SHORT
-                                    )
-                                    .show()
+
+                                if (!viewModel.isFileDownloadInProgress(context)) {
+                                    runBlocking {
+                                        withContext(Dispatchers.IO) {
+                                            handleRawyClickButton(
+                                                viewModel,
+                                                context,
+                                                rowaa[index]
+                                            )
+                                        }
+
+                                        if (!viewModel.isRawyDownloaded(HadithUtils.getFileName(context, rowaa[index]))){
+                                            Toast
+                                                .makeText(
+                                                    context,
+                                                    context.resources.getString(R.string.download_resources_is_started),
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                .show()
+                                        }
+                                    }
+                                } else {
+
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            context.resources.getString(R.string.download_in_progress),
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                                }
                             }
-                        }
-
+                        )
                 ) {
                     Box(modifier = Modifier
                         .fillMaxWidth()
@@ -240,8 +298,8 @@ suspend fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Conte
         val worker = OneTimeWorkRequestBuilder<FileDownloadWorker>()
             .setInputData(data)
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            .addTag(viewModel.WORKER_MANAGER_TAG)
             .setConstraints(constraints)
+            .setId(UUID.fromString(Constants.DOWNLOAD_WORKER_MANAGER_UUID))
             .build()
 
         WorkManager.getInstance(context)

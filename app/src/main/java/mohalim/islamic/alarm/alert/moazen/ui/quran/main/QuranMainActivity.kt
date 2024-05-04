@@ -5,12 +5,19 @@ import android.content.Intent
 import android.graphics.Color.parseColor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,10 +31,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -97,21 +109,48 @@ fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
         LazyColumn{
 
             item {
+                var isPressed by remember { mutableStateOf(false) }
+                /** Setting Button **/
+                val interactionSetting = remember { MutableInteractionSource() }
+                LaunchedEffect(interactionSetting){
+                    interactionSetting.interactions.collect{interaction->
+                        when(interaction){
+                            is PressInteraction.Press ->{
+                                isPressed = true
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    isPressed = false
+                                },90)
+                            }
+                        }
+
+                    }
+                }
+
+                val settingScale by animateFloatAsState(
+                    targetValue =  if (isPressed) 0.5f else 1f,
+                    animationSpec = tween(durationMillis = 80, easing = CubicBezierEasing(0.4f, 0.0f, 0.8f, 0.8f)),
+                    label = "settingScale")
+
                 Column(
                     modifier = Modifier
                         .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                         .fillMaxWidth()
+                        .scale(settingScale)
                         .background(Color(parseColor("#521f58")))
                         .border(
                             1.dp,
                             Color(parseColor("#ffe7ee")),
                             shape = RoundedCornerShape(5)
                         )
-                        .clickable {
-                            val intent = Intent(context, QuranViewerActivity::class.java)
-                            intent.putExtra("Surah", pageNumberReference)
-                            context.startActivity(intent)
-                        }
+                        .clickable(
+                            interactionSource = interactionSetting,
+                            indication = null,
+                            onClick = {
+                                val intent = Intent(context, QuranViewerActivity::class.java)
+                                intent.putExtra("Surah", pageNumberReference)
+                                context.startActivity(intent)
+                            }
+                        )
 
                 ) {
 
@@ -182,10 +221,34 @@ fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
 
 
             items(allSurah.size){index->
+                var isPressed by remember { mutableStateOf(false) }
+                /** Setting Button **/
+                val interactionSetting = remember { MutableInteractionSource() }
+                LaunchedEffect(interactionSetting){
+                    interactionSetting.interactions.collect{interaction->
+                        when(interaction){
+                            is PressInteraction.Press ->{
+                                isPressed = true
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    isPressed = false
+
+                                },90)
+                            }
+                        }
+
+                    }
+                }
+
+                val settingScale by animateFloatAsState(
+                    targetValue =  if (isPressed) 0.5f else 1f,
+                    animationSpec = tween(durationMillis = 80, easing = CubicBezierEasing(0.4f, 0.0f, 0.8f, 0.8f)),
+                    label = "settingScale")
+
                 Column(
                     modifier = Modifier
                         .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                         .fillMaxWidth()
+                        .scale(settingScale)
                         .background(Color(android.graphics.Color.parseColor("#fff2f6")))
                         .border(
                             1.dp,

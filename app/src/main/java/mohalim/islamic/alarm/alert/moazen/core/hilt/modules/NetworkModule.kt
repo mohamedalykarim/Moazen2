@@ -11,6 +11,7 @@ import mohalim.islamic.alarm.alert.moazen.core.repository.NetworkRepository
 import mohalim.islamic.alarm.alert.moazen.core.room.dao.HadithDao
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import java.util.UUID
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -35,6 +36,5 @@ class NetworkModule {
     ) : NetworkRepository{
         return NetworkRepository(context, fileDownloadInterface, hadithDao)
     }
-
 
 }

@@ -13,35 +13,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.core.room.dao.HadithDao
+import mohalim.islamic.alarm.alert.moazen.core.service.FileDownloadWorker
+import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
 import mohalim.islamic.alarm.alert.moazen.core.utils.HadithUtils
 import mohalim.islamic.alarm.alert.moazen.ui.hadith.view.HadithViewerActivity
+import java.util.UUID
 import java.util.concurrent.ExecutionException
 import javax.inject.Inject
 
 
 @HiltViewModel
 class HadithMainViewModel @Inject constructor(val hadithDao: HadithDao): ViewModel() {
-    val WORKER_MANAGER_TAG = "WORKER_MANAGER_TAG"
-
 
     fun isFileDownloadInProgress(context: Context): Boolean {
-        val wm = WorkManager.getInstance(context)
-        val statuses:  ListenableFuture<List<WorkInfo>> = wm.getWorkInfosByTag(WORKER_MANAGER_TAG)
-        return try {
-            var running = false
-            val workInfoList: List<WorkInfo> = statuses.get()
-            for (workInfo in workInfoList) {
-                val state: WorkInfo.State = workInfo.state
-                Log.d("HadithMainViewModel", "isFileDownloadInProgress:  $state")
-                running = (state == WorkInfo.State.RUNNING) or (state == WorkInfo.State.ENQUEUED)
-            }
-            running
-        } catch (e: ExecutionException) {
-            e.printStackTrace()
-            false
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-            false
+        val workManager = WorkManager.getInstance(context)
+        val runningWorker = workManager.getWorkInfoById(UUID.fromString(Constants.DOWNLOAD_WORKER_MANAGER_UUID)).get()
+        if (runningWorker == null) {
+            Log.d("HadithMainViewModel", "isFileDownloadInProgress: runningWorker null")
+            return false
+        }else{
+            Log.d("HadithMainViewModel", "isFileDownloadInProgress: RUNNING "+runningWorker.state)
+            return runningWorker.state == WorkInfo.State.ENQUEUED || runningWorker.state == WorkInfo.State.RUNNING
         }
     }
 
