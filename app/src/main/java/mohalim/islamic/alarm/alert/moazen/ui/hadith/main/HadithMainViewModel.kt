@@ -50,6 +50,8 @@ class HadithMainViewModel @Inject constructor(val hadithDao: HadithDao): ViewMod
 
             _isRawyDownloaded.value = hadithCount == totalCount
 
+            Log.d("HadithMainViewModel", "isRawyDownloaded: $hadithCount total count " + totalCount)
+
             return@withContext hadithCount == totalCount
         }
     }

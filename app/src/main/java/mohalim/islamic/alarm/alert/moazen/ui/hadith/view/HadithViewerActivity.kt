@@ -189,8 +189,6 @@ fun HadithViewerActivityUI(context: Context, viewModel: HadithViewerViewModel, r
                                 fontSize = 26.sp
                             )
 
-
-
                             Text(text = currentHadithDescription,
                                 Modifier
                                     .padding(top = 10.dp)
