@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -48,9 +49,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.work.Constraints
 import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -159,37 +162,41 @@ fun HadithMainActivityUI(context: Context, viewModel: HadithMainViewModel){
                                     return@clickable
                                 }
 
+                                try {
 
-                                if (!viewModel.isFileDownloadInProgress(context)) {
                                     runBlocking {
-                                        withContext(Dispatchers.IO) {
-                                            handleRawyClickButton(
-                                                viewModel,
-                                                context,
-                                                rowaa[index]
-                                            )
-                                        }
+                                        withContext(Dispatchers.IO){
 
-                                        if (!viewModel.isRawyDownloaded(HadithUtils.getFileName(context, rowaa[index]))){
-                                            Toast
-                                                .makeText(
-                                                    context,
-                                                    context.resources.getString(R.string.download_resources_is_started),
-                                                    Toast.LENGTH_SHORT
-                                                )
-                                                .show()
+                                            if (!viewModel.isRawyDownloaded(HadithUtils.getFileName(context, rowaa[index]))){
+                                                if (!viewModel.isFileDownloadInProgress(context)) {
+                                                    handleRawyClickButton(
+                                                        viewModel,
+                                                        context,
+                                                        rowaa[index]
+                                                    )
+
+
+                                                } else {
+                                                    viewModel.toast(context, context.resources.getString(R.string.download_in_progress))
+                                                }
+                                            }else{
+                                                viewModel.startHadithViewerActivity(context, rowaa[index])
+                                            }
+
                                         }
                                     }
-                                } else {
 
-                                    Toast
-                                        .makeText(
-                                            context,
-                                            context.resources.getString(R.string.download_in_progress),
-                                            Toast.LENGTH_SHORT
-                                        )
-                                        .show()
+
+
+
+
+
+
+                                } catch (exception: Exception) {
+                                    Log.d("TAG", "HadithMainActivityUI: "+exception.message)
                                 }
+
+
                             }
                         )
                 ) {
@@ -280,9 +287,8 @@ fun HadithMainActivityUI(context: Context, viewModel: HadithMainViewModel){
 
 }
 
-suspend fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Context, rawy: String) {
-
-    if (!viewModel.isRawyDownloaded(HadithUtils.getFileName(context, rawy))){
+fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Context, rawy: String) {
+    try {
         val url = HadithUtils.getFileURL(context, rawy)
         val fileName = HadithUtils.getFileName(context, rawy)+".json"
 
@@ -302,11 +308,19 @@ suspend fun handleRawyClickButton(viewModel: HadithMainViewModel, context: Conte
             .setId(UUID.fromString(Constants.DOWNLOAD_WORKER_MANAGER_UUID))
             .build()
 
-        WorkManager.getInstance(context)
-            .enqueue(worker)
-
-    }else{
-        viewModel.startHadithViewerActivity(context, rawy)
+        val workerManager = WorkManager.getInstance(context)
+        val currentWorker = workerManager.getWorkInfoById(UUID.fromString(Constants.DOWNLOAD_WORKER_MANAGER_UUID)).get()
+        if (currentWorker == null){
+            workerManager.enqueueUniqueWork(Constants.DOWNLOAD_WORKER_MANAGER_UUID, ExistingWorkPolicy.REPLACE, worker)
+            viewModel.toast(context, context.resources.getString(R.string.download_resources_is_started))
+        }else{
+            if (currentWorker.state == WorkInfo.State.SUCCEEDED){
+                workerManager.enqueueUniqueWork(Constants.DOWNLOAD_WORKER_MANAGER_UUID, ExistingWorkPolicy.REPLACE, worker)
+                viewModel.toast(context, context.resources.getString(R.string.download_resources_is_started))
+            }
+        }
+    }catch (exception : Exception){
+        Log.d("TAG", "handleRawyClickButton: "+exception.message)
     }
 
 

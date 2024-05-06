@@ -3,6 +3,8 @@ package mohalim.islamic.alarm.alert.moazen.ui.hadith.main
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.runtime.MutableFloatState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
@@ -10,8 +12,10 @@ import androidx.work.WorkManager
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.room.dao.HadithDao
 import mohalim.islamic.alarm.alert.moazen.core.service.FileDownloadWorker
 import mohalim.islamic.alarm.alert.moazen.core.utils.Constants
@@ -24,6 +28,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HadithMainViewModel @Inject constructor(val hadithDao: HadithDao): ViewModel() {
+    private val _isRawyDownloaded = MutableStateFlow(false)
+    val isRawyDownloaded : MutableStateFlow<Boolean> = _isRawyDownloaded
 
     fun isFileDownloadInProgress(context: Context): Boolean {
         val workManager = WorkManager.getInstance(context)
@@ -42,7 +48,8 @@ class HadithMainViewModel @Inject constructor(val hadithDao: HadithDao): ViewMod
             val hadithCount = hadithDao.getCount(fileName)
             val totalCount = HadithUtils.getHadithCountForRawy(fileName)
 
-            Log.d("HadithMainViewModel", "isRawyDownloaded: $hadithCount" + " totalCount $totalCount")
+            _isRawyDownloaded.value = hadithCount == totalCount
+
             return@withContext hadithCount == totalCount
         }
     }
@@ -56,6 +63,16 @@ class HadithMainViewModel @Inject constructor(val hadithDao: HadithDao): ViewMod
             }
         }
 
+    }
+
+    fun toast(context: Context, message: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main){
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
 }

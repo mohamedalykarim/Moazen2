@@ -1,5 +1,6 @@
 package mohalim.islamic.alarm.alert.moazen.ui.hadith.view
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -57,7 +58,7 @@ class HadithViewerActivity : AppCompatActivity() {
 
 
         setContent {
-            HadithViewerActivityUI(viewModel, rawyfileName)
+            HadithViewerActivityUI(applicationContext, viewModel, rawyfileName)
         }
     }
 
@@ -72,8 +73,11 @@ class HadithViewerActivity : AppCompatActivity() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HadithViewerActivityUI(viewModel: HadithViewerViewModel, rawyfileName: String){
-    val currentHadith by viewModel.currentHadith.collectAsState()
+fun HadithViewerActivityUI(context: Context, viewModel: HadithViewerViewModel, rawyfileName: String){
+    val currentHadithNumber by viewModel.currentHadithNumber.collectAsState()
+    val currentHadithHadith by viewModel.currentHadithHadith.collectAsState()
+    val currentHadithDescription by viewModel.currentHadithDescription.collectAsState()
+
     val pagerState = rememberPagerState(pageCount = {
         HadithUtils.getHadithCountForRawy(rawyfileName)
     })
@@ -159,7 +163,7 @@ fun HadithViewerActivityUI(viewModel: HadithViewerViewModel, rawyfileName: Strin
                                             .size(32.dp)
                                     )
                                     Text(
-                                        text = "" + currentHadith.number,
+                                        text = HadithUtils.getRawyName(context, rawyfileName+".json")+" - " + currentHadithNumber,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(40.dp)
@@ -174,7 +178,7 @@ fun HadithViewerActivityUI(viewModel: HadithViewerViewModel, rawyfileName: Strin
                                 }
                             }
 
-                            Text(text = currentHadith.hadith,
+                            Text(text = currentHadithHadith,
                                 Modifier
                                     .padding(top = 10.dp)
                                     .fillMaxWidth()
@@ -187,7 +191,7 @@ fun HadithViewerActivityUI(viewModel: HadithViewerViewModel, rawyfileName: Strin
 
 
 
-                            Text(text = currentHadith.description,
+                            Text(text = currentHadithDescription,
                                 Modifier
                                     .padding(top = 10.dp)
                                     .fillMaxWidth()

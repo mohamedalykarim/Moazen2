@@ -119,7 +119,8 @@ fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
                                 isPressed = true
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     isPressed = false
-                                },90)
+
+                                },100)
                             }
                         }
 
@@ -232,7 +233,7 @@ fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     isPressed = false
 
-                                },90)
+                                },120)
                             }
                         }
 
@@ -255,11 +256,15 @@ fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
                             Color(android.graphics.Color.parseColor("#ffd4e2")),
                             shape = RoundedCornerShape(5)
                         )
-                        .clickable {
-                            val intent = Intent(context, QuranViewerActivity::class.java)
-                            intent.putExtra("Surah", allSurah[index].page)
-                            context.startActivity(intent)
-                        }
+                        .clickable(
+                            interactionSource = interactionSetting,
+                            indication = null,
+                            onClick = {
+                                val intent = Intent(context, QuranViewerActivity::class.java)
+                                intent.putExtra("Surah", allSurah[index].page)
+                                context.startActivity(intent)
+                            }
+                        )
 
                 ) {
                     Box(modifier = Modifier

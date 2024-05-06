@@ -18,17 +18,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HadithViewerViewModel @Inject constructor(val roomRepository: RoomRepository) : ViewModel() {
-    private val _currentHadith = MutableStateFlow(HadithEntity(1,"","",""))
-    val currentHadith : StateFlow<HadithEntity> = _currentHadith.asStateFlow()
+    private val _currentHadithNumber = MutableStateFlow(1)
+    val currentHadithNumber : StateFlow<Int> = _currentHadithNumber.asStateFlow()
+
+    private val _currentHadithHadith = MutableStateFlow("")
+    val currentHadithHadith : StateFlow<String> = _currentHadithHadith.asStateFlow()
+
+    private val _currentHadithDescription = MutableStateFlow("")
+    val currentHadithDescription : StateFlow<String> = _currentHadithDescription.asStateFlow()
+
+
 
     fun setCurrentHadith(hadith : HadithEntity){
-        _currentHadith.value = hadith
+        _currentHadithNumber.value = hadith.number
+        _currentHadithHadith.value = hadith.hadith
+        _currentHadithDescription.value = hadith.description
     }
 
     fun getCurrentHadithFromRoom(rawyfileName: String, page: Int) {
         viewModelScope.launch {
             roomRepository.getCurrentHadith(rawyfileName, page).collect{
-                _currentHadith.value = it
+                setCurrentHadith(it)
             }
         }
     }

@@ -145,7 +145,6 @@ fun AzkarActivityUI(viewModel: AzkarViewModel) {
                                        isPressed = true
                                        Handler(Looper.getMainLooper()).postDelayed({
                                            isPressed = false
-
                                        },90)
                                    }
                                }
@@ -168,7 +167,8 @@ fun AzkarActivityUI(viewModel: AzkarViewModel) {
                                    1.dp,
                                    Color(android.graphics.Color.parseColor("#ffd4e2")),
                                    shape = RoundedCornerShape(10)
-                               ).clickable(
+                               )
+                               .clickable(
                                    interactionSource = interactionSetting,
                                    indication = null,
                                    onClick = {
