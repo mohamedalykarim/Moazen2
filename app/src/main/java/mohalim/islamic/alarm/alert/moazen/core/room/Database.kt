@@ -7,7 +7,7 @@ import mohalim.islamic.alarm.alert.moazen.core.room.dao.HadithDao
 import mohalim.islamic.alarm.alert.moazen.core.room.entity.AzkarEntity
 import mohalim.islamic.alarm.alert.moazen.core.room.entity.HadithEntity
 
-@Database(entities = [AzkarEntity::class, HadithEntity::class], version = 5, exportSchema = false)
+@Database(entities = [AzkarEntity::class, HadithEntity::class], version = 6, exportSchema = false)
 abstract class Database : RoomDatabase() {
     abstract fun azkarDao() : AzkarDao
     abstract fun hadithDao() : HadithDao

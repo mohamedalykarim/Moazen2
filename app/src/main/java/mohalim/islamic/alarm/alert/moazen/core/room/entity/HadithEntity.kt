@@ -4,9 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "hadith")
+@Entity(tableName = "hadith", primaryKeys = [("number"), ("rawy")])
 data class HadithEntity(
-    @PrimaryKey
+    @ColumnInfo(name = "number")
     val number : Int,
     @ColumnInfo(name = "hadith")
     val hadith : String,
