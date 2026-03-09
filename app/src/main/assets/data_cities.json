@@ -77,9 +77,8 @@
     {"name": "Taba", "en_name": "Taba", "ar_name": "طابا", "country": "Egypt", "ar_country": "مصر"},
     {"name": "Tanta", "en_name": "Tanta", "ar_name": "طنطا", "country": "Egypt", "ar_country": "مصر"},
     {"name": "Toshka", "en_name": "Toshka", "ar_name": "توشكى", "country": "Egypt", "ar_country": "مصر"},
-    {"name": "Zagazig", "en_name": "Zagazig", "ar_name": "الزقازيق", "country": "Egypt", "ar_country": "مصر"},
+    {"name": "Zagazig", "en_name": "Zagazig", "ar_name": "الزقازيق", "country": "Egypt", "ar_country": "مصر"}
 
   
-    {"name": "Nottingham", "en_name": "Nottingham", "ar_name": "نوتنجهام", "country": "UK", "ar_country": "انجلترا"}
   ]
 }

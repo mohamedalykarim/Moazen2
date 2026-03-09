@@ -2,57 +2,26 @@ package mohalim.islamic.alarm.alert.moazen.ui.setting
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color.parseColor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import dagger.hilt.android.AndroidEntryPoint
@@ -74,29 +43,32 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SettingActivity : AppCompatActivity() {
     val viewModel: SettingViewModel by viewModels()
+
     @Inject
     lateinit var dataStore: DataStore<Preferences>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         setContent {
-            SettingUI(this, viewModel, dataStore)
+            MaterialTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    SettingUI(this, viewModel, dataStore)
+                }
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-
         viewModel.observeSummerTime()
-        viewModel.observeSummerTime()
-
 
         runBlocking {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 viewModel.getCurrentCityName()
-
                 viewModel.getAzanPerformerFagr()
                 viewModel.getAzanPerformerDuhur()
                 viewModel.getAzanPerformerAsr()
@@ -108,14 +80,15 @@ class SettingActivity : AppCompatActivity() {
                 viewModel.getPreAzanPerformerAsr()
                 viewModel.getPreAzanPerformerMaghrib()
                 viewModel.getPreAzanPerformerIshaa()
-
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStore<Preferences>) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val currentCity by viewModel.currentCity.collectAsState()
     val showCityBottomSheet by viewModel.showCityBottomSheet.collectAsState()
     val showAzanPerformerBottomSheet by viewModel.showAzanPerformerBottomSheet.collectAsState()
@@ -135,539 +108,251 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
 
     val summerTimeState by viewModel.summerTimeState.collectAsState()
 
-
     var azanType by remember { mutableStateOf("") }
+    val language = Locale.getDefault().language
 
-    val language = Locale.getDefault().language;
-
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color(parseColor("#ffffff")))
-    ) {
-        Image(
-            modifier = Modifier.fillMaxSize(),
-            painter = painterResource(id = R.drawable.transparent_bg),
-            contentScale = ContentScale.Crop,
-            contentDescription = ""
-        )
-
-        val scrollState = rememberScrollState()
-
-        Column(
-            modifier = Modifier.verticalScroll(scrollState),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-
-            /** Title **/
-            Text(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
-                    .fillMaxWidth(),
-                text = stringResource(id = R.string.setting),
-                fontSize = 40.sp,
-                fontWeight = FontWeight.ExtraBold,
-                textAlign = TextAlign.Start,
-                color = Color(parseColor("#000000"))
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.setting),
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { (context as? SettingActivity)?.onBackPressedDispatcher?.onBackPressed() }) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                scrollBehavior = scrollBehavior
             )
-
-            /**
-             * Current City
-             */
-
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color(parseColor("#ffe7ee")))
-                    .border(
-                        1.dp,
-                        Color(parseColor("#6c0678")),
-                        shape = RoundedCornerShape(7.dp)
-                    )
-                    .padding(8.dp)
-
-            ) {
-
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.current_city),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    val city = Utils.getCurrentCity(context, currentCity)
-                    var cityName: String
-                    cityName = when (language) {
-                        "en" -> {
-                            city.enName
-                        }
-
-                        "ar" -> {
-                            city.arName
-                        }
-
-                        else -> {
-                            city.enName
-                        }
-                    }
-
-                    SettingButton(name = cityName, iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({viewModel.setShowCityBottomSheet(true)}, 200)
-                    }
-
-                }
-
-            }
-
-
-            /**
-             *  Summer Time
-             */
-            SummerTime(context, dataStore = dataStore, summerTimeState)
-
-            /**
-             * Azan Performer
-             */
-
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color(parseColor("#ffe7ee")))
-                    .border(
-                        1.dp,
-                        Color(parseColor("#6c0678")),
-                        shape = RoundedCornerShape(7.dp)
-                    )
-                    .padding(8.dp)
-
-            ) {
-
-                /** Fagr Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.fagr_azan_performer),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerFagr), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_FAGR
-                                viewModel.setShowAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-
-                /** Duhur Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.duhur_azan_performer),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerDuhur), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_ZOHR
-                                viewModel.setShowAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-                /** ASR Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.asr_azan_performer),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerAsr), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_ASR
-                                viewModel.setShowAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-                /** Maghrib Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.maghrib_azan_performer),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerMaghrib), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_MAGHREB
-                                viewModel.setShowAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-
-                /** Ishaa Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.ishaa_azan_performer),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerIshaa), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_ESHA
-                                viewModel.setShowAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-            }
-
-            /**
-             * Before Azan Performer
-             */
-
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color(parseColor("#ffe7ee")))
-                    .border(
-                        1.dp,
-                        Color(parseColor("#6c0678")),
-                        shape = RoundedCornerShape(7.dp)
-                    )
-                    .padding(8.dp)
-
-            ) {
-
-                /** Fagr Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.fagr_before_azan_notification_sound),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerFagr), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_PRE_FAGR
-                                viewModel.setShowPreAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-
-                /** Duhur Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.duhur_before_azan_notification_sound),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerDuhur), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_PRE_ZOHR
-                                viewModel.setShowPreAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-                /** ASR Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.asr_before_azan_notification_sound),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerAsr), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_PRE_ASR
-                                viewModel.setShowPreAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-                /** Maghrib Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.maghrib_before_azan_notification_sound),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerMaghrib), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_PRE_MAGHREB
-                                viewModel.setShowPreAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-
-                /** Ishaa Azan performer **/
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.ishaa_before_azan_notification_sound),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerIshaa), iconId = R.drawable.ic_masjed_icon) {
-                        Handler(Looper.getMainLooper())
-                            .postDelayed({
-                                azanType = Constants.AZAN_TYPE_PRE_ESHA
-                                viewModel.setShowPreAzanPerformerSheet(true)
-                            }, 200)
-                    }
-
-                }
-
-            }
-
-
-            /**
-             * Permission
-             */
-
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color(parseColor("#ffe7ee")))
-                    .border(
-                        1.dp,
-                        Color(parseColor("#6c0678")),
-                        shape = RoundedCornerShape(7.dp)
-                    )
-                    .padding(8.dp)
-
-            ) {
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = stringResource(R.string.required_permissions_for_the_application),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = Color(parseColor("#000000"))
-                    )
-
-                    SettingButton(name = stringResource(R.string.permissions), iconId = R.drawable.ic_masjed_icon, onClickCard = {
-                        context.startActivity(Intent(context, FirstStartActivity::class.java))
-                    })
-
-                }
-
-            }
-
-
-
-
-
-
         }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            // --- Section: Location & Time ---
+            item { SettingSectionHeader(title = stringResource(R.string.current_city)) }
+            item {
+                val city = Utils.getCurrentCity(context, currentCity)
+                val cityName = if (language == "ar") city.arName else city.enName
+                SettingListItem(
+                    title = stringResource(R.string.current_city),
+                    subtitle = cityName,
+                    icon = Icons.Default.LocationOn,
+                    onClick = { viewModel.setShowCityBottomSheet(true) }
+                )
+            }
+            item { SummerTime(context, dataStore, summerTimeState) }
 
+            // --- Section: Prayer Sound (Azan) ---
+            item { SettingSectionHeader(title = stringResource(R.string.prayer_times)) }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.fajr),
+                    performer = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerFagr),
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_FAGR
+                        viewModel.setShowAzanPerformerSheet(true)
+                    }
+                )
+            }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.duhur),
+                    performer = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerDuhur),
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_ZOHR
+                        viewModel.setShowAzanPerformerSheet(true)
+                    }
+                )
+            }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.asr),
+                    performer = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerAsr),
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_ASR
+                        viewModel.setShowAzanPerformerSheet(true)
+                    }
+                )
+            }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.maghrib),
+                    performer = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerMaghrib),
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_MAGHREB
+                        viewModel.setShowAzanPerformerSheet(true)
+                    }
+                )
+            }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.isha),
+                    performer = SettingUtils.getAzanPerformerNameByRawId(context, azanPerformerIshaa),
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_ESHA
+                        viewModel.setShowAzanPerformerSheet(true)
+                    }
+                )
+            }
 
+            // --- Section: Pre-Azan Notifications ---
+            item { SettingSectionHeader(title = stringResource(R.string.before_pray_notification_1)) }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.fajr),
+                    performer = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerFagr),
+                    icon = Icons.Default.NotificationsActive,
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_PRE_FAGR
+                        viewModel.setShowPreAzanPerformerSheet(true)
+                    }
+                )
+            }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.duhur),
+                    performer = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerDuhur),
+                    icon = Icons.Default.NotificationsActive,
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_PRE_ZOHR
+                        viewModel.setShowPreAzanPerformerSheet(true)
+                    }
+                )
+            }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.asr),
+                    performer = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerAsr),
+                    icon = Icons.Default.NotificationsActive,
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_PRE_ASR
+                        viewModel.setShowPreAzanPerformerSheet(true)
+                    }
+                )
+            }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.maghrib),
+                    performer = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerMaghrib),
+                    icon = Icons.Default.NotificationsActive,
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_PRE_MAGHREB
+                        viewModel.setShowPreAzanPerformerSheet(true)
+                    }
+                )
+            }
+            item {
+                AzanSettingItem(
+                    label = stringResource(R.string.isha),
+                    performer = SettingUtils.getPreAzanPerformerNameByRawId(context, preAzanPerformerIshaa),
+                    icon = Icons.Default.NotificationsActive,
+                    onClick = {
+                        azanType = Constants.AZAN_TYPE_PRE_ESHA
+                        viewModel.setShowPreAzanPerformerSheet(true)
+                    }
+                )
+            }
+
+            // --- Section: Permissions & Info ---
+            item { SettingSectionHeader(title = stringResource(R.string.required_permissions_for_the_application)) }
+            item {
+                SettingListItem(
+                    title = stringResource(R.string.permissions),
+                    subtitle = stringResource(R.string.required_permissions_for_the_application),
+                    icon = Icons.Default.Security,
+                    onClick = { context.startActivity(Intent(context, FirstStartActivity::class.java)) }
+                )
+            }
+        }
     }
 
     if (showCityBottomSheet) {
-        ChooseCityBottomUISettingActivity(
-            context = context,
-            dataStore = dataStore,
-            currentCity = currentCity,
-            language = language,
-            viewModel = viewModel
-        )
+        ChooseCityBottomUISettingActivity(context, dataStore, currentCity, language, viewModel)
     }
 
-    if (showAzanPerformerBottomSheet){
-        ChooseAzanPerformerUI(context, viewModel = viewModel, dataStore = dataStore, azanType = azanType )
+    if (showAzanPerformerBottomSheet) {
+        ChooseAzanPerformerUI(context, viewModel, dataStore, azanType)
     }
 
-    if (showPreAzanPerformerBottomSheet){
-        ChoosePreAzanPerformerUI(context, viewModel = viewModel, dataStore = dataStore, azanType = azanType )
+    if (showPreAzanPerformerBottomSheet) {
+        ChoosePreAzanPerformerUI(context, viewModel, dataStore, azanType)
     }
 }
 
 @Composable
-fun SettingButton(name: String, iconId : Int, onClickCard : ()-> Unit) {
-    var isPressed by remember {
-        mutableStateOf(false)
-    }
-    /** Setting Button **/
-    val interactionSetting = remember { MutableInteractionSource() }
-    LaunchedEffect(interactionSetting){
-        interactionSetting.interactions.collect{interaction->
-            when(interaction){
-                is PressInteraction.Press ->{
-                    isPressed = true
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        isPressed = false
+fun SettingSectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 16.dp, top = 24.dp, bottom = 8.dp)
+    )
+}
 
-                    },90)
-                }
-            }
+@Composable
+fun SettingListItem(
+    title: String,
+    subtitle: String? = null,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    ListItem(
+        headlineContent = { Text(title) },
+        supportingContent = subtitle?.let { { Text(it) } },
+        leadingContent = { Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+        trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
+        modifier = Modifier.clickable { onClick() }
+    )
+}
 
-        }
-    }
-    val settingScale by animateFloatAsState(
-        targetValue =  if (isPressed) 0.5f else 1f,
-        animationSpec = tween(durationMillis = 80, easing = CubicBezierEasing(0.4f, 0.0f, 0.8f, 0.8f)),
-        label = "settingScale")
+@Composable
+fun AzanSettingItem(
+    label: String,
+    performer: String,
+    icon: ImageVector = Icons.Default.MusicNote,
+    onClick: () -> Unit
+) {
+    ListItem(
+        headlineContent = { Text(label) },
+        supportingContent = { Text(performer) },
+        leadingContent = { Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.secondary) },
+        modifier = Modifier.clickable { onClick() }
+    )
+}
 
-    Box (
+/** Legacy support or reusable components if needed **/
+@Composable
+fun SettingButton(name: String, iconId: Int, onClickCard: () -> Unit) {
+    ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp)
-            .height(40.dp)
-            .scale(settingScale)
-            .clickable(
-                interactionSource = interactionSetting,
-                indication = null,
-                onClick = onClickCard
-            )
-            .clip(RoundedCornerShape(7.dp))
-            .background(
-                if (isPressed) Color(parseColor("#521f58")) else Color(
-                    parseColor("#66236e")
-                )
-            )
-            .border(
-                1.dp,
-                if (isPressed) Color(parseColor("#ffffff")) else Color(
-                    parseColor("#4e1e54")
-                ),
-                shape = RoundedCornerShape(7.dp)
-            )
-
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        onClick = onClickCard,
+        shape = RoundedCornerShape(12.dp)
     ) {
-        Image(
-            modifier = Modifier.fillMaxWidth(),
-            painter = painterResource(id = R.drawable.transparent_bg),
-            contentScale = ContentScale.Crop,
-            contentDescription = ""
-        )
-
-        Box(
-            modifier = Modifier.fillMaxWidth(),
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = iconId),
-                contentDescription = name,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier
-                    .padding(top = 16.dp, start = 8.dp, end = 16.dp)
-                    .size(32.dp)
+            Icon(
+                painter = androidx.compose.ui.res.painterResource(id = iconId),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.primary
             )
-            Text(
-                text = name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
-                    .padding(4.dp)
-                    .wrapContentHeight(Alignment.CenterVertically),
-                color = Color(parseColor("#ffffff")),
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-            )
-
-
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(text = name, style = MaterialTheme.typography.bodyLarge)
         }
     }
-
-
 }
