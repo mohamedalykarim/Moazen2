@@ -27,6 +27,9 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
     private val _showAzanPerformerBottomSheet = MutableStateFlow(false)
     val showAzanPerformerBottomSheet : StateFlow<Boolean> = _showAzanPerformerBottomSheet.asStateFlow()
 
+    private val _showFontBottomSheet = MutableStateFlow(false)
+    val showFontBottomSheet : StateFlow<Boolean> = _showFontBottomSheet.asStateFlow()
+
     private val _azanPerformerFagr = MutableStateFlow(0)
     val azanPerformerFagr : StateFlow<Int> = _azanPerformerFagr.asStateFlow()
 
@@ -60,10 +63,21 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
     private val _summerTimeState = MutableStateFlow(false)
     val summerTimeState : StateFlow<Boolean> = _summerTimeState.asStateFlow()
 
+    private val _quranFont = MutableStateFlow("mushaf")
+    val quranFont: StateFlow<String> = _quranFont.asStateFlow()
+
     fun observeSummerTime(){
         viewModelScope.launch {
             PreferencesUtils.observeSummerTime(dataStore).collect{
                 _summerTimeState.value = it
+            }
+        }
+    }
+
+    fun observeQuranFont(){
+        viewModelScope.launch {
+            PreferencesUtils.observeQuranFont(dataStore).collect{
+                _quranFont.value = it
             }
         }
     }
@@ -178,5 +192,9 @@ class SettingViewModel @Inject constructor(val dataStore: DataStore<Preferences>
 
     fun setShowPreAzanPerformerSheet(value : Boolean){
         _showPreAzanPerformerBottomSheet.value = value
+    }
+
+    fun setShowFontBottomSheet(value: Boolean){
+        _showFontBottomSheet.value = value
     }
 }

@@ -7,12 +7,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import mohalim.islamic.alarm.alert.moazen.core.network.interfaces.FileDownloadApi_Interface
-import mohalim.islamic.alarm.alert.moazen.core.repository.NetworkRepository
 import mohalim.islamic.alarm.alert.moazen.core.repository.RoomRepository
 import mohalim.islamic.alarm.alert.moazen.core.room.Database
 import mohalim.islamic.alarm.alert.moazen.core.room.dao.AzkarDao
 import mohalim.islamic.alarm.alert.moazen.core.room.dao.HadithDao
+import mohalim.islamic.alarm.alert.moazen.core.room.dao.QuranDao
 import javax.inject.Singleton
 
 @Module
@@ -46,5 +45,11 @@ object DatabaseModule {
     @Provides
     fun provideHadithDao (database: Database): HadithDao{
         return database.hadithDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideQuranDao (database: Database): QuranDao{
+        return database.quranDao()
     }
 }

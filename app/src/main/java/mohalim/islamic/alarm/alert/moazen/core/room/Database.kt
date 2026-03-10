@@ -4,13 +4,16 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import mohalim.islamic.alarm.alert.moazen.core.room.dao.AzkarDao
 import mohalim.islamic.alarm.alert.moazen.core.room.dao.HadithDao
+import mohalim.islamic.alarm.alert.moazen.core.room.dao.QuranDao
 import mohalim.islamic.alarm.alert.moazen.core.room.entity.AzkarEntity
 import mohalim.islamic.alarm.alert.moazen.core.room.entity.HadithEntity
+import mohalim.islamic.alarm.alert.moazen.core.room.entity.QuranPageEntity
 
-@Database(entities = [AzkarEntity::class, HadithEntity::class], version = 6, exportSchema = false)
+@Database(entities = [AzkarEntity::class, HadithEntity::class, QuranPageEntity::class], version = 7, exportSchema = false)
 abstract class Database : RoomDatabase() {
     abstract fun azkarDao() : AzkarDao
     abstract fun hadithDao() : HadithDao
+    abstract fun quranDao() : QuranDao
 
     companion object{
         const val DATABASE_NAME = "moazen_database"

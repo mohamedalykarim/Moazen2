@@ -1,8 +1,6 @@
 package mohalim.islamic.alarm.alert.moazen.ui.quran.main
 
-import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,20 +9,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import mohalim.islamic.alarm.alert.moazen.core.model.Page
-import mohalim.islamic.alarm.alert.moazen.core.model.Surah
-import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
+import mohalim.islamic.alarm.alert.moazen.core.model.quran.SurahApi
+import mohalim.islamic.alarm.alert.moazen.core.network.interfaces.QuranApiInterface
 import javax.inject.Inject
 
 @HiltViewModel
-class QuranMainViewModel @Inject constructor() : ViewModel() {
-    private val _allSurah = MutableStateFlow<MutableList<Surah>>(ArrayList())
+class QuranMainViewModel @Inject constructor(private val quranApi: QuranApiInterface) : ViewModel() {
+    private val _allSurah = MutableStateFlow<List<SurahApi>>(emptyList())
     val allSurah = _allSurah.asStateFlow()
 
     private val _pageNumberReference = MutableStateFlow(1)
     val pageNumberReference : StateFlow<Int> = _pageNumberReference.asStateFlow()
 
-    private val _pageReference = MutableStateFlow(Page(1, 1, 1, "Al-Fatiha", "الفاتحة", 1, 7, "Al-Fatiha", "الفاتحة",))
-    val pageReference : StateFlow<Page> = _pageReference.asStateFlow()
+    private val _pageReference = MutableStateFlow<Page?>(null)
+    val pageReference : StateFlow<Page?> = _pageReference.asStateFlow()
 
 
     fun setPageNumberReference(page : Int){
@@ -35,13 +33,18 @@ class QuranMainViewModel @Inject constructor() : ViewModel() {
         _pageReference.value = page
     }
 
-    fun startToGetAllSurahMetaData(context : Context) {
+    fun fetchSurahList() {
         viewModelScope.launch {
-            val all = Utils.getAllSurahMetaData(context)
-            _allSurah.value.clear()
-            _allSurah.value.addAll(all)
+            try {
+                val response = quranApi.getSurahList()
+                Log.d("QuranMainViewModel", "fetchSurahList: ${response.data}")
+                if (response.code == 200) {
+                    _allSurah.value = response.data
+                }
+            } catch (e: Exception) {
+                // Handle error
+                Log.e("QuranMainViewModel", "fetchSurahList: ${e.message}")
+            }
         }
     }
-
-
 }

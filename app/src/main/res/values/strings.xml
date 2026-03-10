@@ -87,4 +87,16 @@
     <string name="download_in_progress">Download in progress</string>
     <string name="download_resources_is_started">Download Resources is started</string>
     <string name="phone_storage_is_almost_full_please_free_some_space_to_download_the_resources">Phone storage is almost full. Please, Free some space to download the resources</string>
+    <string name="quran_font">Quran Font</string>
+    <string name="choose_quran_font">Choose Quran Font</string>
+
+    <string name="font_hafs_smart">Hafs Smart</string>
+    <string name="font_hafs_18">Hafs 18</string>
+    <string name="font_warsh">Warsh</string>
+    <string name="font_qaloon">Qaloon</string>
+    <string name="font_doori">Doori</string>
+    <string name="font_soosi">Soosi</string>
+    <string name="font_shouba">Shouba</string>
+    <string name="font_bazzi">Bazzi</string>
+    <string name="font_qumbul">Qumbul</string>
 </resources>

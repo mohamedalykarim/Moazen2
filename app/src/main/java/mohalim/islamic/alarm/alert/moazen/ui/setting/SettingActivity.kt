@@ -34,6 +34,7 @@ import mohalim.islamic.alarm.alert.moazen.core.utils.SettingUtils
 import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseAzanPerformerUI
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseCityBottomUISettingActivity
+import mohalim.islamic.alarm.alert.moazen.ui.compose.ChooseFontBottomSheet
 import mohalim.islamic.alarm.alert.moazen.ui.compose.ChoosePreAzanPerformerUI
 import mohalim.islamic.alarm.alert.moazen.ui.compose.SummerTime
 import mohalim.islamic.alarm.alert.moazen.ui.main.FirstStartActivity
@@ -65,6 +66,7 @@ class SettingActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.observeSummerTime()
+        viewModel.observeQuranFont()
 
         runBlocking {
             withContext(Dispatchers.IO) {
@@ -93,6 +95,7 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
     val showCityBottomSheet by viewModel.showCityBottomSheet.collectAsState()
     val showAzanPerformerBottomSheet by viewModel.showAzanPerformerBottomSheet.collectAsState()
     val showPreAzanPerformerBottomSheet by viewModel.showPreAzanPerformerBottomSheet.collectAsState()
+    val showFontBottomSheet by viewModel.showFontBottomSheet.collectAsState()
 
     val azanPerformerFagr by viewModel.azanPerformerFagr.collectAsState()
     val azanPerformerDuhur by viewModel.azanPerformerDuhur.collectAsState()
@@ -107,6 +110,7 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
     val preAzanPerformerIshaa by viewModel.preAzanPerformerIshaa.collectAsState()
 
     val summerTimeState by viewModel.summerTimeState.collectAsState()
+    val quranFont by viewModel.quranFont.collectAsState()
 
     var azanType by remember { mutableStateOf("") }
     val language = Locale.getDefault().language
@@ -150,6 +154,29 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
                 )
             }
             item { SummerTime(context, dataStore, summerTimeState) }
+
+            // --- Section: Quran ---
+            item { SettingSectionHeader(title = stringResource(R.string.quran)) }
+            item {
+                val fontName = when(quranFont) {
+                    "hafs_smart" -> stringResource(R.string.font_hafs_smart)
+                    "hafs_18" -> stringResource(R.string.font_hafs_18)
+                    "warsh" -> stringResource(R.string.font_warsh)
+                    "qaloon" -> stringResource(R.string.font_qaloon)
+                    "doori" -> stringResource(R.string.font_doori)
+                    "soosi" -> stringResource(R.string.font_soosi)
+                    "shouba" -> stringResource(R.string.font_shouba)
+                    "bazzi" -> stringResource(R.string.font_bazzi)
+                    "qumbul" -> stringResource(R.string.font_qumbul)
+                    else -> stringResource(R.string.font_hafs_smart)
+                }
+                SettingListItem(
+                    title = stringResource(R.string.quran_font),
+                    subtitle = fontName,
+                    icon = Icons.Default.FontDownload,
+                    onClick = { viewModel.setShowFontBottomSheet(true) }
+                )
+            }
 
             // --- Section: Prayer Sound (Azan) ---
             item { SettingSectionHeader(title = stringResource(R.string.prayer_times)) }
@@ -285,6 +312,10 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
 
     if (showPreAzanPerformerBottomSheet) {
         ChoosePreAzanPerformerUI(context, viewModel, dataStore, azanType)
+    }
+
+    if (showFontBottomSheet) {
+        ChooseFontBottomSheet(viewModel, dataStore)
     }
 }
 

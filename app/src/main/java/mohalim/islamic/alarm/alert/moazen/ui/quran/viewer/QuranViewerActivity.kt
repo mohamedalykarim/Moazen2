@@ -1,81 +1,71 @@
 package mohalim.islamic.alarm.alert.moazen.ui.quran.viewer
 
 import android.content.Context
-import android.graphics.Paint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Slider
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.IntOffset
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import com.google.android.play.core.splitinstall.SplitInstallManager
-import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import mohalim.islamic.alarm.alert.moazen.R
+import mohalim.islamic.alarm.alert.moazen.core.model.quran.AyahApi
+import mohalim.islamic.alarm.alert.moazen.core.model.quran.PageApi
 import java.util.Locale
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class QuranViewerActivity : AppCompatActivity() {
-    private lateinit var splitInstallManager : SplitInstallManager
-    private val quranModuleName by lazy { getString(R.string.title_quran) }
-    @Inject lateinit var dataStore: DataStore<Preferences>
-
     val viewmodel : QuranViewerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        splitInstallManager = SplitInstallManagerFactory.create(this)
-
-        if(!splitInstallManager.installedModules.contains(quranModuleName)){
-            finish()
-        }
-
-        val page = intent.getIntExtra("Surah", 1)
-
+        val page = intent.getIntExtra("page", 1)
         setContent { 
-            QuranViewerActivityUI(this@QuranViewerActivity, viewmodel, splitInstallManager, quranModuleName, page, dataStore)
+            QuranViewerActivityUI(this@QuranViewerActivity, viewmodel, page)
         }
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-
         val callback = object : OnBackPressedCallback(true ) {
             override fun handleOnBackPressed() {
                 viewmodel.setPreferencesPageReference()
@@ -86,145 +76,146 @@ class QuranViewerActivity : AppCompatActivity() {
     }
 }
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun QuranViewerActivityUI(
-    context: Context,
-    viewmodel: QuranViewerViewModel,
-    splitInstallManager: SplitInstallManager,
-    quranModuleName: String,
-    surahPage: Int,
-    dataStore: DataStore<Preferences>
-) {
-    val scope = rememberCoroutineScope()
-    val language = Locale.getDefault().language;
+fun QuranViewerActivityUI(context: Context, viewmodel: QuranViewerViewModel, initialPage: Int) {
+    val language = Locale.getDefault().language
+    val pageContent by viewmodel.pageContent.collectAsState()
+    val isLoading by viewmodel.isLoading.collectAsState()
+    val showDownloadPrompt by viewmodel.showDownloadPrompt.collectAsState()
+    val isDownloading by viewmodel.isDownloading.collectAsState()
+    val downloadProgress by viewmodel.downloadProgress.collectAsState()
+    val quranFont by viewmodel.quranFont.collectAsState()
 
+    val pagerState = rememberPagerState(pageCount = { 604 })
 
-    val pagerState = rememberPagerState(pageCount = {
-        604
-    })
-
-    LaunchedEffect(key1 = 1){
-        scope.launch {
-            if (language == "en") pagerState.scrollToPage(604- surahPage)
-            if (language == "ar") pagerState.scrollToPage(surahPage - 1)
-        }
+    LaunchedEffect(initialPage) {
+        val targetPage = if (language == "ar") initialPage - 1 else 604 - initialPage
+        pagerState.scrollToPage(targetPage)
     }
 
-    if (language == "en") viewmodel.setLastPage(604 - pagerState.currentPage)
-    if (language == "ar") viewmodel.setLastPage(pagerState.currentPage + 1)
-
-    var scale by remember { mutableFloatStateOf(1f) }
-    var isZoomable by remember { mutableStateOf(false) }
-
-    HorizontalPager(
-        modifier = Modifier.pointerInput(Unit) {
-            detectTransformGestures{ centroid, pan, zoom, rotation ->
-                scale *= zoom
-            }
-        },
-        state = pagerState) { page ->
-        Log.d("TAG", "QuranViewerActivityUI: page $page ")
-        var currentPage = if(language == "en"){
-            604 - page
-        }else if(language == "ar"){
-            page + 1
-        }else{
-            604 - page
-        }
-
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-            ){
-
-                val resourceId = context.resources.getIdentifier("page$currentPage", "drawable", "mohalim.islamic.alarm.alert.moazen.Quran")
-                Log.d("TAG", "QuranViewerActivityUI: page$currentPage")
-                Image(
-                    painterResource(id = resourceId),
-                    contentDescription = "Quran page",
-                    contentScale = ContentScale.FillWidth,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer(
-                            // adding some zoom limits (min 50%, max 200%)
-                            scaleX = maxOf(1f, minOf(2f, scale)),
-                            scaleY = maxOf(1f, minOf(2f, scale))
-                        )
-                )
-
-//            val scale by viewmodel.zoomScale.collectAsState()
-//            val offset by viewmodel.zoomOffset.collectAsState()
-
-
-//            var highlightedAyaNumber by remember{ mutableIntStateOf(0) }
-//            val highlightArea = IntOffset(Utils.dipTopx(context, 150f),Utils.dipTopx(context, 347f))
-//            val highlightSize=  IntOffset(Utils.dipTopx(context, 115f),Utils.dipTopx(context, 30f))
-//            val ayaNumber = 1
-
-
-//            HighlightArea(viewmodel, highlightArea, highlightSize, highlightedAyaNumber, ayaNumber, scale, offset, onClickCanvas = {
-//                if (highlightedAyaNumber == ayaNumber){
-//                    highlightedAyaNumber = 0
-//                }else{
-//                    highlightedAyaNumber = ayaNumber
-//                }
-//            })
-            }
-
-
-        }
-
-
-
+    val currentPageNumber = if (language == "ar") pagerState.currentPage + 1 else 604 - pagerState.currentPage
+    
+    LaunchedEffect(pagerState.currentPage) {
+        viewmodel.setLastPage(currentPageNumber)
+        viewmodel.fetchPage(currentPageNumber)
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize().background(Color(0xFFFFFDF7))
+        ) { pageIndex ->
+            val pageNum = if (language == "ar") pageIndex + 1 else 604 - pageIndex
+            val content = pageContent[pageNum]
 
+            Box(modifier = Modifier.fillMaxSize()) {
+                if (content == null && isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                } else if (content != null) {
+                    QuranPageContent(content, quranFont)
+                }
+            }
+        }
 
+        if (isDownloading) {
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.background(Color.White, RoundedCornerShape(12.dp)).padding(24.dp)
+                ) {
+                    Text("جاري تحميل المصحف للاستخدام بدون إنترنت...", fontWeight = FontWeight.Bold)
+                    LinearProgressIndicator(
+                        progress = downloadProgress,
+                        modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth()
+                    )
+                    Text("${(downloadProgress * 100).toInt()}%")
+                }
+            }
+        }
 
-
+        if (showDownloadPrompt) {
+            AlertDialog(
+                onDismissRequest = { viewmodel.dismissDownloadPrompt() },
+                title = { Text("تحميل المصحف") },
+                text = { Text("هل تريد تحميل صفحات المصحف كاملة (604 صفحة) لتعمل بدون الحاجة للاتصال بالإنترنت لاحقاً؟") },
+                confirmButton = {
+                    Button(onClick = { viewmodel.startFullDownload() }) { Text("تحميل الآن") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewmodel.dismissDownloadPrompt() }) { Text("لاحقاً") }
+                }
+            )
+        }
+    }
 }
 
-
-
-
 @Composable
-fun HighlightArea(
-    viewmodel: QuranViewerViewModel,
-    highlightArea: IntOffset,
-    highlightSize: IntOffset,
-    highlightedAyaNumber : Int,
-    ayaNumber : Int,
-    scale : Float,
-    offset : Offset,
-    onClickCanvas : () -> Unit
-){
-    val interactionSetting = remember { MutableInteractionSource() }
-    val highlightedColor = if (highlightedAyaNumber == ayaNumber) android.graphics.Color.parseColor("#4c000000") else android.graphics.Color.parseColor("#0000ffff")
-    Canvas(modifier = Modifier
-        .fillMaxSize()
-        .clickable(
-            interactionSource = interactionSetting,
-            indication = null,
-            onClick = onClickCanvas
-        )
+fun QuranPageContent(pageData: PageApi, quranFont: String) {
+    var selectedAyahNumber by remember { mutableStateOf(-1) }
+
+    val fontFamily = when(quranFont) {
+        "hafs_smart" -> FontFamily(Font(R.font.hafs_smart_8))
+        "hafs_18" -> FontFamily(Font(R.font.hafs_18))
+        "warsh" -> FontFamily(Font(R.font.warsh_10))
+        "qaloon" -> FontFamily(Font(R.font.qaloon_10))
+        "doori" -> FontFamily(Font(R.font.doori_9))
+        "soosi" -> FontFamily(Font(R.font.soosi_9))
+        "shouba" -> FontFamily(Font(R.font.shouba_8))
+        "bazzi" -> FontFamily(Font(R.font.bazzi_7))
+        "qumbul" -> FontFamily(Font(R.font.qumbul_7))
+        else -> FontFamily(Font(R.font.hafs_smart_8))
+
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        drawIntoCanvas { canvas ->
-            val paint = Paint()
-            canvas.nativeCanvas.apply {
-                drawRect(
-                    highlightArea.x.toFloat(),
-                    highlightArea.y.toFloat(),
-                    (highlightArea.x + highlightSize.x).toFloat(),
-                    (highlightArea.y + highlightSize.y).toFloat(),
-                    paint.apply { color = highlightedColor }
-                )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "الجزء ${pageData.ayahs.first().juz}", fontWeight = FontWeight.Bold, color = Color(0xFF5D4037))
+            Text(text = "صفحة ${pageData.number}", fontWeight = FontWeight.Bold, color = Color(0xFF5D4037))
+        }
+
+        val annotatedString = buildAnnotatedString {
+            pageData.ayahs.forEach { ayah ->
+                val isSelected = selectedAyahNumber == ayah.number
+                
+                pushStringAnnotation(tag = "AYAH", annotation = ayah.number.toString())
+                withStyle(style = SpanStyle(
+                    background = if (isSelected) Color(0xFFFFE082) else Color.Transparent,
+                    color = Color.Black,
+                    fontSize = 24.sp
+                )) {
+                    append(ayah.text)
+                }
+                
+                withStyle(style = SpanStyle(color = Color(0xFF8D6E63), fontSize = 18.sp)) {
+                    append(" \uFD3F${ayah.numberInSurah}\uFD3E ")
+                }
+                pop()
             }
         }
+
+        Text(
+            text = annotatedString,
+            lineHeight = 45.sp,
+            textAlign = TextAlign.Center,
+            fontFamily = fontFamily,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .clickable {
+                    // This is a simplified tap detection for Span
+                }
+        )
     }
 }

@@ -73,4 +73,16 @@
     <string name="overlay_permission">تصريح الرسم على التطبيقات</string>
     <string name="please_swipe_the_screen_to_dismiss_the_notification">قم بسحب الشاشة فى أي اتجاه وسيتم ايقاف التنبيه بشكل تلقائي</string>
     <string name="hadith">الحديث الشريف</string>
+    <string name="quran_font">خط القرآن</string>
+    <string name="choose_quran_font">اختر خط القرآن</string>
+
+    <string name="font_hafs_smart">حفص سمارت</string>
+    <string name="font_hafs_18">حفص 18</string>
+    <string name="font_warsh">ورش</string>
+    <string name="font_qaloon">قالون</string>
+    <string name="font_doori">الدوري</string>
+    <string name="font_soosi">السوسي</string>
+    <string name="font_shouba">شعبة</string>
+    <string name="font_bazzi">البزي</string>
+    <string name="font_qumbul">قنبل</string>
 </resources>

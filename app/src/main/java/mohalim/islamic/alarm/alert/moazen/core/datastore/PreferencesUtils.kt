@@ -46,6 +46,7 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
 
         val SUMMER_TIME = booleanPreferencesKey("summer_time")
         val QURAN_PAGE_REFERENCE = intPreferencesKey("quran_page_reference")
+        val QURAN_FONT = stringPreferencesKey("quran_font")
 
 
         suspend fun setIsFirstOpen(dataStore: DataStore<Preferences>, isFirstOpen: Boolean){
@@ -392,6 +393,23 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
 
         suspend fun getPageReference(dataStore: DataStore<Preferences>): Int {
             return dataStore.data.first()[QURAN_PAGE_REFERENCE] ?: 1
+        }
+
+        suspend fun setQuranFont(dataStore: DataStore<Preferences>, font: String){
+            dataStore.edit { settings ->
+                settings[QURAN_FONT] = font
+            }
+        }
+
+        fun observeQuranFont(dataStore: DataStore<Preferences>): Flow<String> {
+            return dataStore.data
+                .map { preferences ->
+                    preferences[QURAN_FONT] ?: "mushaf"
+                }
+        }
+
+        suspend fun getQuranFont(dataStore: DataStore<Preferences>): String {
+            return dataStore.data.first()[QURAN_FONT] ?: "mushaf"
         }
 
 

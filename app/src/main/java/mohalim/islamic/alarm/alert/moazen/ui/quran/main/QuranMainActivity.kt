@@ -3,12 +3,12 @@ package mohalim.islamic.alarm.alert.moazen.ui.quran.main
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color.parseColor
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -18,17 +18,21 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,7 +60,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.datastore.PreferencesUtils
-import mohalim.islamic.alarm.alert.moazen.core.utils.Utils
 import mohalim.islamic.alarm.alert.moazen.ui.quran.viewer.QuranViewerActivity
 import javax.inject.Inject
 
@@ -70,19 +73,15 @@ class QuranMainActivity : AppCompatActivity() {
         setContent {
             QuranMainActivityUI(this, viewModel)
         }
+        viewModel.fetchSurahList()
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.startToGetAllSurahMetaData(this)
-
         runBlocking {
             withContext(Dispatchers.IO){
                 val pageNumberReference = PreferencesUtils.getPageReference(dataStore)
                 viewModel.setPageNumberReference(pageNumberReference)
-
-                val pageReference = Utils.getPageData(this@QuranMainActivity, pageNumberReference)
-                viewModel.setPageReference(pageReference)
             }
         }
     }
@@ -92,7 +91,15 @@ class QuranMainActivity : AppCompatActivity() {
 fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
     val allSurah by viewModel.allSurah.collectAsState()
     val pageNumberReference by viewModel.pageNumberReference.collectAsState()
-    val pageReference by viewModel.pageReference.collectAsState()
+
+    val surahStartPages = remember {
+        intArrayOf(
+            1, 2, 50, 77, 106, 128, 151, 177, 187, 208, 221, 235, 249, 255, 262, 267, 282, 293, 305, 312, 322, 332, 342, 350, 359, 367, 377, 385, 396, 404,
+            411, 415, 418, 428, 434, 440, 446, 453, 458, 467, 477, 483, 489, 496, 499, 502, 507, 511, 515, 518, 520, 523, 526, 528, 531, 534, 537, 542, 545, 549,
+            551, 553, 554, 556, 558, 560, 562, 564, 566, 568, 570, 572, 574, 575, 577, 578, 580, 582, 583, 585, 587, 589, 591, 593, 594, 595, 597, 598, 599, 600,
+            601, 601, 602, 602, 603, 603, 604, 604, 605, 605, 606, 606, 607, 607, 608, 608, 609, 609, 610, 610, 611, 611, 612, 612
+        ) 
+    }
 
     Box(
         modifier = Modifier
@@ -106,255 +113,157 @@ fun QuranMainActivityUI(context: Context, viewModel: QuranMainViewModel) {
             contentDescription = ""
         )
 
-        LazyColumn{
-
-            item {
-                var isPressed by remember { mutableStateOf(false) }
-                /** Setting Button **/
-                val interactionSetting = remember { MutableInteractionSource() }
-                LaunchedEffect(interactionSetting){
-                    interactionSetting.interactions.collect{interaction->
-                        when(interaction){
-                            is PressInteraction.Press ->{
-                                isPressed = true
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    isPressed = false
-
-                                },100)
-                            }
-                        }
-
-                    }
+        if (allSurah.isEmpty()) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else {
+            LazyColumn {
+                item {
+                    ReferenceCard(context, pageNumberReference)
                 }
 
-                val settingScale by animateFloatAsState(
-                    targetValue =  if (isPressed) 0.5f else 1f,
-                    animationSpec = tween(durationMillis = 80, easing = CubicBezierEasing(0.4f, 0.0f, 0.8f, 0.8f)),
-                    label = "settingScale")
-
-                Column(
-                    modifier = Modifier
-                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-                        .fillMaxWidth()
-                        .scale(settingScale)
-                        .background(Color(parseColor("#521f58")))
-                        .border(
-                            1.dp,
-                            Color(parseColor("#ffe7ee")),
-                            shape = RoundedCornerShape(5)
-                        )
-                        .clickable(
-                            interactionSource = interactionSetting,
-                            indication = null,
-                            onClick = {
-                                val intent = Intent(context, QuranViewerActivity::class.java)
-                                intent.putExtra("Surah", pageNumberReference)
-                                context.startActivity(intent)
-                            }
-                        )
-
-                ) {
-
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                    ){
-                        Image(
-                            modifier = Modifier.fillMaxWidth(),
-                            painter = painterResource(id = R.drawable.transparent_bg),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = ""
-                        )
-
-                        Text(text = "$pageNumberReference",
-                            Modifier
-                                .padding(top = 0.dp, start = 60.dp)
-                                .fillMaxWidth()
-                                .padding(start = 10.dp, end = 10.dp)
-                                .height(70.dp)
-                                .wrapContentHeight(align = Alignment.CenterVertically),
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(parseColor("#ffe7ee")),
-                            fontSize = 50.sp
-                        )
-
-                        Text(text = "سورة "+pageReference.endSurahArName,
-                            Modifier
-                                .padding(top = 50.dp, start = 60.dp)
-                                .fillMaxWidth()
-                                .padding(start = 10.dp, end = 10.dp)
-                                .height(50.dp)
-                                .wrapContentHeight(align = Alignment.CenterVertically),
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(parseColor("#ffffff")),
-                            fontSize = 25.sp
-                        )
-
-                        Text(text = stringResource(R.string.current_referenced_page),
-                            Modifier
-                                .padding(top = 80.dp, start = 60.dp)
-                                .fillMaxWidth()
-                                .padding(start = 10.dp, end = 10.dp)
-                                .height(50.dp)
-                                .wrapContentHeight(align = Alignment.CenterVertically),
-                            textAlign = TextAlign.Center,
-                            color = Color(parseColor("#dadada")),
-                            fontSize = 11.sp
-                        )
-
-                        Image(
-                            modifier = Modifier
-                                .padding(top = 0.dp, start = 10.dp)
-                                .width(90.dp)
-                                .height(120.dp),
-                            painter = painterResource(id = R.drawable.reference_icon),
-                            contentDescription = ""
-                        )
-
-
-
-                    }
-
-                }
-            }
-
-
-            items(allSurah.size){index->
-                var isPressed by remember { mutableStateOf(false) }
-                /** Setting Button **/
-                val interactionSetting = remember { MutableInteractionSource() }
-                LaunchedEffect(interactionSetting){
-                    interactionSetting.interactions.collect{interaction->
-                        when(interaction){
-                            is PressInteraction.Press ->{
-                                isPressed = true
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    isPressed = false
-
-                                },120)
-                            }
-                        }
-
-                    }
-                }
-
-                val settingScale by animateFloatAsState(
-                    targetValue =  if (isPressed) 0.5f else 1f,
-                    animationSpec = tween(durationMillis = 80, easing = CubicBezierEasing(0.4f, 0.0f, 0.8f, 0.8f)),
-                    label = "settingScale")
-
-                Column(
-                    modifier = Modifier
-                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-                        .fillMaxWidth()
-                        .scale(settingScale)
-                        .background(Color(android.graphics.Color.parseColor("#fff2f6")))
-                        .border(
-                            1.dp,
-                            Color(android.graphics.Color.parseColor("#ffd4e2")),
-                            shape = RoundedCornerShape(5)
-                        )
-                        .clickable(
-                            interactionSource = interactionSetting,
-                            indication = null,
-                            onClick = {
-                                val intent = Intent(context, QuranViewerActivity::class.java)
-                                intent.putExtra("Surah", allSurah[index].page)
-                                context.startActivity(intent)
-                            }
-                        )
-
-                ) {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(90.dp)
-                    ){
-                        Image(
-                            modifier = Modifier.fillMaxSize(),
-                            painter = painterResource(id = R.drawable.transparent_bg),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = ""
-                        )
-
-                        Row{
-                            Image(
-                                painterResource(id = R.drawable.zokhrof),
-                                contentDescription = "Image",
-                                modifier = Modifier
-                                    .width(70.dp)
-                                    .height(120.dp)
-                            )
-
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f, true)
-                                    .height(70.dp)
-                            ) {
-                                Box {
-                                    val surahName = allSurah[index].titleAr
-                                    Text(text = "سورة $surahName",
-                                        Modifier
-                                            .padding(top = 10.dp)
-                                            .fillMaxWidth()
-                                            .padding(start = 10.dp, end = 10.dp)
-                                            .height(50.dp)
-                                            .wrapContentHeight(align = Alignment.CenterVertically),
-                                        textAlign = TextAlign.Center,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        fontSize = 26.sp
-                                    )
-
-                                    var surahType = ""
-                                    if(allSurah[index].type == "Makkiyah") surahType = "مكية"
-                                    else if(allSurah[index].type == "Madaniyah") surahType =  "مدنية"
-
-                                    val verseCount = allSurah[index].verseCount
-
-                                    Text(text = "سورة $surahType، عدد آياتها $verseCount",
-                                        Modifier
-                                            .padding(top = 50.dp)
-                                            .fillMaxWidth()
-                                            .padding(start = 10.dp, end = 10.dp)
-                                            .height(50.dp)
-                                            .wrapContentHeight(align = Alignment.CenterVertically),
-                                        textAlign = TextAlign.Center,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp
-                                    )
-                                }
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .width(70.dp)
-                                    .height(120.dp)
-                            ) {
-                                Text(text = allSurah[index].index,
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 10.dp, end = 10.dp)
-                                        .height(120.dp)
-                                        .wrapContentHeight(align = Alignment.CenterVertically),
-                                    textAlign = TextAlign.Center,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 20.sp
-                                )
-                            }
-
-
-                        }
-
-                    }
-
-
-
-
-
+                itemsIndexed(allSurah) { index, surah ->
+                    SurahItem(context, surah, surahStartPages.getOrElse(index) { 1 })
                 }
             }
         }
+    }
+}
 
+@Composable
+fun ReferenceCard(context: Context, pageNumberReference: Int) {
+    var isPressed by remember { mutableStateOf(false) }
+    val interactionSetting = remember { MutableInteractionSource() }
+    LaunchedEffect(interactionSetting) {
+        interactionSetting.interactions.collect { interaction ->
+            if (interaction is PressInteraction.Press) {
+                isPressed = true
+                Handler(Looper.getMainLooper()).postDelayed({ isPressed = false }, 100)
+            }
+        }
+    }
+
+    val settingScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = tween(durationMillis = 80, easing = CubicBezierEasing(0.4f, 0.0f, 0.8f, 0.8f)),
+        label = "settingScale"
+    )
+
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .scale(settingScale)
+            .background(Color(parseColor("#521f58")), RoundedCornerShape(12.dp))
+            .border(1.dp, Color(parseColor("#ffe7ee")), shape = RoundedCornerShape(12.dp))
+            .clickable(
+                interactionSource = interactionSetting,
+                indication = null,
+                onClick = {
+                    val intent = Intent(context, QuranViewerActivity::class.java)
+                    intent.putExtra("page", pageNumberReference)
+                    context.startActivity(intent)
+                }
+            )
+    ) {
+        Box(modifier = Modifier.fillMaxWidth().height(120.dp)) {
+            Image(
+                modifier = Modifier.fillMaxSize(),
+                painter = painterResource(id = R.drawable.transparent_bg),
+                contentScale = ContentScale.Crop,
+                contentDescription = ""
+            )
+
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "$pageNumberReference",
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(parseColor("#ffe7ee")),
+                    fontSize = 40.sp
+                )
+                Text(
+                    text = stringResource(R.string.current_referenced_page),
+                    color = Color(parseColor("#dadada")),
+                    fontSize = 14.sp
+                )
+            }
+
+            Image(
+                modifier = Modifier.padding(10.dp).size(60.dp).align(Alignment.CenterStart),
+                painter = painterResource(id = R.drawable.reference_icon),
+                contentDescription = ""
+            )
+        }
+    }
+}
+
+@Composable
+fun SurahItem(context: Context, surah: mohalim.islamic.alarm.alert.moazen.core.model.quran.SurahApi, startPage: Int) {
+    var isPressed by remember { mutableStateOf(false) }
+    val interactionSetting = remember { MutableInteractionSource() }
+    LaunchedEffect(interactionSetting) {
+        interactionSetting.interactions.collect { interaction ->
+            if (interaction is PressInteraction.Press) {
+                isPressed = true
+                Handler(Looper.getMainLooper()).postDelayed({ isPressed = false }, 120)
+            }
+        }
+    }
+
+    val settingScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.98f else 1f,
+        animationSpec = tween(durationMillis = 80, easing = CubicBezierEasing(0.4f, 0.0f, 0.8f, 0.8f)),
+        label = "settingScale"
+    )
+
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .fillMaxWidth()
+            .scale(settingScale)
+            .background(Color(parseColor("#fff2f6")), RoundedCornerShape(8.dp))
+            .border(1.dp, Color(parseColor("#ffd4e2")), shape = RoundedCornerShape(8.dp))
+            .clickable(
+                interactionSource = interactionSetting,
+                indication = null,
+                onClick = {
+                    val intent = Intent(context, QuranViewerActivity::class.java)
+                    intent.putExtra("page", startPage)
+                    context.startActivity(intent)
+                }
+            )
+    ) {
+        Box(modifier = Modifier.fillMaxWidth().height(80.dp).padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(contentAlignment = Alignment.Center) {
+                    Image(
+                        painterResource(id = R.drawable.zokhrof),
+                        contentDescription = null,
+                        modifier = Modifier.size(50.dp)
+                    )
+                    Text(text = "${surah.number}", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column {
+                    Text(text = surah.englishName, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text(text = "${surah.revelationType} - ${surah.numberOfAyahs} Ayahs", fontSize = 12.sp, color = Color.Gray)
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = surah.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    color = Color(parseColor("#521f58")),
+                    textAlign = TextAlign.End
+                )
+            }
+        }
     }
 }
