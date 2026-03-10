@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -15,10 +16,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,10 +33,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.utils.HadithUtils
 
@@ -75,6 +79,8 @@ fun HadithViewerActivityUI(
     }
 
     val pagerState = rememberPagerState(pageCount = { totalHadithCount })
+    val scope = rememberCoroutineScope()
+    var showJumpDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState.currentPage) {
         viewModel.getCurrentHadithFromRoom(rawyfileName, pagerState.currentPage + 1)
@@ -95,6 +101,9 @@ fun HadithViewerActivityUI(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { showJumpDialog = true }) {
+                        Icon(Icons.Default.Numbers, contentDescription = "Go to Hadith")
+                    }
                     IconButton(onClick = {
                         shareHadith(context, currentHadithHadith, currentHadithDescription)
                     }) {
@@ -221,7 +230,8 @@ fun HadithViewerActivityUI(
                 ) {
                     Surface(
                         color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
-                        shape = CircleShape
+                        shape = CircleShape,
+                        onClick = { showJumpDialog = true }
                     ) {
                         Text(
                             text = "${pagerState.currentPage + 1} / $totalHadithCount",
@@ -233,6 +243,46 @@ fun HadithViewerActivityUI(
                 }
             }
         }
+    }
+
+    if (showJumpDialog) {
+        var textValue by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showJumpDialog = false },
+            title = { Text(stringResource(R.string.go_to_hadith)) },
+            text = {
+                OutlinedTextField(
+                    value = textValue,
+                    onValueChange = { if (it.all { char -> char.isDigit() }) textValue = it },
+                    label = { Text(stringResource(R.string.enter_hadith_number)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val page = textValue.toIntOrNull()
+                        if (page != null && page in 1..totalHadithCount) {
+                            scope.launch {
+                                pagerState.scrollToPage(page - 1)
+                            }
+                            showJumpDialog = false
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.invalid_number), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                ) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showJumpDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 }
 

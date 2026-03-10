@@ -1,12 +1,14 @@
 package mohalim.islamic.alarm.alert.moazen.ui.quran.viewer
 
 import android.content.Context
+import android.graphics.Color.parseColor
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -17,7 +19,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -38,9 +43,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
@@ -57,6 +68,7 @@ import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.core.model.quran.AyahApi
 import mohalim.islamic.alarm.alert.moazen.core.model.quran.PageApi
 import java.util.Locale
+import androidx.core.graphics.toColorInt
 
 @AndroidEntryPoint
 class QuranViewerActivity : AppCompatActivity() {
@@ -161,24 +173,41 @@ fun QuranViewerActivityUI(viewmodel: QuranViewerViewModel, initialPage: Int) {
 
 @Composable
 fun SurahHeader(name: String, fontFamily: FontFamily) {
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .background(Color(0xFFFDF5E6), RoundedCornerShape(8.dp))
-            .border(2.dp, Color(0xFF8D6E63), RoundedCornerShape(8.dp))
-            .padding(vertical = 6.dp),
-        contentAlignment = Alignment.Center
+            .background(colorResource(R.color.purple_500))
+            .clip(shape = RoundedCornerShape(16.dp))
     ) {
-        Text(
-            text = "سُورَةُ $name",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = fontFamily,
-            color = Color(0xFF5D4037),
-            textAlign = TextAlign.Center
+        Image(
+            modifier = Modifier.fillMaxWidth().height(35.dp),
+            painter = painterResource(id = R.drawable.transparent_bg),
+            contentScale = ContentScale.Crop,
+            contentDescription = ""
         )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(painterResource(R.drawable.ic_hadith_icon), contentDescription = "hadith", modifier = Modifier.padding(start = 16.dp).size(35.dp))
+            Text(
+                text = name,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = fontFamily,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Image(painterResource(R.drawable.ic_hadith_icon), contentDescription = "hadith", modifier = Modifier.padding(end = 16.dp).size(35.dp))
+        }
     }
+
+
+
 }
 
 @Composable
@@ -268,8 +297,10 @@ fun AyahFlowText(
             if (ayah.numberInSurah == 1 && ayah.surah.number != 1 && ayah.surah.number != 9) {
                 val cleanBasmala = if (ayahText.contains(basmalaText.trim())) basmalaText.trim() else if (ayahText.contains(basmalaAlt)) basmalaAlt else null
                 cleanBasmala?.let {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp)) {
-                        append("\n$it\n")
+                    withStyle(style = ParagraphStyle(textAlign = TextAlign.Center)) {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp)) {
+                            append(it)
+                        }
                     }
                     ayahText = ayahText.replace(it, "").trim()
                 }
@@ -279,12 +310,12 @@ fun AyahFlowText(
             withStyle(style = SpanStyle(
                 background = if (isSelected) Color(0xFFFFE082) else Color.Transparent,
                 color = Color.Black,
-                fontSize = 21.sp
+                fontSize = 23.sp
             )) {
                 append(ayahText)
             }
 
-            withStyle(style = SpanStyle(color = Color(0xFF8D6E63), fontSize = 15.sp)) {
+            withStyle(style = SpanStyle(color = Color.Red, fontSize = 23.sp)) {
                 append(" \uFD3F${ayah.numberInSurah}\uFD3E ")
             }
             pop()

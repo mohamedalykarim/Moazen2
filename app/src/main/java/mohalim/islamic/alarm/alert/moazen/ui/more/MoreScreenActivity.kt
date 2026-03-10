@@ -29,9 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.google.android.play.core.splitinstall.SplitInstallManager
-import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
-import com.google.android.play.core.splitinstall.SplitInstallRequest
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.islamic.alarm.alert.moazen.R
 import mohalim.islamic.alarm.alert.moazen.ui.azkar.AzkarActivity
@@ -41,19 +38,14 @@ import mohalim.islamic.alarm.alert.moazen.ui.setting.SettingActivity
 
 @AndroidEntryPoint
 class MoreScreenActivity : AppCompatActivity() {
-    private lateinit var splitInstallManager: SplitInstallManager
-    private val quranModuleName by lazy { getString(R.string.title_quran) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        splitInstallManager = SplitInstallManagerFactory.create(this)
 
         setContent {
             MaterialTheme {
                 MoreScreenUI(
-                    onBackClick = { finish() },
-                    splitInstallManager = splitInstallManager,
-                    quranModuleName = quranModuleName
+                    onBackClick = { finish() }
                 )
             }
         }
@@ -63,9 +55,7 @@ class MoreScreenActivity : AppCompatActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoreScreenUI(
-    onBackClick: () -> Unit,
-    splitInstallManager: SplitInstallManager,
-    quranModuleName: String
+    onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -112,12 +102,11 @@ fun MoreScreenUI(
             ) {
                 // Quran Item
                 item {
-                    val quranDownloadingMsg = stringResource(R.string.quran_module_is_downloading)
                     MoreItemCard(
                         name = stringResource(R.string.quran),
                         iconId = R.drawable.ic_quran_icon,
                         onClick = {
-                            handleQuranNavigation(context, splitInstallManager, quranModuleName, quranDownloadingMsg)
+                            context.startActivity(Intent(context, QuranMainActivity::class.java))
                         }
                     )
                 }
@@ -210,33 +199,5 @@ fun MoreItemCard(
                 textAlign = TextAlign.Center
             )
         }
-    }
-}
-
-private fun handleQuranNavigation(
-    context: Context,
-    splitInstallManager: SplitInstallManager,
-    moduleName: String,
-    downloadingMsg: String
-) {
-    if (splitInstallManager.installedModules.contains(moduleName)) {
-        context.startActivity(Intent(context, QuranMainActivity::class.java))
-    } else {
-        val request = SplitInstallRequest.newBuilder()
-            .addModule(moduleName)
-            .build()
-
-        Toast.makeText(context, downloadingMsg, Toast.LENGTH_LONG).show()
-
-        splitInstallManager.startInstall(request)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    context.startActivity(Intent(context, QuranMainActivity::class.java))
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("MoreScreen", "Installation failed", e)
-                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
     }
 }

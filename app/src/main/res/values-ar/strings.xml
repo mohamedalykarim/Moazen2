@@ -81,6 +81,10 @@
     <string name="font_kitab">كتاب</string>
     <string name="font_kitab_bold">كتاب غليظ</string>
 
-
+    <string name="go_to_hadith">الذهاب الى حديث رقم</string>
+    <string name="enter_hadith_number">ادخل رقم الحديث</string>
+    <string name="cancel">الغاء</string>
+    <string name="ok">موافق</string>
+    <string name="invalid_number">رقم غير صحيح</string>
 
 </resources>

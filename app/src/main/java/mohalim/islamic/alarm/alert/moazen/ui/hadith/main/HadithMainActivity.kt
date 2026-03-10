@@ -118,7 +118,6 @@ fun HadithMainActivityUI(context: Context, viewModel: HadithMainViewModel){
                                 isPressed = true
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     isPressed = false
-
                                 },90)
                             }
                         }
@@ -167,7 +166,7 @@ fun HadithMainActivityUI(context: Context, viewModel: HadithMainViewModel){
                                     runBlocking {
                                         withContext(Dispatchers.IO){
 
-                                            if (!viewModel.isRawyDownloaded(HadithUtils.getFileName(context, rowaa[index]))){
+                                            if (!viewModel.checkIsRawyDownloaded(HadithUtils.getFileName(context, rowaa[index]))){
                                                 if (!viewModel.isFileDownloadInProgress(context)) {
                                                     handleRawyClickButton(
                                                         viewModel,

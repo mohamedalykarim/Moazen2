@@ -94,4 +94,10 @@
     <string name="font_kitab">Kitab</string>
     <string name="font_kitab_bold">Kitab Bold</string>
     <string name="font_amiri">Amiri</string>
+
+    <string name="go_to_hadith">Go to Hadith</string>
+    <string name="enter_hadith_number">Enter Hadith number</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="invalid_number">Invalid number</string>
 </resources>
