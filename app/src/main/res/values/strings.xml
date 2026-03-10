@@ -90,13 +90,8 @@
     <string name="quran_font">Quran Font</string>
     <string name="choose_quran_font">Choose Quran Font</string>
 
-    <string name="font_hafs_smart">Hafs Smart</string>
-    <string name="font_hafs_18">Hafs 18</string>
-    <string name="font_warsh">Warsh</string>
-    <string name="font_qaloon">Qaloon</string>
-    <string name="font_doori">Doori</string>
-    <string name="font_soosi">Soosi</string>
-    <string name="font_shouba">Shouba</string>
-    <string name="font_bazzi">Bazzi</string>
-    <string name="font_qumbul">Qumbul</string>
+    <string name="font_uthmanic">Uthmanic</string>
+    <string name="font_kitab">Kitab</string>
+    <string name="font_kitab_bold">Kitab Bold</string>
+    <string name="font_amiri">Amiri</string>
 </resources>

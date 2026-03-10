@@ -159,16 +159,10 @@ fun SettingUI(context: Context, viewModel: SettingViewModel, dataStore: DataStor
             item { SettingSectionHeader(title = stringResource(R.string.quran)) }
             item {
                 val fontName = when(quranFont) {
-                    "hafs_smart" -> stringResource(R.string.font_hafs_smart)
-                    "hafs_18" -> stringResource(R.string.font_hafs_18)
-                    "warsh" -> stringResource(R.string.font_warsh)
-                    "qaloon" -> stringResource(R.string.font_qaloon)
-                    "doori" -> stringResource(R.string.font_doori)
-                    "soosi" -> stringResource(R.string.font_soosi)
-                    "shouba" -> stringResource(R.string.font_shouba)
-                    "bazzi" -> stringResource(R.string.font_bazzi)
-                    "qumbul" -> stringResource(R.string.font_qumbul)
-                    else -> stringResource(R.string.font_hafs_smart)
+                    "amiri" -> stringResource(R.string.font_amiri)
+                    "kitab" -> stringResource(R.string.font_kitab)
+                    "kitab_bold" -> stringResource(R.string.font_kitab_bold)
+                    else -> stringResource(R.string.font_kitab)
                 }
                 SettingListItem(
                     title = stringResource(R.string.quran_font),

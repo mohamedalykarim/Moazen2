@@ -76,13 +76,11 @@
     <string name="quran_font">خط القرآن</string>
     <string name="choose_quran_font">اختر خط القرآن</string>
 
-    <string name="font_hafs_smart">حفص سمارت</string>
-    <string name="font_hafs_18">حفص 18</string>
-    <string name="font_warsh">ورش</string>
-    <string name="font_qaloon">قالون</string>
-    <string name="font_doori">الدوري</string>
-    <string name="font_soosi">السوسي</string>
-    <string name="font_shouba">شعبة</string>
-    <string name="font_bazzi">البزي</string>
-    <string name="font_qumbul">قنبل</string>
+    <string name="font_uthmanic">عثماني</string>
+    <string name="font_amiri">أميري</string>
+    <string name="font_kitab">كتاب</string>
+    <string name="font_kitab_bold">كتاب غليظ</string>
+
+
+
 </resources>

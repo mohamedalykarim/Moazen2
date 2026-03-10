@@ -47,65 +47,23 @@ fun ChooseFontBottomSheet(
                 modifier = Modifier.padding(16.dp)
             )
 
-            FontItem("hafs_smart", stringResource(R.string.font_hafs_smart)) {
+            FontItem("amiri", stringResource(R.string.font_amiri)) {
                 scope.launch {
-                    PreferencesUtils.setQuranFont(dataStore, "hafs_smart")
+                    PreferencesUtils.setQuranFont(dataStore, "amiri")
                     viewModel.setShowFontBottomSheet(false)
                 }
             }
 
-            FontItem("hafs_18", stringResource(R.string.font_hafs_18)) {
+            FontItem("kitab", stringResource(R.string.font_kitab)) {
                 scope.launch {
-                    PreferencesUtils.setQuranFont(dataStore, "hafs_18")
+                    PreferencesUtils.setQuranFont(dataStore, "kitab")
                     viewModel.setShowFontBottomSheet(false)
                 }
             }
 
-            FontItem("warsh", stringResource(R.string.font_warsh)) {
+            FontItem("kitab_bold", stringResource(R.string.font_kitab_bold)) {
                 scope.launch {
-                    PreferencesUtils.setQuranFont(dataStore, "warsh")
-                    viewModel.setShowFontBottomSheet(false)
-                }
-            }
-
-            FontItem("qaloon", stringResource(R.string.font_qaloon)) {
-                scope.launch {
-                    PreferencesUtils.setQuranFont(dataStore, "qaloon")
-                    viewModel.setShowFontBottomSheet(false)
-                }
-            }
-
-            FontItem("doori", stringResource(R.string.font_doori)) {
-                scope.launch {
-                    PreferencesUtils.setQuranFont(dataStore, "doori")
-                    viewModel.setShowFontBottomSheet(false)
-                }
-            }
-
-            FontItem("soosi", stringResource(R.string.font_soosi)) {
-                scope.launch {
-                    PreferencesUtils.setQuranFont(dataStore, "soosi")
-                    viewModel.setShowFontBottomSheet(false)
-                }
-            }
-
-            FontItem("shouba", stringResource(R.string.font_shouba)) {
-                scope.launch {
-                    PreferencesUtils.setQuranFont(dataStore, "shouba")
-                    viewModel.setShowFontBottomSheet(false)
-                }
-            }
-
-            FontItem("bazzi", stringResource(R.string.font_bazzi)) {
-                scope.launch {
-                    PreferencesUtils.setQuranFont(dataStore, "bazzi")
-                    viewModel.setShowFontBottomSheet(false)
-                }
-            }
-
-            FontItem("qumbul", stringResource(R.string.font_qumbul)) {
-                scope.launch {
-                    PreferencesUtils.setQuranFont(dataStore, "qumbul")
+                    PreferencesUtils.setQuranFont(dataStore, "kitab_bold")
                     viewModel.setShowFontBottomSheet(false)
                 }
             }
