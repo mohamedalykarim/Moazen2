@@ -77,7 +77,7 @@ class QuranViewerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val page = intent.getIntExtra("page", 1)
-        setContent { 
+        setContent {
             QuranViewerActivityUI(viewmodel, page)
         }
     }
@@ -113,7 +113,7 @@ fun QuranViewerActivityUI(viewmodel: QuranViewerViewModel, initialPage: Int) {
     }
 
     val currentPageNumber = if (language == "ar") pagerState.currentPage + 1 else 604 - pagerState.currentPage
-    
+
     LaunchedEffect(pagerState.currentPage) {
         viewmodel.setLastPage(currentPageNumber)
         viewmodel.fetchPage(currentPageNumber)
@@ -196,7 +196,7 @@ fun SurahHeader(name: String, fontFamily: FontFamily) {
             Image(painterResource(R.drawable.ic_hadith_icon), contentDescription = "hadith", modifier = Modifier.padding(start = 16.dp).size(35.dp))
             Text(
                 text = name,
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = fontFamily,
                 color = Color.White,
@@ -225,29 +225,29 @@ fun QuranPageContent(pageData: PageApi, quranFont: String) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header info
             Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "الجزء ${pageData.ayahs.firstOrNull()?.juz ?: ""}", fontWeight = FontWeight.Bold, color = Color(0xFF5D4037), fontSize = 14.sp)
-                Text(text = "صفحة ${pageData.number}", fontWeight = FontWeight.Bold, color = Color(0xFF5D4037), fontSize = 14.sp)
+                Text(text = "الجزء ${pageData.ayahs.firstOrNull()?.juz ?: ""}", fontWeight = FontWeight.Bold, color = Color(0xFF5D4037), fontSize = 12.sp)
+                Text(text = "صفحة ${pageData.number}", fontWeight = FontWeight.Bold, color = Color(0xFF5D4037), fontSize = 12.sp)
             }
 
             // Main Content
             Column(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = if (pageData.number <= 2) Arrangement.Center else Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 val ayahs = pageData.ayahs
                 var currentSurahId = -1
                 val blocks = mutableListOf<List<AyahApi>>()
                 var currentBlock = mutableListOf<AyahApi>()
-                
+
                 ayahs.forEach { ayah ->
                     if (ayah.surah.number != currentSurahId || ayah.numberInSurah == 1) {
                         if (currentBlock.isNotEmpty()) blocks.add(currentBlock)
@@ -293,12 +293,12 @@ fun AyahFlowText(
         ayahs.forEach { ayah ->
             val isSelected = selectedAyahNumber == ayah.number
             var ayahText = ayah.text
-            
+
             if (ayah.numberInSurah == 1 && ayah.surah.number != 1 && ayah.surah.number != 9) {
                 val cleanBasmala = if (ayahText.contains(basmalaText.trim())) basmalaText.trim() else if (ayahText.contains(basmalaAlt)) basmalaAlt else null
                 cleanBasmala?.let {
                     withStyle(style = ParagraphStyle(textAlign = TextAlign.Center)) {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp)) {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 19.sp)) {
                             append(it)
                         }
                     }
@@ -310,12 +310,12 @@ fun AyahFlowText(
             withStyle(style = SpanStyle(
                 background = if (isSelected) Color(0xFFFFE082) else Color.Transparent,
                 color = Color.Black,
-                fontSize = 23.sp
+                fontSize = 18.sp
             )) {
                 append(ayahText)
             }
 
-            withStyle(style = SpanStyle(color = Color.Red, fontSize = 23.sp)) {
+            withStyle(style = SpanStyle(color = Color.Red, fontSize = 19.sp)) {
                 append(" \uFD3F${ayah.numberInSurah}\uFD3E ")
             }
             pop()
@@ -324,7 +324,12 @@ fun AyahFlowText(
 
     Text(
         text = annotatedString,
-        lineHeight = if (pageNumber <= 2) 55.sp else 46.sp,
+        style = androidx.compose.ui.text.TextStyle(
+            platformStyle = androidx.compose.ui.text.PlatformTextStyle(
+                includeFontPadding = false
+            )
+        ),
+        lineHeight = if (pageNumber <= 2) 42.sp else 32.sp,
         textAlign = if (pageNumber <= 2) TextAlign.Center else TextAlign.Justify,
         fontFamily = fontFamily,
         onTextLayout = { textLayoutResult = it },
