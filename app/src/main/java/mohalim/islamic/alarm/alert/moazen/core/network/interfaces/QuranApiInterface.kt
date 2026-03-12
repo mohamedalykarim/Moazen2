@@ -10,6 +10,6 @@ interface QuranApiInterface {
     @GET("v1/surah")
     suspend fun getSurahList(): QuranApiResponse<List<SurahApi>>
 
-    @GET("v1/page/{page}/quran-uthmani")
+    @GET("v1/page/{page}/quran-uthmani-quran-academy")
     suspend fun getPage(@Path("page") page: Int): QuranApiResponse<PageApi>
 }

@@ -404,12 +404,12 @@ class PreferencesUtils @Inject constructor(val context: Context, private val dat
         fun observeQuranFont(dataStore: DataStore<Preferences>): Flow<String> {
             return dataStore.data
                 .map { preferences ->
-                    preferences[QURAN_FONT] ?: "kitab"
+                    preferences[QURAN_FONT] ?: "kitab_bold"
                 }
         }
 
         suspend fun getQuranFont(dataStore: DataStore<Preferences>): String {
-            return dataStore.data.first()[QURAN_FONT] ?: "kitab"
+            return dataStore.data.first()[QURAN_FONT] ?: "kitab_bold"
         }
 
 
